@@ -21,6 +21,7 @@
     ],
     "paths": {
       "@/components/*": ["./src/components/*"],
+      "@/registry/new-york/*": ["./src/components/*"],
       "@/*": ["./src/*"]
     }
   },
