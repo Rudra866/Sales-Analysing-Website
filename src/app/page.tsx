@@ -25,7 +25,9 @@ export default function DashboardPage() {
     return (
         <>
             <div className="md:hidden">
+                <div className={'flex flex-col shadow text-primary'}>
 
+                </div>
             </div>
             <div className="hidden flex-col md:flex">
                 <div className="flex-1 space-y-4 p-8 pt-6">
