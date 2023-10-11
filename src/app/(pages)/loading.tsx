@@ -1,5 +1,7 @@
 import React from 'react';
 
+// todo loading skeleton & spinner,
+
 function Loading() {
     return (
         <div>

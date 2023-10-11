@@ -1,8 +1,8 @@
 import React from 'react';
-import TeamSwitcher from "@/components/team-switcher";
+import TeamSwitcher from "@/components/dashboard-components/team-switcher";
 import {MainNav} from "@/components/main-nav";
-import {Search} from "@/components/search";
-import {UserNav} from "@/components/user-nav";
+import {Search} from "@/components/dashboard-components/search";
+import {UserNav} from "@/components/dashboard-components/user-nav";
 import Image from "next/image";
 import {MobileNav} from "@/components/mobile-nav";
 

@@ -1,6 +1,3 @@
-import { Metadata } from "next"
-import Image from "next/image"
-
 import { Button } from "@/registry/new-york/ui/button"
 import {
     Card,
@@ -15,9 +12,12 @@ import {
     TabsList,
     TabsTrigger,
 } from "@/registry/new-york/ui/tabs"
-import { CalendarDateRangePicker } from "@/components/date-range-picker"
-import { Overview } from "@/components/overview"
-import { RecentSales } from "@/components/recent-sales"
+import { CalendarDateRangePicker } from "@/components/dashboard-components/date-range-picker"
+import { Overview } from "@/components/dashboard-components/overview"
+import { RecentSales } from "@/components/dashboard-components/recent-sales"
+
+
+// Todo dashboard charts
 
 
 

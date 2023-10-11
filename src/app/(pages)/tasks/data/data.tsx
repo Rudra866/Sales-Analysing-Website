@@ -8,6 +8,7 @@ import {
   QuestionMarkCircledIcon,
   StopwatchIcon,
 } from "@radix-ui/react-icons"
+import {Avatar} from "@/components/ui/avatar";
 
 export const labels = [
   {

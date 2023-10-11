@@ -6,14 +6,6 @@ import {usePathname} from "next/navigation";
 import {docsConfig} from "@/lib/config";
 
 
-const examples = [
-  'authentication',
-  'cards',
-  'forms',
-  'music',
-  'playground',
-  'tasks'
-]
 
 export function MainNav({className, ...props}: React.HTMLAttributes<HTMLElement>) {
   const pathname = usePathname()
