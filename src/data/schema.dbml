@@ -1,0 +1,90 @@
+/*
+Spread Sheet Columns
+1. Sales number (or index)
+2. Stock #
+3. Sales Rep
+4. Fin Mgr (Finance Manager)
+5. Financing
+6. Customer Name
+7. City
+8. Vehicle Make
+9. Trade
+10. Actual Cash Value
+11. Trade-in Allowance
+12. Gross Profit
+13. Gross Profit MTD (Month To Date)
+14. F & I (Finance & Insurance)
+15. F & I MTD
+16. Holdback
+17. Holdback MTD
+18. Total
+19. Total MTD
+20. (Seems to be empty)
+21. (Seems to be empty)
+
+Table Relationships:
+1. **Sales**: This table will contain information about each sale, including the sales number, stock #, vehicle make, actual cash value, trade-in allowance, gross profit, and total.
+2. **Employees**: This table will list the employees with their roles (e.g., sales rep, finance manager).
+3. **Customers**: This table will have details about the customers, including their names and cities.
+4. **Financing**: This table will detail the financing method used for each sale.
+5. **TradeIns**: This table will hold information about trade-ins, including the trade and its actual cash value.
+
+here's the proposed database schema:
+*/
+
+Table Sales {
+  SaleID integer [pk, increment]
+  StockNumber varchar(255) [not null] /* Unique? */
+  VehicleMake varchar(255) [not null]
+
+  /* Tune these at some point and err chk for each */
+  /* decimal(10,2) cap is 99999999.99 */
+  ActualCashValue   decimal(10,2) [not null]
+  TradeInAllowance  decimal(10,2) [not null]
+  GrossProfit       decimal(10,2) [not null]
+  Total             decimal(10,2) [not null]
+
+  EmployeeID int [not null, ref: > Employees.EmployeeID]
+  CustomerID int [not null, ref: > Customers.CustomerID]
+  FinancingID int [ref: > Financing.FinancingID]
+  TradeInID int [ref: > TradeIns.TradeInID]
+}
+
+table Employees {
+  EmployeeID int [pk, increment] /* one to many */
+  Name varchar(255) [not null]
+  Role varchar(255) [not null] // (e.g., Sales Rep, Finance Manager)
+}
+
+table Customers {
+  CustomerID int [pk, increment] /* one to many */
+  Name varchar(255) [not null]
+  City varchar(255) [not null]
+}
+
+table Financing {
+  FinancingID int [pk, increment] /* one to many */
+  Method varchar(255) [not null, unique] // (e.g., BNS)
+}
+
+table TradeIns {
+  TradeInID int [pk, increment] /* one to many */
+  Trade varchar(255)            [not null]
+  ActualCashValue decimal(10,2) [not null]
+}
+
+/* Could include roles table to allow admin to "fine tune" permissions and
+ * give custom ones. */
+
+/* Could include sessions table to allow the server to keep track of authenticated users
+ * between restarts and allow multiple sessions with fixed expiry dates
+ */
+
+/*
+**Relationships:**
+- One sale can be associated with one employee, one customer, one financing method, and one trade-in.
+ However, one employee can be associated with many sales, one customer can have many sales,
+ one financing method can be used in many sales, and there can be many trade-ins associated with various sales.
+
+Would you like a visual representation of this schema or any further details?
+*/

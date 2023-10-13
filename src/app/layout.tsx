@@ -3,6 +3,7 @@ import {fontSans} from "@/lib/fonts";
 import {cn} from "@/lib/utils";
 import {ThemeProvider} from "@/components/providers";
 import Navigation from "@/components/navigation";
+import React from "react";
 
 
 export default function RootLayout({children,}: { children: React.ReactNode }) {

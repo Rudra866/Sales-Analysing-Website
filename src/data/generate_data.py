@@ -1,6 +1,6 @@
 # CMPT 370 - Group 22
 # Fake test data generator (RYAN MADE THIS)
-
+# https://dbdocs.io/rys68639ef0785a9/370-Binary-Bandits
 
 import enum, json, csv
 import sys, random
@@ -269,7 +269,7 @@ def generate_data():
         ";".join(financers),
         ";".join(cities),
     ]
-    with open(DATAFILE, "w") as out:
+    with open(DATAFILE, "w", encoding="utf-8") as out:
         out.writelines([line + "\n" for line in lines])
 
 
@@ -316,7 +316,7 @@ def main():
 
     if GENERATE_SQL:
         try:
-            with open(OUTFILE_SQL, 'w') as f:
+            with open(OUTFILE_SQL, 'w', encoding="utf-8") as f:
                 f.writelines([line + "\n" for line in (build_mysql_schema() if GENERATE_SCHEMA else []) +
                               build_mysql_output([table.value[1] for table in Table.__members__.values()])])
                 print("Wrote file:", f.name)
@@ -327,7 +327,7 @@ def main():
     if GENERATE_CSV:
         for table in Table.__members__.values():
             try:
-                with open(table.value[0] + ".csv", 'w') as f:
+                with open(table.value[0] + ".csv", 'w', encoding="utf-8") as f:
                     f.write(f"{CSV_DELIMITER}".join(table.value[1][0].keys()) + "\n")
                     csv_lines = [obj.csv() + CSV_DELIMITER for obj in table.value[1]]
                     f.write("\n".join(csv_lines))
@@ -338,7 +338,7 @@ def main():
 
     if GENERATE_JSON:
         try:
-            with open(OUTFILE_JSON, "w") as f:
+            with open(OUTFILE_JSON, "w", encoding="utf-8") as f:
                 json_table = build_json_dict([table.value[1] for table in Table.__members__.values()])
                 json.dump(json_table, f, indent=JSON_INDENT)
             print("Wrote file:", f.name)
@@ -384,7 +384,7 @@ if __name__ == "__main__":
         exit(1)
 
     try:
-        with open(DATAFILE) as finput:
+        with open(DATAFILE, encoding="utf-8") as finput:
             first_names = finput.readline().strip('\n').split(";")[:-1]
             last_names = finput.readline().strip('\n').split(";")[:-1]
             car_makes = finput.readline().strip('\n').split(";")[:-1]
