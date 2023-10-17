@@ -18,10 +18,15 @@ import { RecentSales } from "@/components/dashboard-components/recent-sales"
 
 
 // Todo dashboard charts
+//
 
 
 
 export default function DashboardPage() {
+    // if (!session) return <Login />
+
+
+
     return (
         <>
             <div className="md:hidden">
@@ -35,7 +40,7 @@ export default function DashboardPage() {
                         <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
                         <div className="flex items-center space-x-2">
                             <CalendarDateRangePicker />
-                            <Button>Download</Button>
+                            <Button >Download</Button>
                         </div>
                     </div>
                     <Tabs defaultValue="overview" className="space-y-4">

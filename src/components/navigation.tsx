@@ -5,6 +5,7 @@ import {Search} from "@/components/dashboard-components/search";
 import {UserNav} from "@/components/dashboard-components/user-nav";
 import Image from "next/image";
 import {MobileNav} from "@/components/mobile-nav";
+// import {ModeToggle} from "@/components/mode-toggle";
 
 function Navigation() {
     return (
@@ -16,6 +17,7 @@ function Navigation() {
                     <Search />
                     <TeamSwitcher />
                     <UserNav />
+                    {/*<ModeToggle />*/}
                 </div>
             </div>
             <div className="container flex h-fit items-center">

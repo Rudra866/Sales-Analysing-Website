@@ -1,5 +1,5 @@
-import { Metadata } from "next"
-import Image from "next/image"
+'use client'
+
 import Link from "next/link"
 
 import { cn } from "@/lib/utils"
@@ -7,7 +7,16 @@ import { buttonVariants } from "@/registry/new-york/ui/button"
 import { UserAuthForm } from "./components/user-auth-form"
 
 
+// id	Name	EmployeeNumber	Password	Role	CreatedOn	LastAccessed
+// 1	Tennille Moloshnikov	44346	$2b$12$N3kIFeKbKAUDyVlT.UIt3eMOVHhoBeg2XQ8PlHFdTKoqif3UT9Hge	1	2023-01-18 10:06	2023-10-08 21:09
+
+
 export default function AuthenticationPage() {
+
+
+
+
+
   return (
     <>
       <div className="md:hidden">

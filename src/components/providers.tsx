@@ -3,12 +3,99 @@
 import * as React from "react"
 import { ThemeProvider as NextThemesProvider } from "next-themes"
 import { ThemeProviderProps } from "next-themes/dist/types"
-import { TooltipProvider } from "@/components/ui/tooltip"
+import {createContext, useContext, useEffect, useState, ReactNode} from "react";
+import supabase from "@/lib/supabase";
+import { createClient, SupabaseClient, Session } from '@supabase/supabase-js';
+
+interface SupabaseContextType {
+    supabase: SupabaseClient;
+    session: Session | null;
+}
+
+const SupabaseContext = createContext<SupabaseContextType | undefined>(undefined);
+
+export function useSupabase(): SupabaseContextType {
+    const context = useContext(SupabaseContext);
+    if (!context) {
+        throw new Error("useSupabase must be used within a SupabaseProvider");
+    }
+    return context;
+}
+
+interface SupabaseProviderProps {
+    children: ReactNode;
+}
+
+export function SupabaseProvider({ children }: SupabaseProviderProps) {
+    const [session, setSession] = useState<Session | null>(null);
+
+    useEffect(() => {
+
+        const { data: authListener } = supabase.auth.onAuthStateChange(
+            (event, session) => {
+                setSession(session);
+            }
+        );
+
+        return () => {
+            authListener?.subscription.unsubscribe();
+        };
+    }, [supabase.auth]);
+
+    const contextValue = {
+        supabase,
+        session,
+    };
+
+    return (
+        <SupabaseContext.Provider value={contextValue}>
+            {children}
+        </SupabaseContext.Provider>
+    );
+}
+
+// const SupabaseContext = createContext();
+//
+// export function useSupabase() {
+//     return useContext(SupabaseContext);
+// }
+//
+// export function SupabaseProvider({ children }) {
+//     const [session, setSession] = useState(null);
+//
+//     useEffect(() => {
+//         setSession(supabase.auth.session());
+//
+//         const { data: authListener } = supabase.auth.onAuthStateChange(
+//             (event, session) => {
+//                 setSession(session);
+//             }
+//         );
+//
+//         return () => {
+//             authListener.unsubscribe();
+//         };
+//     }, [supabase.auth]);
+//
+//     const contextValue = {
+//         supabase,
+//         session,
+//     };
+//
+//     return (
+//         <SupabaseContext.Provider value={contextValue}>
+//             {children}
+//         </SupabaseContext.Provider>
+//     );
+// }
+
 
 export function ThemeProvider({ children, ...props }: ThemeProviderProps) {
-  return (
-    <NextThemesProvider {...props}>
-            <TooltipProvider>{children}</TooltipProvider>
+    return (
+    <NextThemesProvider  {...props}>
+        <SupabaseProvider>
+            {children}
+        </SupabaseProvider>
     </NextThemesProvider>
   )
 }

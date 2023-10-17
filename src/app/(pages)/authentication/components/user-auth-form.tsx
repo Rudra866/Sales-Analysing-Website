@@ -7,11 +7,30 @@ import { Icons } from "@/components/icons"
 import { Button } from "@/registry/new-york/ui/button"
 import { Input } from "@/registry/new-york/ui/input"
 import { Label } from "@/registry/new-york/ui/label"
+import supabase from "@/lib/supabase";
 
 interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {}
 
 export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
   const [isLoading, setIsLoading] = React.useState<boolean>(false)
+  const [email, setEmail] = React.useState(null)
+  const [success, setSuccess] = React.useState(false)
+
+
+  const login = async () => {
+    if (!email) alert('Email is required')
+    try {
+      setIsLoading(true)
+      let { data, error } = await supabase.auth.signInWithPassword({
+        email: 'someone@email.com',
+        password: 'NZvADvQYOcSPXKFuZRPI'
+      })
+    } catch (error) {
+      console.log(error)
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
   async function onSubmit(event: React.SyntheticEvent) {
     event.preventDefault()
@@ -24,7 +43,7 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
 
   return (
     <div className={cn("grid gap-6", className)} {...props}>
-      <form onSubmit={onSubmit}>
+      <form onSubmit={login}>
         <div className="grid gap-2">
           <div className="grid gap-1">
             <Label className="sr-only" htmlFor="email">
