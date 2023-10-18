@@ -3,7 +3,7 @@
 import {Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table"
 import supabase from "@/lib/supabase";
 import {useEffect, useState} from "react";
-import {Tables} from "@/lib/database.types";
+import {Tables, SalesType} from "@/lib/database.types";
 import {DbResult} from "@/lib/types";
 
 
@@ -87,13 +87,19 @@ export default function TableDemo() {
     }
     return (
         <Table>
-            <TableCaption>{loading ? 'loading...': 'A list of your recent invoices.'}</TableCaption>
+            <TableCaption>{loading ? 'Loading...': 'A list of Car Sales.'}</TableCaption>
             <TableHeader>
                 <TableRow>
-                    <TableHead className="w-[100px]">Invoice</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Method</TableHead>
-                    <TableHead className="text-right">Amount</TableHead>
+                    {/*<TableHead className="w-[100px]">Invoice</TableHead>*/}
+                    {/*<TableHead>Status</TableHead>*/}
+                    {/*<TableHead>Method</TableHead>*/}
+                    {/*<TableHead className="text-right">Amount</TableHead>*/}
+
+                    {/* Table Header to SalesType columns*/}
+
+
+
+
                 </TableRow>
             </TableHeader>
             <TableBody>

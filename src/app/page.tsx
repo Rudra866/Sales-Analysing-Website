@@ -23,7 +23,8 @@ import { RecentSales } from "@/components/dashboard-components/recent-sales"
 
 
 export default function DashboardPage() {
-    // if (!session) return <Login />
+    // if !session redirect to /authentication
+    // else
 
 
 
