@@ -1,6 +1,11 @@
-
+'use client'
 
 import {Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table"
+import supabase from "@/lib/supabase";
+import {useEffect, useState} from "react";
+import {Tables} from "@/lib/database.types";
+import {DbResult} from "@/lib/types";
+
 
 const invoices = [
     {
@@ -48,9 +53,41 @@ const invoices = [
 ]
 
 export default function TableDemo() {
+    const [sales, setSales] = useState<Tables<'Sales'>>();
+    const [loading, setLoading] = useState(true);
+    // https://supabase.com/dashboard/project/ciguaogfmmnxjxfqpwhp/editor/31053?view=definition
+
+    useEffect(() => {
+        fetchWorkouts();
+    }, []);
+
+    useEffect(() => {
+        console.log(sales)
+    }, [sales]);
+
+    const fetchWorkouts = async () => {
+        try {
+            setLoading(true)
+
+            let { data: Sales, error } = await supabase
+                .from('Sales')
+                .select('*')
+                .order('id', { ascending: true })
+                .limit(10)
+
+            if (error) throw error
+            if (Sales) setSales( Sales as DbResult<typeof Sales>)
+
+        } catch (error) {
+            console.log(error)
+        } finally {
+            setLoading(false)
+        }
+
+    }
     return (
         <Table>
-            <TableCaption>A list of your recent invoices.</TableCaption>
+            <TableCaption>{loading ? 'loading...': 'A list of your recent invoices.'}</TableCaption>
             <TableHeader>
                 <TableRow>
                     <TableHead className="w-[100px]">Invoice</TableHead>

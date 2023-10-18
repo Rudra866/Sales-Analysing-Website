@@ -1,5 +1,11 @@
 import { Icons } from "@/components/icons"
 import {z} from "zod";
+import { PostgrestError } from '@supabase/supabase-js'
+
+export type DbResult<T> = T extends PromiseLike<infer U> ? U : never
+export type DbResultOk<T> = T extends PromiseLike<{ data: infer U }> ? Exclude<U, null> : never
+export type DbResultErr = PostgrestError
+
 
 export interface NavItem {
     title: string
@@ -62,31 +68,5 @@ export const  use_vehicle_sales_schema = z.object({
 })
 
 export type new_vehicle_sales_type = z.infer<typeof new_vehicle_sales_schema>
-export type use_vehicle_sales_type = z.infer<typeof use_vehicle_sales_schema>
 
-// Types for Supabase
-export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[]
 
-export interface Database {
-    public: {
-        Tables: {
-            movies: {
-                Row: {               // the data expected from .select()
-                    id: number
-                    name: string
-                    data: Json | null
-                }
-                Insert: {            // the data to be passed to .insert()
-                    id?: never         // generated columns must not be supplied
-                    name: string       // `not null` columns with no default must be supplied
-                    data?: Json | null // nullable columns can be omitted
-                }
-                Update: {            // the data to be passed to .update()
-                    id?: never
-                    name?: string      // `not null` columns are optional on .update()
-                    data?: Json | null
-                }
-            }
-        }
-    }
-}
