@@ -3,67 +3,16 @@
 import {Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table"
 import supabase from "@/lib/supabase";
 import {useEffect, useState} from "react";
-import {Tables, SalesType} from "@/lib/database.types";
+import {Tables} from "@/lib/database.types";
 import {DbResult} from "@/lib/types";
 
-
-const invoices = [
-    {
-        invoice: "INV001",
-        paymentStatus: "Paid",
-        totalAmount: "$250.00",
-        paymentMethod: "Credit Card",
-    },
-    {
-        invoice: "INV002",
-        paymentStatus: "Pending",
-        totalAmount: "$150.00",
-        paymentMethod: "PayPal",
-    },
-    {
-        invoice: "INV003",
-        paymentStatus: "Unpaid",
-        totalAmount: "$350.00",
-        paymentMethod: "Bank Transfer",
-    },
-    {
-        invoice: "INV004",
-        paymentStatus: "Paid",
-        totalAmount: "$450.00",
-        paymentMethod: "Credit Card",
-    },
-    {
-        invoice: "INV005",
-        paymentStatus: "Paid",
-        totalAmount: "$550.00",
-        paymentMethod: "PayPal",
-    },
-    {
-        invoice: "INV006",
-        paymentStatus: "Pending",
-        totalAmount: "$200.00",
-        paymentMethod: "Bank Transfer",
-    },
-    {
-        invoice: "INV007",
-        paymentStatus: "Unpaid",
-        totalAmount: "$300.00",
-        paymentMethod: "Credit Card",
-    },
-]
-
 export default function TableDemo() {
-    const [sales, setSales] = useState<Tables<'Sales'>>();
+    const [sales, setSales] = useState<Tables<'Sales'>[]>();
     const [loading, setLoading] = useState(true);
-    // https://supabase.com/dashboard/project/ciguaogfmmnxjxfqpwhp/editor/31053?view=definition
 
     useEffect(() => {
         fetchWorkouts();
     }, []);
-
-    useEffect(() => {
-        console.log(sales)
-    }, [sales]);
 
     const fetchWorkouts = async () => {
         try {
@@ -76,39 +25,48 @@ export default function TableDemo() {
                 .limit(10)
 
             if (error) throw error
-            if (Sales) setSales( Sales as DbResult<typeof Sales>)
+            if (Sales) setSales( Sales as DbResult<typeof Sales[]>)
 
         } catch (error) {
             console.log(error)
         } finally {
             setLoading(false)
         }
-
     }
     return (
         <Table>
             <TableCaption>{loading ? 'Loading...': 'A list of Car Sales.'}</TableCaption>
             <TableHeader>
                 <TableRow>
-                    {/*<TableHead className="w-[100px]">Invoice</TableHead>*/}
-                    {/*<TableHead>Status</TableHead>*/}
-                    {/*<TableHead>Method</TableHead>*/}
-                    {/*<TableHead className="text-right">Amount</TableHead>*/}
-
-                    {/* Table Header to SalesType columns*/}
-
-
-
-
+                    <TableHead className="w-[100px]">ActualCashValue</TableHead>
+                    <TableHead>CustomerID</TableHead>
+                    <TableHead>EmployeeID</TableHead>
+                    <TableHead>FinancingID</TableHead>
+                    <TableHead>FinandInsurance</TableHead>
+                    <TableHead>GrossProfit</TableHead>
+                    <TableHead>Holdback</TableHead>
+                    <TableHead>id</TableHead>
+                    <TableHead>StockNumber</TableHead>
+                    <TableHead>Total</TableHead>
+                    <TableHead>TradeInId</TableHead>
+                    <TableHead className="text-right">VechileMake</TableHead>
                 </TableRow>
             </TableHeader>
             <TableBody>
-                {invoices.map((invoice) => (
-                    <TableRow key={invoice.invoice}>
-                        <TableCell className="font-medium">{invoice.invoice}</TableCell>
-                        <TableCell>{invoice.paymentStatus}</TableCell>
-                        <TableCell>{invoice.paymentMethod}</TableCell>
-                        <TableCell className="text-right">{invoice.totalAmount}</TableCell>
+                {sales && sales.map((sale) => (
+                    <TableRow key={sale.id}>
+                        <TableCell className="font-medium">{sale.ActualCashValue}</TableCell>
+                        <TableCell>{sale.CustomerID}</TableCell>
+                        <TableCell>{sale.EmployeeID}</TableCell>
+                        <TableCell>{sale.FinancingID}</TableCell>
+                        <TableCell>{sale.FinAndInsurance}</TableCell>
+                        <TableCell>{sale.GrossProfit}</TableCell>
+                        <TableCell>{sale.Holdback}</TableCell>
+                        <TableCell>{sale.id}</TableCell>
+                        <TableCell>{sale.StockNumber}</TableCell>
+                        <TableCell>{sale.Total}</TableCell>
+                        <TableCell>{sale.TradeInID}</TableCell>
+                        <TableCell className="text-right">{sale.VehicleMake}</TableCell>
                     </TableRow>
                 ))}
             </TableBody>

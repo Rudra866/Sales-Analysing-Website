@@ -1,10 +1,12 @@
 import React from 'react';
 import Table from "@/components/table";
+import Login from "@/components/auth-components/login";
 
 function Page() {
     return (
         <div>
-            <Table />
+            <Login/>
+
         </div>
     );
 }
