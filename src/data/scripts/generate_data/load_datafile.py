@@ -2,6 +2,14 @@ import sys
 
 from config import DATAFILE
 
+email_domains = [
+    "@gmail.com",
+    "@yahoo.com",
+    "@hotmail.com",
+    "@outlook.com",
+    "@icloud.com",
+]
+
 try:
     with open(DATAFILE, "r", encoding="utf-8") as finput:
         first_names = finput.readline().strip('\n').split(";")[:-1]

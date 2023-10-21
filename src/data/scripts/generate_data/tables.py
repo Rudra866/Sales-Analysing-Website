@@ -7,7 +7,7 @@ from datetime import datetime, timedelta
 from io import StringIO
 
 from config import *
-from load_datafile import first_names, last_names, cities, car_makes
+from load_datafile import first_names, last_names, cities, car_makes, email_domains
 from tables_util import generate_password_hash, random_date
 
 
@@ -93,6 +93,7 @@ class Employee(SharedMixin):
         self.id: int = Employee.index
         self.Name: str = f"{random.choice(first_names)} {random.choice(last_names)}"
         self.EmployeeNumber: str = str(EMPLOYEE_ID_START + self.id)
+        self.Email: str = f"{'.'.join(self.Name.lower().split(' '))}{random.choice(email_domains)}"
         self.Password = generate_password_hash(self.id)
 
         self.Role = role_id
