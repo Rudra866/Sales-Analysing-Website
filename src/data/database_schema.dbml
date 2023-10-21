@@ -56,6 +56,8 @@ table Sales {
   DealerCost    decimal(10,2) [note: "used sale only"]
   ROI           decimal(3,2)  [note: "used sale, percentage as decimal."]
 
+  Total         decimal(10,2) [not null]
+
   EmployeeID int [not null, ref: > Employees.id]
   CustomerID int [not null, ref: > Customers.id]
   FinancingID int [ref: > Financing.id]

@@ -96,8 +96,11 @@ python main.py -h
 ## Authors
 
 CMPT 370 Fall - Group 22
+Ryan Schaffer
 
 ## Version History
+* 0.2.1
+    * Fixed missing columns in script and schema, tested with current schema on supabase.
 
 * 0.2
     * Updated for database changes on 2023-10-21. SQL schema definitions are now loaded in from a file instead.

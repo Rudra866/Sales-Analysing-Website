@@ -111,6 +111,8 @@ NOTIFICATION_COUNT = 10
 # Sets the time to create the sales to and from.
 BUSINESS_HOURS = (8, 17)
 
+TASK_DATE_RANGE = (7, 30)
+
 # Role types with weights associated
 role_types = \
     {"Administrator": 1,
@@ -122,14 +124,14 @@ role_types = \
      "Sales Associate": 6,
      }
 
-role_perms = {  # READ, WRITE, MODIFY, EMPLOYEEMGMT, DATABASEMGMT
-    "Administrator": [True, True, True, True, True],
-    "Sales Manager": [True, True, True, True, False],
-    "Financer": [True, False, False, False, False],
-    "Human Resources": [True, False, False, True, False],
-    "Sales Intern": [True, True, True, False, False],  # Should sales intern really be able to modify?
-    "Senior Sales Associate": [True, True, True, False, False],
-    "Sales Associate": [True, True, True, False, False],
+role_perms = {  # READ, WRITE, MODIFYSELF, MODIFYALL, EMPLOYEEMGMT, DATABASEMGMT
+    "Administrator": [True, True, True, True, True, True],
+    "Sales Manager": [True, True, True, True, True, False],
+    "Financer": [True, False, False, False, False, False],
+    "Human Resources": [True, False, False, False, True, False],
+    "Sales Intern": [True, True, True, False, False, False],  # Should sales intern really be able to modify?
+    "Senior Sales Associate": [True, True, True, True, False, False],
+    "Sales Associate": [True, True, True, False, False, False],
 }
 
 role_choices, role_weights, role_perms = list(role_types.keys()), list(role_types.values()), list(role_perms.values())

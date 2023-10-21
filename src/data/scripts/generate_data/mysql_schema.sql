@@ -1,6 +1,6 @@
 -- SQL dump generated using DBML (dbml-lang.org)
 -- Database: MySQL
--- Generated at: 2023-10-21T06:25:35.313Z
+-- Generated at: 2023-10-21T21:29:30.338Z
 
 CREATE TABLE `Sales` (
   `id` integer PRIMARY KEY NOT NULL AUTO_INCREMENT,
@@ -16,6 +16,7 @@ CREATE TABLE `Sales` (
   `DaysInStock` int COMMENT 'used sale only',
   `DealerCost` decimal(10,2) COMMENT 'used sale only',
   `ROI` decimal(3,2) COMMENT 'used sale, percentage as decimal.',
+  `Total` decimal(10,2) NOT NULL,
   `EmployeeID` int NOT NULL,
   `CustomerID` int NOT NULL,
   `FinancingID` int,

@@ -163,12 +163,13 @@ class Roles(SharedMixin):
     table = Table.ROLES
 
     def __init__(self, name, read_perm=False, write_perm=False,
-                 modify_perm=False, employee_perm=False, database_perm=False):
+                 modifyself_perm=False, modifyall_perm=False, employee_perm=False, database_perm=False):
         self.id: int = Roles.index
         self.RoleName: str = name
         self.ReadPermission: bool = read_perm
         self.WritePermission: bool = write_perm
-        self.ModifyPermission: bool = modify_perm
+        self.ModifySelfPermission: bool = modifyself_perm
+        self.ModifyAllPermission: bool = modifyall_perm
         self.EmployeePermission: bool = employee_perm
         self.DatabasePermission: bool = database_perm
 
@@ -205,7 +206,7 @@ class Sales(SharedMixin):
 
         # All sales - sum of segments
         self.Total: float = round(self.GrossProfit + self.FinAndInsurance +
-                                  self.Holdback if self.NewSale else self.LotPack, 2)
+                                  (self.Holdback if self.NewSale else self.LotPack), 2)
 
         # Foreign Keys
         self.EmployeeID: int = employee.id
@@ -242,13 +243,14 @@ class SalesGoal(SharedMixin):
     index = DATABASE_START_ID
     table = Table.SALES_GOALS
 
-    def __init__(self, assignee, creator, deadline, goal):
+    def __init__(self, creator, deadline, goal):
         self.id: int = SalesGoal.index
         self.Name: str = "goal " + str(self.id)
         self.Description: str = lorem_string
-        self.Assignee: int = assignee.id  # Employee.id
         self.Creator: int = creator.id  # Employee.id
-        self.GoalTime: str = deadline
+        self.StartDate: str = deadline
+        self.EndDate: str = (datetime.strptime(self.StartDate, "%Y-%m-%d %H:%M:%S") +
+                             timedelta(days=30)).strftime("%Y-%m-%d %H:%M:%S")
         self.TotalGoal: str = goal
 
         SalesGoal.index += 1
@@ -264,7 +266,10 @@ class Task(SharedMixin):
         self.Name: str = "task " + str(self.id)
         self.Description: str = lorem_string
         self.PercentageComplete: float = percentage_complete
-        self.DateIssued: str = date_issued
+        # self.DateIssued: str = date_issued
+        self.StartDate: str = date_issued
+        self.EndDate: str = (datetime.strptime(self.StartDate, "%Y-%m-%d %H:%M:%S") +
+                             timedelta(days=random.choice(range(*TASK_DATE_RANGE)))).strftime("%Y-%m-%d %H:%M:%S")
         self.Assignee: int = assignee.id
         self.Creator: int = creator.id
 
@@ -303,7 +308,7 @@ def generate_sales_goals(employees, monthly_sales):
             goal = round(val.Total * (1.0 + offset), 2)
         else:
             goal = round(val.Total * (1.0 - offset), 2)
-        output.append(SalesGoal(*random.choices(employees, k=2), val.TimePeriod, goal))
+        output.append(SalesGoal(random.choice(employees), val.TimePeriod, goal))
     return output
 
 
