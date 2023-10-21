@@ -30,6 +30,7 @@ export interface Database {
       Employees: {
         Row: {
           CreatedOn: string
+          Email: string | null
           EmployeeNumber: string
           id: number
           LastAccessed: string
@@ -39,6 +40,7 @@ export interface Database {
         }
         Insert: {
           CreatedOn?: string
+          Email?: string | null
           EmployeeNumber: string
           id?: number
           LastAccessed?: string
@@ -48,6 +50,7 @@ export interface Database {
         }
         Update: {
           CreatedOn?: string
+          Email?: string | null
           EmployeeNumber?: string
           id?: number
           LastAccessed?: string
@@ -359,5 +362,6 @@ export interface Database {
     }
   }
 }
+
 export type Tables<T extends keyof Database['public']['Tables']> = Database['public']['Tables'][T]['Row']
 export type Enums<T extends keyof Database['public']['Enums']> = Database['public']['Enums'][T]
