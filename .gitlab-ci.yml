@@ -1,0 +1,57 @@
+stages:
+  - deploy
+  - teardown
+
+deploy_preview:
+  stage: deploy
+  except:
+    - main
+  script:
+    - vercel pull --yes --environment=preview --token=$VERCEL_TOKEN
+    - vercel build --token=$VERCEL_TOKEN
+    - DEPLOY_URL=$(vercel deploy --prebuilt  --token=$VERCEL_TOKEN)
+    - echo "DEPLOY_URL=$DEPLOY_URL" >> deploy.env
+  artifacts:
+    reports:
+      dotenv: deploy.env
+  environment:
+    name: "$CI_COMMIT_REF_SLUG"
+    url: $DEPLOY_URL
+    on_stop: end_deployment
+  cache:
+    key: ${CI_COMMIT_REF_SLUG}
+    paths:
+      - node_modules/
+      - .next/cache/
+
+deploy_production:
+  stage: deploy
+  only:
+    - main
+  script:
+    - vercel pull --yes --environment=production --token=$VERCEL_TOKEN
+    - vercel build --prod --token=$VERCEL_TOKEN
+    - DEPLOY_URL=$(vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN)
+    - echo "DEPLOY_URL=$DEPLOY_URL" >> deploy.env
+  artifacts:
+    reports:
+      dotenv: deploy.env
+  environment:
+    name: "$CI_COMMIT_REF_SLUG"
+    url: $DEPLOY_URL
+    on_stop: end_deployment
+  cache:
+    key: ${CI_COMMIT_REF_SLUG}
+    paths:
+      - node_modules/
+      - .next/cache/
+
+# don't bother removing old ones from vercel, just remove from gitlab
+end_deployment:
+  stage: teardown
+  script:
+    - echo "Removing environment. $CI_COMMIT_REF_SLUG"
+  when: manual
+  environment:
+    name: "$CI_COMMIT_REF_SLUG"
+    action: stop
