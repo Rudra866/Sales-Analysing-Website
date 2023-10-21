@@ -24,9 +24,11 @@ python -m venv venv
 ```
 Windows:
 ```
-.\venv\Scripts\activate.ps1 (PS)
-OR
-.\venv\Scripts\activate.bat (CMD)
+.\venv\Scripts\activate.ps1
+```
+OR (CMD)
+```
+.\venv\Scripts\activate.bat
 ```
 
 Bash:
@@ -96,6 +98,9 @@ python main.py -h
 CMPT 370 Fall - Group 22
 
 ## Version History
+
+* 0.2
+    * Updated for database changes on 2023-10-21. SQL schema definitions are now loaded in from a file instead.
 
 * 0.1
     * Pushed to group repo. Supports adding data to all tables in our initial schema.

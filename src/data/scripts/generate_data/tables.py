@@ -164,13 +164,13 @@ class Roles(SharedMixin):
 
     def __init__(self, name, read_perm=False, write_perm=False,
                  modify_perm=False, employee_perm=False, database_perm=False):
-        self.   id:                 int = Roles.index
-        self.   RoleName:           str = name
-        self.   ReadPermission:     bool = read_perm
-        self.   WritePermission:    bool = write_perm
-        self.   ModifyPermission:   bool = modify_perm
-        self.   EmployeePermission: bool = employee_perm
-        self.   DatabasePermission: bool = database_perm
+        self.id: int = Roles.index
+        self.RoleName: str = name
+        self.ReadPermission: bool = read_perm
+        self.WritePermission: bool = write_perm
+        self.ModifyPermission: bool = modify_perm
+        self.EmployeePermission: bool = employee_perm
+        self.DatabasePermission: bool = database_perm
 
         Roles.index += 1
 
@@ -181,23 +181,37 @@ class Sales(SharedMixin):
 
     def __init__(self, stock_number, employee, customer, financing, trade_in):
         # Note -- sales are not added in order by ID, but rather by SaleTime, as in prod
-        self.   id:                int = Sales.index  # Hidden (managed by database)
-        self.   StockNumber:       str = str(stock_number)
-        self.   VehicleMake:       str = random.choice(car_makes)
-        self.   ActualCashValue:   float = round(random.uniform(*NEW_SALE_RANGE), 2)
-        self.   GrossProfit:       float = round(self.ActualCashValue * random.uniform(*GROSS_PROFIT_RANGE), 2)
-        self.   FinAndInsurance:   float = round(self.ActualCashValue * (INSURANCE_FEES if financing is None else
-                                                                         FINANCE_FEES + INSURANCE_FEES), 2)
-        self.   Holdback:          float = round(self.ActualCashValue * random.uniform(*HOLDBACK_RANGE), 2)
+        self.id: int = Sales.index  # Hidden (managed by database)
+        self.StockNumber: str = str(stock_number)
+        self.VehicleMake: str = random.choice(car_makes)
+        self.ActualCashValue: float = round(random.uniform(*NEW_SALE_RANGE), 2)
+        self.GrossProfit: float = round(self.ActualCashValue * random.uniform(*GROSS_PROFIT_RANGE), 2)
+        self.FinAndInsurance: float = round(self.ActualCashValue * (INSURANCE_FEES if financing is None else
+                                                                    FINANCE_FEES + INSURANCE_FEES), 2)
+        self.SaleTime: str = random_date().strftime("%Y-%m-%d %H:%M:%S")
+        self.NewSale: bool = random.random() > USED_SALES_RATE
+        # New sales only
+        self.Holdback: float = None if not self.NewSale else round(self.ActualCashValue *
+                                                                   random.uniform(*HOLDBACK_RANGE), 2)
 
-        self.   Total:             float = round(self.GrossProfit + self.FinAndInsurance + self.Holdback, 2)
-        self.   SaleTime:          str = random_date().strftime("%Y-%m-%d %H:%M:%S")
+        # Used sales only
+        self.LotPack: float = None if self.NewSale else (
+            round(self.ActualCashValue * random.uniform(*LOT_PACK_RANGE), 2))
+        self.DaysInStock: int = None if self.NewSale else random.choice(range(*DAYS_IN_STOCK))
+        self.DealerCost: float = None if self.NewSale else round(self.ActualCashValue *
+                                                                 random.uniform(*ROI_RANGE), 2)
+        self.ROI: float = None if self.NewSale else round(self.DealerCost /
+                                                          self.ActualCashValue, 2)
+
+        # All sales - sum of segments
+        self.Total: float = round(self.GrossProfit + self.FinAndInsurance +
+                                  self.Holdback if self.NewSale else self.LotPack, 2)
 
         # Foreign Keys
-        self.   EmployeeID:        int = employee.id
-        self.   CustomerID:        int = customer.id
-        self.   FinancingID:       int = None if financing is None else financing.id
-        self.   TradeInID:         int = None if trade_in is None else trade_in.id
+        self.EmployeeID: int = employee.id
+        self.CustomerID: int = customer.id
+        self.FinancingID: int = None if financing is None else financing.id
+        self.TradeInID: int = None if trade_in is None else trade_in.id
 
         Sales.index += 1
 
@@ -207,12 +221,12 @@ class MonthlySales(SharedMixin):
     table = Table.MONTHLY_SALES
 
     def __init__(self, month_year, gross_profit=0, fin_and_insurance=0, holdback=0, total=0):
-        self.   id:                 int = MonthlySales.index
-        self.   TimePeriod:         str = month_year
-        self.   GrossProfit:        float = gross_profit
-        self.   FinAndInsurance:    float = fin_and_insurance
-        self.   Holdback:           float = holdback
-        self.   Total:              float = total
+        self.id: int = MonthlySales.index
+        self.TimePeriod: str = month_year
+        self.GrossProfit: float = gross_profit
+        self.FinAndInsurance: float = fin_and_insurance
+        self.Holdback: float = holdback
+        self.Total: float = total
 
         MonthlySales.index += 1
 
@@ -220,7 +234,7 @@ class MonthlySales(SharedMixin):
     def add_sale(self, sale: Sales):
         self.GrossProfit = round(self.GrossProfit + sale.GrossProfit, 2)
         self.FinAndInsurance = round(self.FinAndInsurance + sale.FinAndInsurance, 2)
-        self.Holdback = round(self.Holdback + sale.Holdback, 2)
+        self.Holdback = round(self.Holdback + 0 if sale.Holdback is None else sale.Holdback, 2)
         self.Total = round(self.Total + sale.Total, 2)
 
 
@@ -229,13 +243,13 @@ class SalesGoal(SharedMixin):
     table = Table.SALES_GOALS
 
     def __init__(self, assignee, creator, deadline, goal):
-        self.   id:                 int = SalesGoal.index
-        self.   Name:               str = "goal " + str(self.id)
-        self.   Description:        str = lorem_string
-        self.   Assignee:           int = assignee.id  # Employee.id
-        self.   Creator:            int = creator.id   # Employee.id
-        self.   GoalTime:           str = deadline
-        self.   TotalGoal:          str = goal
+        self.id: int = SalesGoal.index
+        self.Name: str = "goal " + str(self.id)
+        self.Description: str = lorem_string
+        self.Assignee: int = assignee.id  # Employee.id
+        self.Creator: int = creator.id  # Employee.id
+        self.GoalTime: str = deadline
+        self.TotalGoal: str = goal
 
         SalesGoal.index += 1
 
@@ -246,13 +260,13 @@ class Task(SharedMixin):
 
     def __init__(self, assignee, creator, date_issued=random_date().strftime("%Y-%m-%d %H:%M:%S"),
                  percentage_complete=round(random.random(), 2)):
-        self.   id:                 int = Task.index
-        self.   Name:               str = "task " + str(self.id)
-        self.   Description:        str = lorem_string
-        self.   PercentageComplete: float = percentage_complete
-        self.   DateIssued:         str = date_issued
-        self.   Assignee:           int = assignee.id
-        self.   Creator:            int = creator.id
+        self.id: int = Task.index
+        self.Name: str = "task " + str(self.id)
+        self.Description: str = lorem_string
+        self.PercentageComplete: float = percentage_complete
+        self.DateIssued: str = date_issued
+        self.Assignee: int = assignee.id
+        self.Creator: int = creator.id
 
         Task.index += 1
 
@@ -262,9 +276,9 @@ class Notification(SharedMixin):
     table = Table.NOTIFICATIONS
 
     def __init__(self, employee, sale):
-        self.   id:                 int = Notification.index
-        self.   Employee:           int = employee.id
-        self.   Sale:               int = sale.id
+        self.id: int = Notification.index
+        self.Employee: int = employee.id
+        self.Sale: int = sale.id
 
         Notification.index += 1
 

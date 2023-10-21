@@ -35,7 +35,7 @@ here's the proposed database schema:
 
 /* Many of these still need tuning. As we setup restrictions on form entry, we can tune the max size of some of these. */
 table Sales {
-  id integer [pk, increment]
+  id integer               [pk, not null, increment]
   StockNumber varchar(255) [not null] /* Unique? */
   VehicleMake varchar(255) [not null]
 
@@ -44,10 +44,17 @@ table Sales {
   ActualCashValue   decimal(10,2) [not null]
   GrossProfit       decimal(10,2) [not null]
   FinAndInsurance   decimal(10,2) [not null]
-  Holdback          decimal(10,2) [not null]
-  Total             decimal(10,2) [not null]
-
   SaleTime timestamp [default: `now()`]
+  NewSale       boolean       [note: "set based on New/Used sale"]
+
+  // new sale only
+  Holdback          decimal(10,2) [note: "new sale only"]
+
+  // used sale only
+  LotPack       decimal(10,2) [note: "used sale only"]
+  DaysInStock   int           [note: "used sale only"]
+  DealerCost    decimal(10,2) [note: "used sale only"]
+  ROI           decimal(3,2)  [note: "used sale, percentage as decimal."]
 
   EmployeeID int [not null, ref: > Employees.id]
   CustomerID int [not null, ref: > Customers.id]
@@ -59,88 +66,78 @@ table Sales {
  * I'd assume they're going to be queried seperately anyways?
  * If so, we assume Sales as NewSales and UsedSales has the following extra members: */
 
-/*
-  LotPack   decimal(10,2) [not null]
-  DaysInStock int
-  Cost      decimal(10,2) [not null]
-  ROI       decimal(2,2)  [not null]  -- percentage
-
-*/
-
 table MonthlySales {
-  id int [pk, increment]
-  TimePeriod timestamp [note: "Timestamp in the form of YYYY-MM-01 00:00:00"]
+  id int [pk, not null, increment]
+  TimePeriod timestamp [not null, note: "Timestamp in the form of YYYY-MM-01 00:00:00"]
   // or double timestamp one for month/one for year? Performance shouldn't matter much, just depends on how we want to construct our queries.
   /* may need to increase these to be safe? (only 10.00M) Whatever is reasonable.*/
-  GrossProfit     decimal(10,2)
-  FinAndInsurance decimal(10,2)
-  Holdback        decimal(10,2)
-  Total           decimal(10,2)
+  GrossProfit     decimal(10,2) [not null]
+  FinAndInsurance decimal(10,2) [not null]
+  Holdback        decimal(10,2) [not null]
+  Total           decimal(10,2) [not null]
 }
 
 /* if we have the NewSales / UsedSales split, we also have these split? */
 
 table Roles {
-  id int [pk, increment]
+  id int [pk, not null, increment]
   RoleName varchar(255)
-  // align these with more Epics if needed, or come up with some others for more control.
-  ReadPermission boolean [default: false, note: "Allow user to read created sales"]
-  WritePermission boolean [default: false, note: "Allow user to create new sales"]
-  ModifyPermission boolean [default: false, note: "Allow user to modify previously entered sales"]
-  EmployeePermission boolean [default: false, note: "Allow user to manage employees (create, remove, etc..)"]
-  DatabasePermission boolean [default: false, note: "Allow user to modify database directly (drop tables etc...). Highest privilege."]
+  // come up with some others for more control.
+  ReadPermission boolean          [not null, default: false, note: "Allow user to read created sales"]
+  WritePermission boolean         [not null, default: false, note: "Allow user to create new sales"]
+  ModifySelfPermission boolean    [not null, default: false, note: "Allow user to modify previously entered sales that were created by that user."]
+  ModifyAllPermission boolean     [not null, default: false, note: "Allow user to modify previously entered sales that were created by anyone."]
+  EmployeePermission boolean      [not null, default: false, note: "Allow user to manage employees (create, remove, etc..)"]
+  DatabasePermission boolean      [not null, default: false, note: "Allow user to modify database directly (drop tables etc...). Highest privilege."]
 }
 
 table Employees {
-  id int [pk, increment]
+  id int [pk, not null, increment]
   Name varchar(255) [not null]
-  /* Do we know if they have internal numbers they use in existing systems?
-   * Otherwise we can replace this column with Username */
   EmployeeNumber varchar(255) [not null]
+  Email TEXT  [not null, note: "max len(320)"]
   Password TEXT [not null, note: "salted hash of a password"]
-
   Role int [not null, ref: > Roles.id]
-  CreatedOn timestamp [default: `now()`, note: "Extra optional metadata for `admin` type roles to access"]
-  LastAccessed timestamp [default: `now()`, note: "Extra optional metadata for `admin` type roles to access"]
+  CreatedOn timestamp [not null, default: `now()`, note: "Extra optional metadata for `admin` type roles to access"]
+  LastAccessed timestamp [not null, default: `now()`, note: "Extra optional metadata for `admin` type roles to access"]
 }
 
 table Customers {
-  id int [pk, increment]
+  id int [pk, not null, increment]
   Name varchar(255) [not null]
   City varchar(255) [not null]
 }
 
-
 table Financing {
-  id int [pk, increment]
+  id int [pk, not null, increment]
   Method varchar(255) [not null, unique] // (e.g., BNS)
 }
 
-
 table TradeIns {
-  id int [pk, increment] /* one to many */
+  id int [pk, not null, increment] /* one to many */
   Trade varchar(255)            [not null, note: "Name of a car that was traded-in"]
   ActualCashValue decimal(10,2) [not null]
 }
 
 table Tasks {
-  id int [pk, increment]
+  id int [pk, not null, increment]
   Name varchar(255) [not null]
   Description TEXT
   PercentageComplete decimal(3,2)
-  DateIssued timestamp [default: `now()`]
+  StartDate timestamp   [not null, default: `now()`]
+  EndDate timestamp   [not null, default: `now()`]
   Assignee int [ref: > Employees.id]
   Creator int [ref: > Employees.id]
 }
 
 table SalesGoals {
-  id int [pk, increment]
-  Name varchar(255)
+  id int [pk, not null, increment]
+  Name varchar(255) [not null]
   Description TEXT
-  Assignee int [ref: > Employees.id]
-  Creator int [ref: > Employees.id]
-  GoalTime timestamp   [note: "Timestamp in the form of YYYY-MM-01 00:00:00"]
-  TotalGoal decimal(10,2)
+  Creator int [not null, ref: > Employees.id]
+  StartDate timestamp   [not null, default: `now()`]
+  EndDate timestamp   [not null, default: `now()`]
+  TotalGoal decimal(10,2) [not null]
 }
 
 
@@ -148,7 +145,7 @@ table SalesGoals {
 /* We could probably do this easier with the LastAccessed time stamp,
  * but then notifications are only shown once. */
 table Notifications {
-  id bigint [pk, increment]
+  id bigint [pk, not null, increment]
   Employee int [not null, ref: > Employees.id]
   Sale int [not null, ref: > Sales.id]
 }

@@ -4,6 +4,8 @@ OUTPUT_DIR = "output"
 DATAFILE = "datasets.txt"
 OUTFILE_SQL = "output.sql"
 OUTFILE_JSON = "output.json"
+MYSQL_SCHEMA_FILE = "mysql_schema.sql"
+POSTGRES_SCHEMA_FILE = "postgres_schema.sql"
 JSON_INDENT = 2
 CSV_DELIMITER = ","
 
@@ -48,6 +50,8 @@ OFF_BY_SALES_GOAL = (0.01, 0.33)
 # Number of tasks to create
 NUM_TASKS = 50
 
+USED_SALES_RATE = 0.4
+
 """
 Acura 	2% of the Base MSRP
 Audi 	No holdback
@@ -85,6 +89,15 @@ Volkswagen 	2% of the Base MSRP
 Volvo 	1% of the Base MSRP
 """
 HOLDBACK_RANGE = (0.01, 0.03)
+
+# Used sales lotpack % of total cost
+LOT_PACK_RANGE = (0.01, 0.03)
+
+# Days in stock range
+DAYS_IN_STOCK = (1, 120)
+
+# roi from 70-100
+ROI_RANGE = (0.70, 1)
 
 # For now, 6% finance fee to the dealer, only applied when customer has financed.
 FINANCE_FEES = 0.06
