@@ -365,3 +365,10 @@ export interface Database {
 
 export type Tables<T extends keyof Database['public']['Tables']> = Database['public']['Tables'][T]['Row']
 export type Enums<T extends keyof Database['public']['Enums']> = Database['public']['Enums'][T]
+// etc.
+// export type Tables<T extends keyof Database['public']['Tables']> = Database['public']['Tables'][T]['Row']
+// export type Tables = Database['public']['Tables'][keyof Database['public']['Tables']]['Row']
+export type SalesType = Database['public']['Tables']['Sales']['Row']
+// export type SalesGoals = Database['public']['Tables']['SalesGoals']['Row']
+
+

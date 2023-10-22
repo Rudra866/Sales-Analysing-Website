@@ -7,12 +7,32 @@ interface DocsConfig {
 export const docsConfig: DocsConfig = {
     mainNav: [
         {
-            title: "Contact",
-            href: "/contact-us",
+            title: "Dashboard",
+            href: "/dashboard",
         },
         {
-            title: "About",
-            href: "/about-us",
+            title: "Authentication",
+            href: "/authentication",
+        },
+        {
+            title: "Cards",
+            href: "/cards",
+        },
+        {
+            title: "Forms",
+            href: "/forms",
+        },
+        {
+            title: "Music",
+            href: "/music",
+        },
+        {
+            title: "Playground",
+            href: "/playground",
+        },
+        {
+            title: "Tasks",
+            href: "/tasks",
         },
     ],
 }

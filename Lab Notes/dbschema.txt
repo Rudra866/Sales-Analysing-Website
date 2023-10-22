@@ -1,0 +1,71 @@
+
+Spread Sheet Columns
+1. Sales number (or index)
+2. Stock #
+3. Sales Rep
+4. Fin Mgr (Finance Manager)
+5. Financing
+6. Customer Name
+7. City
+8. Vehicle Make
+9. Trade
+10. Actual Cash Value
+11. Trade-in Allowance
+12. Gross Profit
+13. Gross Profit MTD (Month To Date)
+14. F & I (Finance & Insurance)
+15. F & I MTD
+16. Holdback
+17. Holdback MTD
+18. Total
+19. Total MTD
+20. (Seems to be empty)
+21. (Seems to be empty)
+
+Table Relationships:
+1. **Sales**: This table will contain information about each sale, including the sales number, stock #, vehicle make, actual cash value, trade-in allowance, gross profit, and total.
+2. **Employees**: This table will list the employees with their roles (e.g., sales rep, finance manager).
+3. **Customers**: This table will have details about the customers, including their names and cities.
+4. **Financing**: This table will detail the financing method used for each sale.
+5. **TradeIns**: This table will hold information about trade-ins, including the trade and its actual cash value.
+
+here's the proposed database schema:
+
+**1. Sales**
+   - `SaleID`: Primary Key (Auto-incremented integer)
+   - `StockNumber`: Text/String
+   - `VehicleMake`: Text/String
+   - `ActualCashValue`: Float
+   - `TradeInAllowance`: Float
+   - `GrossProfit`: Float
+   - `Total`: Float
+   - `EmployeeID`: Foreign Key (Refers to `Employees.EmployeeID`)
+   - `CustomerID`: Foreign Key (Refers to `Customers.CustomerID`)
+   - `FinancingID`: Foreign Key (Refers to `Financing.FinancingID`)
+   - `TradeInID`: Foreign Key (Refers to `TradeIns.TradeInID`)
+
+**2. Employees**
+   - `EmployeeID`: Primary Key (Auto-incremented integer)
+   - `Name`: Text/String
+   - `Role`: Text/String (e.g., Sales Rep, Finance Manager)
+
+**3. Customers**
+   - `CustomerID`: Primary Key (Auto-incremented integer)
+   - `Name`: Text/String
+   - `City`: Text/String
+
+**4. Financing**
+   - `FinancingID`: Primary Key (Auto-incremented integer)
+   - `Method`: Text/String (e.g., BNS)
+
+**5. TradeIns**
+   - `TradeInID`: Primary Key (Auto-incremented integer)
+   - `Trade`: Text/String
+   - `ActualCashValue`: Float
+
+**Relationships:**
+- One sale can be associated with one employee, one customer, one financing method, and one trade-in.
+ However, one employee can be associated with many sales, one customer can have many sales,
+ one financing method can be used in many sales, and there can be many trade-ins associated with various sales.
+
+Would you like a visual representation of this schema or any further details?

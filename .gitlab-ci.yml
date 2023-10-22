@@ -1,5 +1,6 @@
 stages:
   - deploy
+  - dbdocs
   - teardown
 
 deploy_preview:
@@ -45,6 +46,17 @@ deploy_production:
     paths:
       - node_modules/
       - .next/cache/
+
+# Update the documentation page when a new update is made to the schema. Also generate the files required for
+update-dbdocs:
+  stage: dbdocs
+  script:
+    - dbdocs build src/data/database_schema.dbml --project="370 Binary Bandits"
+
+  only:
+    changes:
+      - src/data/database_schema.dbml
+
 
 # don't bother removing old ones from vercel, just remove from gitlab
 end_deployment:
