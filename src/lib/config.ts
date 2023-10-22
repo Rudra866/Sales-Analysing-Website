@@ -8,7 +8,7 @@ export const docsConfig: DocsConfig = {
     mainNav: [
         {
             title: "Dashboard",
-            href: "/",
+            href: "/dashboard",
         },
         {
             title: "Authentication",

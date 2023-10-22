@@ -4,8 +4,8 @@ import {useRouter} from 'next/navigation'
 import {useEffect, useState} from 'react'
 import {Input} from "@/components/ui/input";
 import {Button} from "@/components/ui/button";
-import {useSupabase} from "@/components/providers";
-import {Label} from "@/components/ui/label";
+// import {useSupabase} from "@/components/providers";
+// import {Label} from "@/components/ui/label";
 import {createClientComponentClient} from "@supabase/auth-helpers-nextjs";
 import {Database} from "@/lib/database.types";
 import {Icons} from "@/components/icons";
@@ -70,14 +70,6 @@ export default function Login() {
             <Button variant={'outline'} onClick={handleSignOut}>Sign out</Button>
             {signIn && <div>signed in</div>}
 
-            {/*<form action="/auth/login" method="post">*/}
-            {/*    <label htmlFor="email">Email</label>*/}
-            {/*    <input name="email" />*/}
-            {/*    <label htmlFor="password">Password</label>*/}
-            {/*    <input type="password" name="password" />*/}
-            {/*    <button>Sign In</button>*/}
-            {/*    <button formAction="/auth/sign-up">Sign Up</button>*/}
-            {/*</form>*/}
         </div>
     )
 }
