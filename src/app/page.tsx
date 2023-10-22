@@ -6,8 +6,8 @@ export default async function DashboardPage() {
 
     // TODO https://youtu.be/KmJN-bEayeY?si=IvDmsmw_xtZHiz1Y
 
-    
-    const supabase = createServerComponentClient({ cookies })
+    const cookiesStore = cookies()
+    const supabase = createServerComponentClient({ cookies: () => cookiesStore })
 
     const {data: {session},} = await supabase.auth.getSession();
 
