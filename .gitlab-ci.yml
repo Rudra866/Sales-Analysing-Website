@@ -1,44 +1,57 @@
-# NEED TO ADD TO VARIABLES:
-# ACCESS_TOKEN: gitlab project access token, with read permission and not guest
-# GITHUB_ACCESS_TOKEN: github user token, with only our project enabled for it for safety.
-# DBDOCS_TOKEN: dbdocs user token, used to update dbdocs reference
-#
-# NEED to ensure gitlab runner has dbdocs installed already. (will be there if I am hosting the runner.)
-stages:          # List of stages for jobs, and their order of execution
-  - clone_to_github
-  - update_dbdocs
+stages:
+  - deploy
+  - teardown
 
-clone-job: 
-  stage: clone_to_github
+deploy_preview:
+  stage: deploy
+  except:
+    - main
   script:
-    - git clone -b "${CI_COMMIT_REF_NAME}" https://oauth2:$ACCESS_TOKEN@git.cs.usask.ca/fzl936/370-binary-bandits.git repo
-    - git config --global user.email "${GIT_USER_EMAIL:-$GITLAB_USER_EMAIL}"
-    - git config --global user.name "${GIT_USER_NAME:-$GITLAB_USER_NAME}"
+    - vercel pull --yes --environment=preview --token=$VERCEL_TOKEN
+    - vercel build --token=$VERCEL_TOKEN
+    - DEPLOY_URL=$(vercel deploy --prebuilt  --token=$VERCEL_TOKEN)
+    - echo "DEPLOY_URL=$DEPLOY_URL" >> deploy.env
+  artifacts:
+    reports:
+      dotenv: deploy.env
+  environment:
+    name: "$CI_COMMIT_REF_SLUG"
+    url: $DEPLOY_URL
+    on_stop: end_deployment
+  cache:
+    key: ${CI_COMMIT_REF_SLUG}
+    paths:
+      - node_modules/
+      - .next/cache/
 
-    # Go to the new directory
-    - cd repo
-
-    # add our github upstream
-    - git remote add github https://Code-Allergy:$GITHUB_ACCESS_TOKEN@github.com/BillColak/BinaryBandits.git
-
-    # - git branch | grep ${CI_COMMIT_REF_NAME} || git checkout -b ${CI_COMMIT_REF_NAME}
-    # Then, push the latest commit to repo.
-    - git push -f github "${CI_COMMIT_REF_NAME}"
-      
-# Update the documentation page when a new update is made to the schema. Also generate the files required for 
-dbdocs-job:
-  stage: update_dbdocs  
-  script:
-    - dbdocs build src/data/database_schema.dbml --project="370 Binary Bandits"
-
-    # Figure out how to create the schemas to be loaded by py script on change
-    # - dbml2sql --mysql ./database_schema.dbml -o database_mysql.sql
-    # - dbml2sql --postgres ./database_schema.dbml -o database_postgresql.sql
-    # - git add database_mysql.sql database_postgresql.sql
-    # - git commit -m "Generated database schemas from commit $CI_COMMIT_SHORT_SHA [skip ci]"
-    # - git remote rm origin && git remote add origin https://oauth2:$ACCESS_TOKEN@git.cs.usask.ca/rys686/testci.git
-    # - git push origin HEAD:$CI_COMMIT_REF_NAME
-
+deploy_production:
+  stage: deploy
   only:
-    changes:
-      - src/data/database_schema.dbml
+    - main
+  script:
+    - vercel pull --yes --environment=production --token=$VERCEL_TOKEN
+    - vercel build --prod --token=$VERCEL_TOKEN
+    - DEPLOY_URL=$(vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN)
+    - echo "DEPLOY_URL=$DEPLOY_URL" >> deploy.env
+  artifacts:
+    reports:
+      dotenv: deploy.env
+  environment:
+    name: "$CI_COMMIT_REF_SLUG"
+    url: $DEPLOY_URL
+    on_stop: end_deployment
+  cache:
+    key: ${CI_COMMIT_REF_SLUG}
+    paths:
+      - node_modules/
+      - .next/cache/
+
+# don't bother removing old ones from vercel, just remove from gitlab
+end_deployment:
+  stage: teardown
+  script:
+    - echo "Removing environment. $CI_COMMIT_REF_SLUG"
+  when: manual
+  environment:
+    name: "$CI_COMMIT_REF_SLUG"
+    action: stop
