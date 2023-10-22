@@ -1,0 +1,200 @@
+import React, {Dispatch, SetStateAction, useState} from "react";
+import {useForm} from "react-hook-form";
+import * as z from "zod";
+import {zodResolver} from "@hookform/resolvers/zod";
+import supabase from "@/lib/supabase";
+import {DialogFooter} from "@/components/ui/dialog";
+import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
+import {DialogBody} from "next/dist/client/components/react-dev-overlay/internal/components/Dialog";
+import {Input} from "@/components/ui/input";
+import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
+import {Button} from "@/components/ui/button";
+import {Row} from "@tanstack/react-table";
+import {Employee, Role} from "@/app/(pages)/admin/employees/page";
+import {DialogClose} from "@radix-ui/react-dialog";
+
+
+interface EmployeeSelectModalFormProps {
+  row: Row<Employee>
+  roles: Role[]
+  updateEmployee: (employee: Employee) => void
+  setShowDialog: Dispatch<SetStateAction<boolean>>;
+}
+const employeeFormSchema = z.object({
+  EmployeeNumber:
+      z.string().min(1, {
+        message: "EmployeeNumber must not be empty."})
+          .max(255, {
+            message: "EmployeeNumber must be shorter than 255 characters."}),
+
+  Name:
+      z.string()
+          .min(1, {
+            message: "Employee Name must not be empty."})
+          .max(255, {
+            message: "Employee Name must be less than 255 characters."}),
+
+  Email:
+      z.string()
+          .min(1, {
+            message: "Employee Email must not be empty."})
+          .max(320, {
+            message: "Employee Email must be less than 255 characters."})
+          .email({
+            message: "Employee Email must be a valid email address."}),
+
+  Role:
+      z.string().refine(
+          (value) => {
+            return !isNaN(Number(value)) && Number(value) >= 1
+          }, {
+            message: "Invalid."
+          }
+      )
+})
+
+
+export function EmployeeSelectModalForm({ row, roles, setShowDialog, updateEmployee }: EmployeeSelectModalFormProps) {
+  const [editState, setEditState] = useState(false);
+  const employee = row.original;
+  const form = useForm<z.infer<typeof employeeFormSchema>>({
+    resolver: zodResolver(employeeFormSchema),
+    defaultValues: {
+      EmployeeNumber: employee?.EmployeeNumber ?? "",
+      Name: employee?.Name ?? "",
+      Email: employee?.Email ?? "",
+      Role: employee?.Role.toString() ?? "",
+    },
+  })
+
+  async function onSubmit(values: z.infer<typeof employeeFormSchema>) {
+    try {
+      const { EmployeeNumber, Name, Email, Role } = values;
+      const { data, error} = await supabase
+          .from('Employees')
+          .update({ EmployeeNumber, Name, Email, Role: parseInt(Role)})
+          .eq("id", employee.id)
+          .select().single()
+
+      if (error) {
+        console.log("Supabase error: ", error);
+        throw new Error("An error occurred while updating the employee record.");
+      }
+
+      updateEmployee(data);
+    } catch (error) {
+      console.log(error)
+    } finally {
+      setShowDialog(false);
+    }
+  }
+
+  return (
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+        <DialogBody>
+          <FormField
+              control={form.control}
+              name="EmployeeNumber"
+              render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>EmployeeNumber</FormLabel>
+                    <FormControl>
+                      <Input
+                          placeholder="EmployeeNumber"
+                          {...field}
+                          disabled={!editState}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+              )}
+          />
+          <FormField
+              control={form.control}
+              name="Name"
+              render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Name</FormLabel>
+                    <FormControl>
+                      <Input
+                          placeholder="Employee Name"
+                          {...field}
+                          disabled={!editState}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+              )}
+          />
+          <FormField
+              control={form.control}
+              name="Email"
+              render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email</FormLabel>
+                    <FormControl>
+                      <Input
+                          placeholder="Employee Email"
+                          {...field}
+                          disabled={!editState}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+              )}
+          />
+          <FormField
+              control={form.control}
+              name="Role"
+              render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Role</FormLabel>
+                    <Select
+                        onValueChange={field.onChange}
+                        disabled={!editState}
+                        defaultValue={field.value.toString()}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Employee Role" {...field} />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {roles.map((role) => (
+                            <SelectItem value={role.id.toString()} key={role.id}>
+                              {role.RoleName}
+                            </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+              )}
+          />
+        </DialogBody>
+        <DialogFooter>
+          {editState ? (
+              <Button type={"submit"}>Submit</Button>
+          ) : (
+              <Button
+                  variant="destructive"
+                  type="button"
+                  onClick={() =>
+                      setTimeout(() => {
+                        setEditState(true);
+                      }, 10)
+                  }
+              >
+                Edit
+              </Button>
+          )}
+          <DialogClose asChild>
+            <Button type="button" variant="secondary">
+              Close
+            </Button>
+          </DialogClose>
+        </DialogFooter>
+      </form>
+    </Form>);
+}
