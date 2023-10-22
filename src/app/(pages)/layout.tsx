@@ -1,15 +1,27 @@
-import { Metadata } from "next"
-export const metadata: Metadata = {
-  title: "Examples",
-  description: "Check out some examples app built using the components.",
-}
 
 interface ExamplesLayoutProps {
   children: React.ReactNode
 }
-// todo loading skeleton & spinner, and error handling, and 404
 
-export default function ExamplesLayout({ children }: ExamplesLayoutProps) {
+export default async function ExamplesLayout({ children }: ExamplesLayoutProps) {
+  // const router = useRouter()
+  // const supabase = useSupabase()
+  //
+  // useLayoutEffect(() => {
+  //       const { data: authListener } = supabase.supabase.auth.onAuthStateChange(
+  //           (event, session) => {
+  //             if (session?.user) {
+  //               router.push('/app')
+  //             } else {
+  //               router.push('/authentication')
+  //             }
+  //           }
+  //       );
+  //       return () => {authListener?.subscription.unsubscribe()};
+  //     }
+  //     , [supabase.supabase.auth, router]);
+
+
   return (
     <>
       <div className="relative pt-10">
