@@ -14,6 +14,8 @@ export default function AuthenticationPage() {
   return (
     <>
       <div className="md:hidden">
+        {/*todo use tabs for this*/}
+
       </div>
       <div className="container relative hidden h-[800px] flex-col items-center justify-center md:grid lg:max-w-none lg:grid-cols-2 lg:px-0 ">
         <Image src={'/logo.png'} alt={'icon'} width={120} height={50} className={"absolute right-4 top-4 md:right-8 md:top-8"}/>

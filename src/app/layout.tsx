@@ -11,6 +11,7 @@ export default function RootLayout({children,}: { children: React.ReactNode }) {
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
             <Navigation />
             <div className="container flex-1 rounded-[0.5rem]">
+                {/*<Login/>*/}
                 {children}
             </div>
         </ThemeProvider>
