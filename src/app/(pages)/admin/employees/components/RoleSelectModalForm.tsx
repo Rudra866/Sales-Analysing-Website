@@ -10,7 +10,7 @@ import {Button} from "@/components/ui/button";
 import {DialogClose} from "@radix-ui/react-dialog";
 import React from "react";
 import {Row} from "@tanstack/react-table";
-import {Employee, Role} from "@/app/(pages)/admin/employees/page";
+import {Employee, Role} from "@/lib/database.types";
 
 interface RoleSelectModalFormProps {
   row: Row<Employee>

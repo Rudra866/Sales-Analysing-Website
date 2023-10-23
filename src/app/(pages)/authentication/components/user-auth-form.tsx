@@ -7,74 +7,41 @@ import { Icons } from "@/components/icons"
 import { Button } from "@/registry/new-york/ui/button"
 import { Input } from "@/registry/new-york/ui/input"
 import { Label } from "@/registry/new-york/ui/label"
-// import supabase from "@/lib/supabase";
 import {createClientComponentClient} from "@supabase/auth-helpers-nextjs";
 import {Database} from "@/lib/database.types";
-import {useState} from "react";
+import {FormEvent, useState} from "react";
 import {useRouter} from "next/navigation";
-// import {useSupabase} from "@/components/providers";
+import useAuth from "@/hooks/use-auth";
 
 interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {}
 
+
 export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
-  const [isLoading, setIsLoading] = React.useState<boolean>(false)
+  const [isLoading, setIsLoading] = useState<boolean>(false)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [success, setSuccess] = React.useState(false)
-  const supabase = createClientComponentClient<Database>()
-  // const supabase = useSupabase().supabase
   const router = useRouter()
-  const [signIn, setSignIn] = useState(false)
+  const [signedIn, setSignedIn] = useState(false)
 
-  // const login = async () => {
-  //   if (!email) alert('Email is required')
-  //   try {
-  //     setIsLoading(true)
-  //     let { data, error } = await supabase.auth.signInWithPassword({
-  //       email: 'someone@email.com',
-  //       password: 'NZvADvQYOcSPXKFuZRPI'
-  //     })
-  //   } catch (error) {
-  //     console.log(error)
-  //   } finally {
-  //     setIsLoading(false)
-  //   }
-  // }
+  const {signIn} = useAuth();
 
-  // do sign up from settings page
-  // const handleSignUp = async () => {
-  //   await supabase.auth.signUp({
-  //     email,
-  //     password,
-  //     options: {
-  //       emailRedirectTo: `${location.origin}/auth/callback`,
-  //     },
-  //   })
-  //   router.refresh()
-  // }
-
-  const handleSignIn = async () => {
-    // if (!email) alert('Email is required')
+  const handleSignIn = async (e: FormEvent) => {
+    e.preventDefault()
+    setIsLoading(true);
     try {
-      setIsLoading(true)
-      const {error} =
-          await supabase.auth.signInWithPassword({
+      await signIn(
+          {
             email,
-            password,
+            password
           })
-      if (error) {setSignIn(false)
-      } else setSignIn(true)
-    } catch (error) {
-
-    } finally {
+      } catch (e) {
+        console.error(e)
+        setSignedIn(false)
+      } finally {
+        setSignedIn(true)
         setIsLoading(false)
-      router.refresh()
-    }
-  }
-
-  const handleSignOut = async () => {
-    await supabase.auth.signOut()
-    router.refresh()
+        router.refresh()
+      }
   }
 
   return (
@@ -93,6 +60,8 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
               autoComplete="email"
               autoCorrect="off"
               disabled={isLoading}
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
             />
             <Input
               id="password"
@@ -102,6 +71,8 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
               autoComplete="password"
               autoCorrect="off"
               disabled={isLoading}
+              value={password}
+              onChange={(event) => setPassword(event.target.value)}
             />
 
           </div>
@@ -131,7 +102,7 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
         )}{" "}
         Github
       </Button>
-      {signIn && <div>signed in</div>}
+      {signedIn && <div>signed in</div>}
     </div>
   )
 }

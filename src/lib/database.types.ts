@@ -1,10 +1,10 @@
 export type Json =
-  | string
-  | number
-  | boolean
-  | null
-  | { [key: string]: Json | undefined }
-  | Json[]
+    | string
+    | number
+    | boolean
+    | null
+    | { [key: string]: Json | undefined }
+    | Json[]
 
 export interface Database {
   public: {
@@ -29,8 +29,9 @@ export interface Database {
       }
       Employees: {
         Row: {
+          AuthUser: string | null
           CreatedOn: string
-          Email: string | null
+          Email: string
           EmployeeNumber: string
           id: number
           LastAccessed: string
@@ -39,8 +40,9 @@ export interface Database {
           Role: number
         }
         Insert: {
+          AuthUser?: string | null
           CreatedOn?: string
-          Email?: string | null
+          Email: string
           EmployeeNumber: string
           id?: number
           LastAccessed?: string
@@ -49,8 +51,9 @@ export interface Database {
           Role: number
         }
         Update: {
+          AuthUser?: string | null
           CreatedOn?: string
-          Email?: string | null
+          Email?: string
           EmployeeNumber?: string
           id?: number
           LastAccessed?: string
@@ -59,6 +62,12 @@ export interface Database {
           Role?: number
         }
         Relationships: [
+          {
+            foreignKeyName: "Employees_AuthUser_fkey"
+            columns: ["AuthUser"]
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "Employees_Role_fkey"
             columns: ["Role"]
@@ -145,7 +154,8 @@ export interface Database {
           DatabasePermission: boolean
           EmployeePermission: boolean
           id: number
-          ModifyPermission: boolean
+          ModifyAllPermission: boolean
+          ModifySelfPermission: boolean
           ReadPermission: boolean
           RoleName: string | null
           WritePermission: boolean
@@ -154,7 +164,8 @@ export interface Database {
           DatabasePermission?: boolean
           EmployeePermission?: boolean
           id?: number
-          ModifyPermission?: boolean
+          ModifyAllPermission?: boolean
+          ModifySelfPermission?: boolean
           ReadPermission?: boolean
           RoleName?: string | null
           WritePermission?: boolean
@@ -163,7 +174,8 @@ export interface Database {
           DatabasePermission?: boolean
           EmployeePermission?: boolean
           id?: number
-          ModifyPermission?: boolean
+          ModifyAllPermission?: boolean
+          ModifySelfPermission?: boolean
           ReadPermission?: boolean
           RoleName?: string | null
           WritePermission?: boolean
@@ -174,12 +186,17 @@ export interface Database {
         Row: {
           ActualCashValue: number
           CustomerID: number
+          DaysInStock: number | null
+          DealerCost: number | null
           EmployeeID: number
           FinancingID: number | null
           FinAndInsurance: number
           GrossProfit: number
-          Holdback: number
+          Holdback: number | null
           id: number
+          LotPack: number | null
+          NewSale: boolean | null
+          ROI: number | null
           SaleTime: string | null
           StockNumber: string
           Total: number
@@ -189,12 +206,17 @@ export interface Database {
         Insert: {
           ActualCashValue: number
           CustomerID: number
+          DaysInStock?: number | null
+          DealerCost?: number | null
           EmployeeID: number
           FinancingID?: number | null
           FinAndInsurance: number
           GrossProfit: number
-          Holdback: number
+          Holdback?: number | null
           id?: number
+          LotPack?: number | null
+          NewSale?: boolean | null
+          ROI?: number | null
           SaleTime?: string | null
           StockNumber: string
           Total: number
@@ -204,12 +226,17 @@ export interface Database {
         Update: {
           ActualCashValue?: number
           CustomerID?: number
+          DaysInStock?: number | null
+          DealerCost?: number | null
           EmployeeID?: number
           FinancingID?: number | null
           FinAndInsurance?: number
           GrossProfit?: number
-          Holdback?: number
+          Holdback?: number | null
           id?: number
+          LotPack?: number | null
+          NewSale?: boolean | null
+          ROI?: number | null
           SaleTime?: string | null
           StockNumber?: string
           Total?: number
@@ -245,39 +272,33 @@ export interface Database {
       }
       SalesGoals: {
         Row: {
-          Assignee: number
           Creator: number
           Description: string | null
-          GoalTime: string
+          EndDate: string
           id: number
           Name: string
+          StartDate: string
           TotalGoal: number
         }
         Insert: {
-          Assignee: number
           Creator: number
           Description?: string | null
-          GoalTime: string
+          EndDate?: string
           id?: number
           Name: string
+          StartDate?: string
           TotalGoal: number
         }
         Update: {
-          Assignee?: number
           Creator?: number
           Description?: string | null
-          GoalTime?: string
+          EndDate?: string
           id?: number
           Name?: string
+          StartDate?: string
           TotalGoal?: number
         }
         Relationships: [
-          {
-            foreignKeyName: "SalesGoals_Assignee_fkey"
-            columns: ["Assignee"]
-            referencedRelation: "Employees"
-            referencedColumns: ["id"]
-          },
           {
             foreignKeyName: "SalesGoals_Creator_fkey"
             columns: ["Creator"]
@@ -288,31 +309,34 @@ export interface Database {
       }
       Tasks: {
         Row: {
-          Assignee: number
-          Creator: number
-          DateIssued: string
+          Assignee: number | null
+          Creator: number | null
           Description: string | null
+          EndDate: string
           id: number
           Name: string
           PercentageComplete: number | null
+          StartDate: string
         }
         Insert: {
-          Assignee: number
-          Creator: number
-          DateIssued?: string
+          Assignee?: number | null
+          Creator?: number | null
           Description?: string | null
+          EndDate?: string
           id?: number
           Name: string
           PercentageComplete?: number | null
+          StartDate?: string
         }
         Update: {
-          Assignee?: number
-          Creator?: number
-          DateIssued?: string
+          Assignee?: number | null
+          Creator?: number | null
           Description?: string | null
+          EndDate?: string
           id?: number
           Name?: string
           PercentageComplete?: number | null
+          StartDate?: string
         }
         Relationships: [
           {
@@ -363,12 +387,12 @@ export interface Database {
   }
 }
 
-export type Tables<T extends keyof Database['public']['Tables']> = Database['public']['Tables'][T]['Row']
-export type Enums<T extends keyof Database['public']['Enums']> = Database['public']['Enums'][T]
-// etc.
-// export type Tables<T extends keyof Database['public']['Tables']> = Database['public']['Tables'][T]['Row']
-// export type Tables = Database['public']['Tables'][keyof Database['public']['Tables']]['Row']
-export type SalesType = Database['public']['Tables']['Sales']['Row']
-// export type SalesGoals = Database['public']['Tables']['SalesGoals']['Row']
+export type Tables<T extends keyof Database['public']['Tables']> = Database['public']['Tables'][T]['Row'];
+export type Enums<T extends keyof Database['public']['Enums']> = Database['public']['Enums'][T];
+export type Employee = Tables<"Employees">;
+export type Role = Tables<"Roles">;
+
+// export interface Customer extends Tables<"Customers"> {}
+// export interface Financier extends Tables<"Financing"> {}
 
 

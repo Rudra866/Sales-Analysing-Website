@@ -7,14 +7,14 @@ import {
   SortingState,
   useReactTable
 } from "@tanstack/react-table";
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {Input} from "@/components/ui/input";
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 import {Button} from "@/components/ui/button";
 import {ChevronLeftIcon, ChevronRightIcon, DoubleArrowLeftIcon, DoubleArrowRightIcon} from "@radix-ui/react-icons";
 import {Checkbox} from "@/components/ui/checkbox";
-import {Employee, Role} from "@/app/(pages)/admin/employees/page";
+import {Employee, Role} from "@/lib/database.types";
 import {ArrowUpDown, MoreHorizontal} from "lucide-react";
 import {
   DropdownMenu,
@@ -26,13 +26,49 @@ import {
 import FormModal from "@/app/(pages)/admin/employees/components/FormModal";
 import {EmployeeSelectModalForm} from "@/app/(pages)/admin/employees/components/EmployeeSelectModalForm";
 import {RoleSelectModalForm} from "@/app/(pages)/admin/employees/components/RoleSelectModalForm";
+import {createClientComponentClient} from "@supabase/auth-helpers-nextjs";
+import {Database} from "@/lib/database.types";
 
-interface EmployeeTableProps {
-  employees: Employee[]
-  roles: Role[]
-  updateEmployee: (employee: Employee) => void
-}
-export default function EmployeeTable({ employees, roles, updateEmployee }: EmployeeTableProps) {
+export default function EmployeeTable() {
+  const [loading, setLoading] = useState(true);
+  const [employees, setEmployees] = useState<Employee[]>([]);
+  const [roles, setRoles] = useState<Role[]>([]);
+  const supabase = createClientComponentClient<Database>();
+
+  useEffect(() => {
+    function fetchData() {
+      return Promise.all([
+        supabase.from('Employees').select(),
+        supabase.from('Roles').select(),
+      ]);
+    }
+    async function loadData() {
+      try {
+        setLoading(true);
+        const [employeeData, roleData] = await fetchData();
+        const { data: employees, count: employeeCount, error: employeeError} = employeeData;
+        const { data: roles, count: roleCount, error: roleError } = roleData;
+
+        if (employeeError || roleError) {
+          console.error("Supabase error: ", (employeeError ?? roleError));
+          throw new Error("Failed to load employee or roles data.");
+        }
+
+        setEmployees(employees);
+        setRoles(roles);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+    loadData().then(()=> setLoading(false));
+  }, [supabase]);
+
+  function updateEmployee(employee:Employee) {
+    const originalEmployees = [...employees]
+    const updatedEmployees = originalEmployees
+        .map((oldEmployee) => oldEmployee.id === employee.id ? employee: oldEmployee)
+    setEmployees(updatedEmployees)
+  }
   function DropDownMenu(row:Row<Employee>, roles: Role[]) {
     const [showEmployeeModal, setShowEmployeeModal] = useState(false);
     const [showRoleModal, setShowRoleModal] = useState(false);
@@ -64,7 +100,7 @@ export default function EmployeeTable({ employees, roles, updateEmployee }: Empl
           </DropdownMenu>
 
           <FormModal title={"Employee"} showDialog={showEmployeeModal} setShowDialog={setShowEmployeeModal}>
-            <EmployeeSelectModalForm roles={roles} updateEmployee={updateEmployee} row={row} setShowDialog={setShowEmployeeModal}/>
+            <EmployeeSelectModalForm roles={roles} updateEmployee={updateEmployee} employee={row.original} setShowDialog={setShowEmployeeModal}/>
           </FormModal>
           <FormModal title={"Employee"} showDialog={showRoleModal} setShowDialog={setShowRoleModal}>
             <RoleSelectModalForm row={row} roles={roles} updateEmployee={updateEmployee} />

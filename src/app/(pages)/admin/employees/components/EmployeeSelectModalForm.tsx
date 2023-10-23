@@ -9,13 +9,12 @@ import {DialogBody} from "next/dist/client/components/react-dev-overlay/internal
 import {Input} from "@/components/ui/input";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 import {Button} from "@/components/ui/button";
-import {Row} from "@tanstack/react-table";
-import {Employee, Role} from "@/app/(pages)/admin/employees/page";
+import {Employee, Role} from "@/lib/database.types";
 import {DialogClose} from "@radix-ui/react-dialog";
 
 
 interface EmployeeSelectModalFormProps {
-  row: Row<Employee>
+  employee: Employee
   roles: Role[]
   updateEmployee: (employee: Employee) => void
   setShowDialog: Dispatch<SetStateAction<boolean>>;
@@ -54,9 +53,8 @@ const employeeFormSchema = z.object({
 })
 
 
-export function EmployeeSelectModalForm({ row, roles, setShowDialog, updateEmployee }: EmployeeSelectModalFormProps) {
+export function EmployeeSelectModalForm({ employee, roles, setShowDialog, updateEmployee }: EmployeeSelectModalFormProps) {
   const [editState, setEditState] = useState(false);
-  const employee = row.original;
   const form = useForm<z.infer<typeof employeeFormSchema>>({
     resolver: zodResolver(employeeFormSchema),
     defaultValues: {

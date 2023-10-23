@@ -33,3 +33,13 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# idea
+.idea
+
+# python
+__pycache__/
+venv/
+
+# data gen output
+*/output/
