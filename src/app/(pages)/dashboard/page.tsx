@@ -18,15 +18,42 @@ import {
 import { CalendarDateRangePicker } from "./components/date-range-picker"
 import { Overview } from "./components/overview"
 import { RecentSales } from "./components/recent-sales"
+import TeamSwitcher from "@/components/dashboard-components/team-switcher";
+import {Search} from "@/components/dashboard-components/search";
+import {UserNav} from "@/components/dashboard-components/user-nav";
+import {MainNav} from "@/components/main-nav";
+import {DataTable} from "@/app/(pages)/tasks/components/data-table";
+import {test_columns} from "@/app/(pages)/tasks/components/test-column";
+import {promises as fs} from "fs";
+import path from "path";
+import {z} from "zod";
+import {taskSchema} from "@/app/(pages)/tasks/data/schema";
 
 
+async function getTasks() {
+  const data = await fs.readFile(
+      path.join(process.cwd(), "src/app/(pages)/tasks/data/tasks.json")
+  )
+  const tasks = JSON.parse(data.toString())
+  return z.array(taskSchema).parse(tasks)
+}
 
-export default function DashboardPage() {
+
+export default async  function DashboardPage() {
+  const tasks = await getTasks()
   return (
     <>
-      <div className="md:hidden">
-      </div>
       <div className="hidden flex-col md:flex">
+        <div className="border-b">
+          {/*<div className="flex h-16 items-center px-4">*/}
+          {/*  <TeamSwitcher />*/}
+          {/*  <MainNav className="mx-6" />*/}
+          {/*  <div className="ml-auto flex items-center space-x-4">*/}
+          {/*    <Search />*/}
+          {/*    <UserNav />*/}
+          {/*  </div>*/}
+          {/*</div>*/}
+        </div>
         <div className="flex-1 space-y-4 p-8 pt-6">
           <div className="flex items-center justify-between space-y-2">
             <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
@@ -38,13 +65,13 @@ export default function DashboardPage() {
           <Tabs defaultValue="overview" className="space-y-4">
             <TabsList>
               <TabsTrigger value="overview">Overview</TabsTrigger>
-              <TabsTrigger value="analytics" disabled>
-                Analytics
+              <TabsTrigger value="Sales Table">
+                Sales Table
               </TabsTrigger>
-              <TabsTrigger value="reports" disabled>
+              <TabsTrigger value="reports">
                 Reports
               </TabsTrigger>
-              <TabsTrigger value="notifications" disabled>
+              <TabsTrigger value="notifications">
                 Notifications
               </TabsTrigger>
             </TabsList>
@@ -174,6 +201,25 @@ export default function DashboardPage() {
                 </Card>
               </div>
             </TabsContent>
+            <TabsContent value="Sales Table">
+              <div className="hidden h-full flex-1 flex-col space-y-8 p-8 md:flex">
+                <div className="flex items-center justify-between space-y-2">
+                  <div>
+                    <h2 className="text-2xl font-bold tracking-tight">Welcome back!</h2>
+                    <p className="text-muted-foreground">
+                      Here&apos;s a list of your tasks for this month!
+                    </p>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    {/*<UserNav />*/}
+                  </div>
+                </div>
+                <DataTable data={tasks} columns={test_columns} />
+              </div>
+
+            </TabsContent>
+            <TabsContent value="reports">Reports</TabsContent>
+            <TabsContent value="notifications">Notifications</TabsContent>
           </Tabs>
         </div>
       </div>

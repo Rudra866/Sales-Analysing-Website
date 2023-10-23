@@ -20,9 +20,10 @@ function Navigation() {
                     {/*<ModeToggle />*/}
                 </div>
             </div>
-            <div className="container flex h-fit items-center">
-                <MobileNav />
-            </div>
+
+            {/*<div className="container flex h-fit items-center">*/}
+            {/*    <MobileNav />*/}
+            {/*</div>*/}
         </header>
     );
 }

@@ -25,7 +25,6 @@ export default function TableDemo() {
                 .from('Employees')
                 .select('*')
 
-
             if (error) console.log(error)
             if (Employee) setEmployee( Employee as DbResult<typeof Employee[]>)
 

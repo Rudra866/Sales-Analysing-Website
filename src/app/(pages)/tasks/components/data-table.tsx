@@ -12,6 +12,7 @@ import { DataTableToolbar } from "../components/data-table-toolbar"
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
+  onRowSelect?: (ids: number[]) => void;
 }
 
 export function DataTable<TData, TValue>({columns, data}: DataTableProps<TData, TValue>) {

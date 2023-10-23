@@ -10,10 +10,9 @@ import Login from "@/components/auth-components/login";
 import {createClientComponentClient} from "@supabase/auth-helpers-nextjs";
 
 export default function TableDemo() {
+    const supabase = createClientComponentClient<Database>()
     const [sales, setSales] = useState<Tables<'Sales'>[]>();
     const [loading, setLoading] = useState(true);
-    // const supabase = useSupabase()
-    const supabase = createClientComponentClient<Database>()
 
     useEffect(() => {
         fetchTable();
@@ -30,7 +29,10 @@ export default function TableDemo() {
                 .limit(10)
 
             if (error) throw error
-            if (Sales) setSales( Sales as DbResult<typeof Sales[]>)
+            if (Sales) {
+                setSales( Sales as DbResult<typeof Sales[]>)
+                console.log(Sales)
+            }
 
         } catch (error) {
             console.log(error)

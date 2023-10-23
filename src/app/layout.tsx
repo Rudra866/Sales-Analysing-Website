@@ -2,7 +2,7 @@ import '@/styles/globals.css'
 import {fontSans} from "@/lib/fonts";
 import {cn} from "@/lib/utils";
 import {ThemeProvider} from "@/components/providers";
-import Navigation from "@/components/navigation";
+import Navigation from "@/components/menu/navigation";
 
 export default function RootLayout({children,}: { children: React.ReactNode }) {
   return (
@@ -11,8 +11,11 @@ export default function RootLayout({children,}: { children: React.ReactNode }) {
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
             <Navigation />
             <div className="container flex-1 rounded-[0.5rem]">
-                {/*<Login/>*/}
-                {children}
+                <div className="relative py-10">
+                    <section className="overflow-hidden rounded-[0.5rem] border bg-background shadow">
+                        {children}
+                    </section>
+                </div>
             </div>
         </ThemeProvider>
       </body>
