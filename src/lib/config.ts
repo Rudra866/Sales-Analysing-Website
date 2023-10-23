@@ -34,5 +34,10 @@ export const docsConfig: DocsConfig = {
             title: "Tasks",
             href: "/tasks",
         },
+        // example for admin panel
+        {
+            title: "Admin",
+            href: "/admin/employees",
+        },
     ],
 }

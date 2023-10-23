@@ -55,7 +55,7 @@ export default function TableDemo() {
                         <TableCell>{employee.EmployeeNumber}</TableCell>
                         <TableCell>{employee.Password}</TableCell>
                         <TableCell>{employee.Role}</TableCell>
-                        <TableCell className="text-right">{employee.email}</TableCell>
+                        <TableCell className="text-right">{employee.Email}</TableCell>
                     </TableRow>
                 ))}
             </TableBody>

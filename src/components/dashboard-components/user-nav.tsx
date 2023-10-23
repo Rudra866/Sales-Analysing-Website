@@ -19,9 +19,18 @@ import {
 import {Mail, MessageSquare, Moon, PlusCircle, Sun, UserPlus} from "lucide-react";
 import * as React from "react";
 import {useTheme} from "next-themes";
+import { useRouter } from 'next/navigation'
+import useAuth from "@/hooks/use-auth";
 
 export function UserNav() {
   const { setTheme, theme } = useTheme()
+  const router = useRouter()
+  const {user, employee, signOut} = useAuth();
+
+  const handleSignOut = async () => {
+    await signOut();
+    router.refresh()
+  }
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -35,9 +44,9 @@ export function UserNav() {
       <DropdownMenuContent className="w-56" align="end" forceMount>
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium leading-none">shadcn</p>
+            <p className="text-sm font-medium leading-none">{employee?.Name ?? "Guest"}</p>
             <p className="text-xs leading-none text-muted-foreground">
-              m@example.com
+              {user?.email ?? "nobody@nobody.com"}
             </p>
           </div>
         </DropdownMenuLabel>
@@ -86,7 +95,7 @@ export function UserNav() {
           <span>Change theme</span>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem>
+        <DropdownMenuItem onClick={handleSignOut}>
           Log out
           <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut>
         </DropdownMenuItem>
