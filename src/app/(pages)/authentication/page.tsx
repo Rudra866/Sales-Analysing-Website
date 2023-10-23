@@ -14,11 +14,11 @@ export default function AuthenticationPage() {
 
       </div>
       <div className="container relative hidden h-[800px] flex-col items-center justify-center md:grid lg:max-w-none lg:grid-cols-2 lg:px-0 ">
-        <Image src={'/logo.png'} alt={'icon'} width={120} height={50} className={"absolute right-4 top-4 md:right-8 md:top-8"}/>
+        <Image src={'/images/logo.png'} alt={'icon'} width={120} height={50} className={"absolute right-4 top-4 md:right-8 md:top-8"}/>
 
         <div className="relative hidden h-full flex-col bg-muted p-10 text-white dark:border-r lg:flex ">
           <div className="absolute inset-0 bg-zinc-900 bg-[url('/img4.jpg')" />
-          <Image src={'/img2.jpg'} alt={'icon'} fill sizes={'100%'} className={'grayscale-[25%]'}/>
+          <Image src={'/images/img2.jpg'} alt={'icon'} fill sizes={'100%'} className={'grayscale-[25%]'}/>
           <div className="relative z-20 flex items-center text-lg font-medium">
 
           </div>
