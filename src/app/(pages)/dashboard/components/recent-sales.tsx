@@ -5,6 +5,15 @@ import {
 } from "@/components/ui/avatar"
 
 export function RecentSales() {
+
+  const fetchSales = async () => {
+    try {
+
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
   return (
     <div className="space-y-8">
       <div className="flex items-center">

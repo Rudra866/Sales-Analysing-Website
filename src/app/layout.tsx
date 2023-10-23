@@ -2,7 +2,7 @@ import '@/styles/globals.css'
 import {fontSans} from "@/lib/fonts";
 import {cn} from "@/lib/utils";
 import {ThemeProvider} from "@/components/providers";
-import Navigation from "@/components/navigation";
+import Navigation from "@/components/menu/navigation";
 import {AuthProvider} from "@/hooks/use-auth";
 import { ReactNode } from "react";
 
