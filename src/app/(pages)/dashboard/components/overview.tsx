@@ -1,33 +1,66 @@
-import { Line, LineChart, ResponsiveContainer, XAxis, YAxis } from 'recharts';
+"use client"
 
+import {Bar, BarChart, ResponsiveContainer, Tooltip, XAxis, YAxis} from "recharts"
+import {useDashboard} from "@/app/(pages)/dashboard/components/dashboard-provider";
+import {useEffect, useState} from "react";
+import {Tables} from "@/lib/database.types";
+import {format} from "date-fns";
 
-interface OverviewProps {
-    d: { GrossProfit: number; SaleTime: string | null }[];
+function groupByMonth(data: Tables<"Sales">[]): { [p: string]: number } {
+    const groupedData: { [key: string]: number } = {};
+
+    data.forEach(item => {
+        const date = new Date(
+            item.SaleTime?.toString() || ''
+        );
+
+        const monthYearKey = format(date, 'MMM');
+
+        if (!groupedData[monthYearKey]) {
+            groupedData[monthYearKey] = 0;
+        }
+
+        groupedData[monthYearKey] += item.Total;
+    });
+
+    return groupedData;
 }
 
 
 
-// Overview component
-export function Overview({ d }: OverviewProps ) {
+export function Overview() {
 
-    if (!Array.isArray(d)) {
-        // If d is not an array, make it an array
-        d=[d];
+    const {data, date, setDate} = useDashboard()
+    const [salesByMonth, setSalesByMonth] = useState<{ name: string; total: number }[]>();
+
+    useEffect(() => {
+        setSalesByMonth(
+            Object.entries(groupByMonth(data || [])).map(([key, value]) => ({
+                name: key,
+                total: value,
+            })))
+    }, [data, date]);
+
+    const customToolTip = (props: any) => {
+        // console.log(props)
+        try {
+            if (props.active && props.payload && props.payload.length) {
+                return (
+                    <div className="bg-muted p-4 rounded-md shadow-md">
+                        <p className="text-muted-foreground text-sm">{props.label}</p>
+                        <p className="text-muted-foreground text-sm">Total: {`$${Number(props?.payload[0]?.value)?.toLocaleString()}`}</p>
+                    </div>
+                )
+            }
+        }  catch (e) {
+            console.log(e)
+        }
+        return null
     }
-    // Group sales data by day
-    const groupedData: { [key: string]: number } = {};
-    d.forEach(item => {
-        const date = item.SaleTime ? new Date(item.SaleTime).toISOString().split('T')[0] : 'Unknown';
-        groupedData[date] = (groupedData[date] || 0) + item.GrossProfit;
-    });
-    const data = Object.keys(groupedData).map(date => ({
-        name: date,
-        GrossProfit: groupedData[date],
-    }));
 
     return (
         <ResponsiveContainer width="100%" height={350}>
-            <LineChart data={data}>
+            <BarChart data={salesByMonth}>
                 <XAxis
                     dataKey="name"
                     stroke="#888888"
@@ -40,10 +73,14 @@ export function Overview({ d }: OverviewProps ) {
                     fontSize={12}
                     tickLine={false}
                     axisLine={false}
-                    tickFormatter={(value) => `$${value}`}
+                    tickFormatter={(value) => `$${Number(value).toLocaleString()}`}
                 />
-                <Line type="monotone" dataKey="GrossProfit" stroke="#adfa1d" strokeWidth={2}/>
-            </LineChart>
+                <Bar dataKey="total" fill="#adfa1d" radius={[4, 4, 0, 0]}/>
+                <Tooltip
+                    content={customToolTip}
+                    cursor={{fill: 'rgba(250,250,250,0.3)', radius: 4
+                    }}/>
+            </BarChart>
         </ResponsiveContainer>
-    );
+    )
 }
