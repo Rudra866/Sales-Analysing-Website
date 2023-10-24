@@ -1,15 +1,9 @@
 import {Avatar, AvatarFallback, AvatarImage,} from "@/components/ui/avatar"
 import {useRouter} from "next/navigation";
+import {useDashboard} from "@/app/(pages)/dashboard/components/dashboard-provider";
 
 export function RecentSales() {
-
-    const fetchSales = async () => {
-        try {
-
-        } catch (error) {
-            console.error(error)
-        }
-    }
+    const {date, setDate} = useDashboard()
 
     function SalesRow({name, email, amount, id}: { name: string; email: string; amount: number; id: string }) {
         const random = (max: number) => Math.floor(Math.random() * max) + 1

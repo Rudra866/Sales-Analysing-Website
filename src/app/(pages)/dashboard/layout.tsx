@@ -1,3 +1,5 @@
+import {DashboardProvider} from "@/app/(pages)/dashboard/components/dashboard-provider";
+
 interface ExamplesLayoutProps {
   children: React.ReactNode
 }
@@ -5,11 +7,9 @@ interface ExamplesLayoutProps {
 export default async function Layout({ children }: ExamplesLayoutProps) {
   return (
     <div className="relative py-10">
-      <section>
-        <div className="overflow-hidden rounded-[0.5rem] border bg-background shadow">
+      <DashboardProvider>
           {children}
-        </div>
-      </section>
+      </DashboardProvider>
     </div>
   )
 }

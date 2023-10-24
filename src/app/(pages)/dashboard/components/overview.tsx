@@ -1,22 +1,66 @@
 "use client"
 
 import {Bar, BarChart, ResponsiveContainer, Tooltip, XAxis, YAxis} from "recharts"
-export function Overview({ data }: {data: { name: string; total: number; }[] | undefined }) {
+import {useDashboard} from "@/app/(pages)/dashboard/components/dashboard-provider";
+import {useEffect, useState} from "react";
+import {Tables} from "@/lib/database.types";
+import {format} from "date-fns";
+
+function groupByMonth(data: Tables<"Sales">[]): { [p: string]: number } {
+    const groupedData: { [key: string]: number } = {};
+
+    data.forEach(item => {
+        const date = new Date(
+            item.SaleTime?.toString() || ''
+        );
+
+        const monthYearKey = format(date, 'MMM');
+
+        if (!groupedData[monthYearKey]) {
+            groupedData[monthYearKey] = 0;
+        }
+
+        groupedData[monthYearKey] += item.Total;
+    });
+
+    return groupedData;
+}
+
+
+
+export function Overview() {
+
+    const {data, date, setDate} = useDashboard()
+    const [salesByMonth, setSalesByMonth] = useState<{ name: string; total: number }[]>();
+
+    useEffect(() => {
+        setSalesByMonth(
+            Object.entries(groupByMonth(data || [])).map(([key, value]) => ({
+                name: key,
+                total: value,
+            })))
+    }, [data, date]);
 
     const customToolTip = (props: any) => {
-        if (props.active) {
-            return (
-                <div className="bg-muted p-4 rounded-md shadow-md">
-                    <p className="text-muted-foreground text-sm">{props.label}</p>
-                    {/*<p className="text-muted-foreground text-sm">Total: {`$${Number(props.payload[0].value).toLocaleString()}`}</p>*/}
-                    <p className="text-muted-foreground text-sm">Total: {props.payload[0].value}</p>
-                </div>
-            )
-        } return null
+        // console.log(props)
+        try {
+            if (props.active && props.payload && props.payload.length) {
+                return (
+                    <div className="bg-muted p-4 rounded-md shadow-md">
+                        <p className="text-muted-foreground text-sm">{props.label}</p>
+                        <p className="text-muted-foreground text-sm">Total: {`$${Number(props?.payload[0]?.value)?.toLocaleString()}`}</p>
+                    </div>
+                )
+            }
+        }  catch (e) {
+            console.log(e)
+        }
+        return null
     }
+
   return (
     <ResponsiveContainer width="100%" height={350}>
-      <BarChart data={data}>
+      <BarChart data={salesByMonth}>
         <XAxis
           dataKey="name"
           stroke="#888888"
