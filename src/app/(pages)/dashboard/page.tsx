@@ -16,29 +16,27 @@ import {useDashboard} from "./components/dashboard-provider";
 import {Tables} from "@/lib/database.types";
 import supabase from "@/lib/supabase";
 import {linkGc} from "next/dist/client/app-link-gc";
+import {Span} from "next/dist/server/lib/trace/tracer";
+import {DbResult} from "@/lib/types";
 
 
 export default function DashboardPage() {
     const {data, date, setDate} = useDashboard()
     const [totalRevenue, setTotalRevenue] = useState<number>(0);
-
+    const [totalGoal, setTotalGoal] = useState<number>(0);
     useEffect(() => {
 
-  // const fetchTable = async () => {
-  //     let {data: Employees, error} = await supabase
-  //         .from('Employees')
-  //         .select(`
-  //   some_column,
-  //   Sales (
-  //     EmployeeID, Total, SaleTime
-  //   )
-  // `)
-  //         .order('SaleTime', {ascending: true})
-  //
-  //     console.log(Employees, error)
-  //   }
-  //   fetchTable()
+      const fetchTable = async () => {
 
+          let { data: SalesGoals, error } = await supabase
+              .from('SalesGoals')
+              .select('TotalGoal, EndDate')
+
+          console.log('totalGoal', data)
+          setTotalGoal(data as DbResult<typeof data[]>);
+        }
+
+        fetchTable()
 
         setTotalRevenue(data?.map((sale) => sale?.Total).reduce((a, b) => a + b, 0) || 0)
     }, [data, date]);
@@ -65,14 +63,19 @@ export default function DashboardPage() {
                             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                                 <Card>
                                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                        <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
+                                        {/*todo  total revenue for the month - total estimated sales*/}
+                                        <CardTitle className="text-sm font-medium">Total Revenue for the month</CardTitle>
                                         <DollarSign className="h-4 w-4 text-muted-foreground"/>
                                     </CardHeader>
                                     <CardContent>
                                         <div className="text-2xl font-bold">{`$${totalRevenue.toLocaleString()}`}</div>
                                         <p className="text-xs text-muted-foreground">
                                             <span className={cn('text-[#adfa1d]')}>+20.1% </span>
-                                            from last month
+                                            from last
+                                            <span>
+                                          {" "}
+                                                {format(new Date(date?.from || new Date()), 'yyyy-MM-dd')}
+                                            </span>
                                         </p>
                                     </CardContent>
                                 </Card>
@@ -80,7 +83,8 @@ export default function DashboardPage() {
                                 <Card>
                                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                                         <CardTitle className="text-sm font-medium">
-                                            Subscriptions
+                                            Total revenue for the year
+                                        {/*    todo*/}
                                         </CardTitle>
                                         <Icons.persons className="h-4 w-4 text-muted-foreground"/>
                                     </CardHeader>
@@ -94,7 +98,8 @@ export default function DashboardPage() {
                                 </Card>
                                 <Card>
                                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                        <CardTitle className="text-sm font-medium">Sales</CardTitle>
+                                        <CardTitle className="text-sm font-medium">Gross profit</CardTitle>
+                                        {/*todo*/}
                                         <CreditCard className="h-4 w-4 text-muted-foreground"/>
                                     </CardHeader>
                                     <CardContent>
@@ -138,6 +143,14 @@ export default function DashboardPage() {
                                     </CardHeader>
                                     <CardContent>
                                         <RecentSales/>
+                                    </CardContent>
+                                </Card>
+                                <Card className="col-span-4">
+                                    <CardHeader>
+                                        <CardTitle>Sales</CardTitle>
+                                    </CardHeader>
+                                    <CardContent className="pl-2">
+                                        <Overview/>
                                     </CardContent>
                                 </Card>
                             </div>
