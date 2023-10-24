@@ -58,29 +58,29 @@ export function Overview() {
         return null
     }
 
-  return (
-    <ResponsiveContainer width="100%" height={350}>
-      <BarChart data={salesByMonth}>
-        <XAxis
-          dataKey="name"
-          stroke="#888888"
-          fontSize={12}
-          tickLine={false}
-          axisLine={false}
-        />
-        <YAxis
-          stroke="#888888"
-          fontSize={12}
-          tickLine={false}
-          axisLine={false}
-          tickFormatter={(value) => `$${Number(value).toLocaleString()}`}
-        />
-        <Bar dataKey="total" fill="#adfa1d" radius={[4, 4, 0, 0]}/>
-          <Tooltip
-              content={customToolTip}
-              cursor={{fill: 'rgba(250,250,250,0.3)', radius: 4
-          }}/>
-      </BarChart>
-    </ResponsiveContainer>
-  )
+    return (
+        <ResponsiveContainer width="100%" height={350}>
+            <BarChart data={salesByMonth}>
+                <XAxis
+                    dataKey="name"
+                    stroke="#888888"
+                    fontSize={12}
+                    tickLine={false}
+                    axisLine={false}
+                />
+                <YAxis
+                    stroke="#888888"
+                    fontSize={12}
+                    tickLine={false}
+                    axisLine={false}
+                    tickFormatter={(value) => `$${Number(value).toLocaleString()}`}
+                />
+                <Bar dataKey="total" fill="#adfa1d" radius={[4, 4, 0, 0]}/>
+                <Tooltip
+                    content={customToolTip}
+                    cursor={{fill: 'rgba(250,250,250,0.3)', radius: 4
+                    }}/>
+            </BarChart>
+        </ResponsiveContainer>
+    )
 }
