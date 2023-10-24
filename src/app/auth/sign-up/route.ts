@@ -18,7 +18,8 @@ export async function POST(request: Request) {
         options: {
             emailRedirectTo: `${requestUrl.origin}/auth/callback`,
         },
-    })
+    });
+
 
     return NextResponse.redirect(requestUrl.origin, {
         status: 301,

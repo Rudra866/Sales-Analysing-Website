@@ -26,13 +26,18 @@ export const docsConfig: DocsConfig = {
             title: "Music",
             href: "/music",
         },
-        {
-            title: "Playground",
-            href: "/playground",
-        },
+        // {
+        //     title: "Playground",
+        //     href: "/playground",
+        // },
         {
             title: "Tasks",
             href: "/tasks",
+        },
+        // example for admin panel
+        {
+            title: "Admin",
+            href: "/admin/employees",
         },
     ],
 }

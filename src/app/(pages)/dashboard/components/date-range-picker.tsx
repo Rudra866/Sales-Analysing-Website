@@ -1,37 +1,28 @@
-"use client";
+"use client"
 
-import * as React from "react";
-import { CalendarIcon } from "@radix-ui/react-icons";
-import { addDays, format } from "date-fns";
-import { DateRange } from "react-day-picker";
+import * as React from "react"
+import {CalendarIcon} from "@radix-ui/react-icons"
+import {addDays, format} from "date-fns"
+import {DateRange} from "react-day-picker"
 
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
+import {cn} from "@/lib/utils"
+import {Button} from "@/components/ui/button"
+import {Calendar} from "@/components/ui/calendar"
 import {
     Popover,
     PopoverContent,
     PopoverTrigger,
-} from "@/components/ui/popover";
+} from "@/components/ui/popover"
+import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 
-export function CalendarDateRangePicker({
-                                            className,
-                                            onChange,
-                                        }: {
-    className?: string;
-    onChange: (dateRange: DateRange | undefined) => void;
-}) {
-    const [date, setDate] = React.useState<DateRange | undefined>({
-        from: new Date(2023, 0, 20),
-        to: addDays(new Date(2023, 0, 20), 20),
-    });
 
-    const handleDateChange = (newDateRange: DateRange | undefined) => {
+interface CalendarDateRangePickerProps extends React.HTMLAttributes<HTMLDivElement> {
+    className?: string
+    date?: DateRange | undefined
+    setDate?: React.Dispatch<React.SetStateAction<DateRange | undefined>>
+}
 
-        setDate(newDateRange);
-        onChange(newDateRange);
-    };
-
+export function CalendarDateRangePicker({className, date, setDate}: CalendarDateRangePickerProps) {
     return (
         <div className={cn("grid gap-2", className)}>
             <Popover>
@@ -44,7 +35,7 @@ export function CalendarDateRangePicker({
                             !date && "text-muted-foreground"
                         )}
                     >
-                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        <CalendarIcon className="mr-2 h-4 w-4"/>
                         {date?.from ? (
                             date.to ? (
                                 <>
@@ -65,11 +56,41 @@ export function CalendarDateRangePicker({
                         mode="range"
                         defaultMonth={date?.from}
                         selected={date}
-                        onSelect={handleDateChange}
+                        onSelect={setDate}
                         numberOfMonths={2}
                     />
+                    <div className="flex flex-row space-x-1 p-1">
+                        <Button
+                            variant="outline"
+                            className="w-full rounded-none rounded-b-md"
+                            onClick={() => setDate && setDate({
+                                from: addDays(new Date(), -Number(30)),
+                                to: new Date()
+                            })}
+                        >
+                            Clear
+                        </Button>
+
+                        <Select onValueChange={(value) =>
+                            setDate ? setDate({
+                                from: addDays(new Date(), -Number(value)),
+                                to: new Date()
+                            }) : undefined}
+                        >
+                            <SelectTrigger>
+                                <SelectValue placeholder="Select"/>
+                            </SelectTrigger>
+                            <SelectContent >
+                                <SelectItem value="30">In a month</SelectItem>
+                                <SelectItem value="90">In 3 months</SelectItem>
+                                <SelectItem value="180">In 6 months</SelectItem>
+                                <SelectItem value="270">In 9 months</SelectItem>
+                                <SelectItem value="365">Annual</SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </div>
                 </PopoverContent>
             </Popover>
         </div>
-    );
+    )
 }

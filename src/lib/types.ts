@@ -69,4 +69,11 @@ export const  use_vehicle_sales_schema = z.object({
 
 export type new_vehicle_sales_type = z.infer<typeof new_vehicle_sales_schema>
 
-
+export const navigationMenu = [
+    "Dashboard",
+    "Sales Table",
+    "Top Products",
+    "Settings",
+    "Profile",
+    "Log Out",
+]

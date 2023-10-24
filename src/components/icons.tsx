@@ -27,6 +27,7 @@ import {
   type LucideIcon,
 } from "lucide-react"
 import React from "react";
+import path from "path";
 
 export type Icon = LucideIcon
 
@@ -42,8 +43,40 @@ export const Icons = {
             <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path>
         </svg>
     ),
+    persons: (props: LucideProps) => (
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="2"
+            className="h-4 w-4 text-muted-foreground"
+            {...props}
+        >
+            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+            <circle cx="9" cy="7" r="4" />
+            <path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
+        </svg>
+    ),
+    sparkline: (props: LucideProps) => (
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="2"
+            className="h-4 w-4 text-muted-foreground"
+            {...props}
+        >
+            <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
+        </svg>
+    ),
 
-  close: X,
+    close: X,
   spinner: Loader2,
   chevronLeft: ChevronLeft,
   chevronRight: ChevronRight,

@@ -1,35 +1,63 @@
 'use client'
 
+// unneeded
 import {useRouter} from 'next/navigation'
-import {useEffect, useState} from 'react'
+import * as React from 'react'
+import {useState} from 'react'
 import {Input} from "@/components/ui/input";
 import {Button} from "@/components/ui/button";
-// import {useSupabase} from "@/components/providers";
-// import {Label} from "@/components/ui/label";
 import {createClientComponentClient} from "@supabase/auth-helpers-nextjs";
 import {Database} from "@/lib/database.types";
 import {Icons} from "@/components/icons";
-import * as React from "react";
 
 export default function Login() {
-    const [email, setEmail] = useState('')
-    const [password, setPassword] = useState('')
-    const router = useRouter()
-    const supabase = createClientComponentClient<Database>()
-    // const supabase = useSupabase()
-    const [signIn, setSignIn] = useState(false)
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const router = useRouter()
+  const supabase = createClientComponentClient<Database>()
+  const [signIn, setSignIn] = useState(false)
 
 
+  const handleSignUp = async () => {
+    const EmployeeNumber = "12345"
+    const Name = "Test Employee"
+    const Email = "testing@example.com"
+    const Role = 1
+    const Password = "password1"
 
-    const handleSignUp = async () => {
-        await supabase.auth.signUp({
-            email,
-            password,
-            options: {
-                emailRedirectTo: `${location.origin}/auth/callback`,
-            },
-        })
-        router.refresh()
+    try {
+      const { error:authError } = await supabase.auth.signUp({
+        email:Email,
+        password:Password,
+        options: {
+          emailRedirectTo: `${location.origin}/auth/callback`,
+          data: {
+            number: EmployeeNumber,
+            name: Name,
+            role: Role
+          }
+        },
+      });
+      const {error:retrieveError } =  await supabase
+          .from("Employees")
+          .insert([
+            {
+              EmployeeNumber: EmployeeNumber,
+              Name: Name,
+              Email: Email,
+              Role: Role,
+              Password: "*"
+            }
+          ]).select().single();
+
+      if (authError) throw authError;
+      if (retrieveError) throw retrieveError;
+
+
+    } catch (e) {
+      console.log(e);
+    }
+      router.refresh()
     }
 
     const handleSignIn = async () => {
@@ -44,7 +72,6 @@ export default function Login() {
     }
 
     const handleSignOut = async () => {
-        // await supabase.supabase.auth.signOut()
         await supabase.auth.signOut()
         router.refresh()
     }
@@ -71,5 +98,5 @@ export default function Login() {
             {signIn && <div>signed in</div>}
 
         </div>
-    )
+  )
 }
