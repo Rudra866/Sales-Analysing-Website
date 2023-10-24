@@ -1,80 +1,49 @@
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@/components/ui/avatar"
+import {Avatar, AvatarFallback, AvatarImage,} from "@/components/ui/avatar"
+import {useRouter} from "next/navigation";
 
 export function RecentSales() {
 
-  const fetchSales = async () => {
-    try {
+    const fetchSales = async () => {
+        try {
 
-    } catch (error) {
-      console.error(error)
+        } catch (error) {
+            console.error(error)
+        }
     }
-  }
 
-  return (
-    <div className="space-y-8">
-      <div className="flex items-center">
-        <Avatar className="h-9 w-9">
-          <AvatarImage src="/avatars/01.png" alt="Avatar" />
-          <AvatarFallback>OM</AvatarFallback>
-        </Avatar>
-        <div className="ml-4 space-y-1">
-          <p className="text-sm font-medium leading-none">Olivia Martin</p>
-          <p className="text-sm text-muted-foreground">
-            olivia.martin@email.com
-          </p>
+    function SalesRow({name, email, amount, id}: { name: string; email: string; amount: number; id: string }) {
+        const random = (max: number) => Math.floor(Math.random() * max) + 1
+        const router = useRouter()
+
+        return (
+            <div className="flex items-center border border-background hover:border-border rounded-lg p-2 cursor-pointer"
+                 onClick={() => {
+                     router.push(`/profile/${id}`)
+                 }}
+            >
+                <Avatar className="h-9 w-9">
+                    <AvatarImage src={`/avatars/0${random(5)}.png`} alt="Avatar"/>
+                    <AvatarFallback>{name[0]}</AvatarFallback>
+                </Avatar>
+                <div className="ml-4 space-y-1">
+                    <p className="text-sm font-medium leading-none">{name}</p>
+                    <p className="text-sm text-muted-foreground">{email}</p>
+                </div>
+                <div className="ml-auto font-medium">
+                    +${amount.toLocaleString('en-US', {minimumFractionDigits: 2})}
+                </div>
+            </div>
+
+        )
+    }
+
+
+    return (
+        <div className="space-y-2">
+            {SalesRow({name: 'Sofia Davis', email: 'sofia.davis@email.com', amount: 39.00, id:'123'})}
+            {SalesRow({name: 'Sofia Davis', email: 'sofia.davis@email.com', amount: 39.00, id:'123'})}
+            {SalesRow({name: 'Sofia Davis', email: 'sofia.davis@email.com', amount: 39.00, id:'123'})}
+            {SalesRow({name: 'Sofia Davis', email: 'sofia.davis@email.com', amount: 39.00, id:'123'})}
         </div>
-        <div className="ml-auto font-medium">+$1,999.00</div>
-      </div>
-      <div className="flex items-center">
-        <Avatar className="flex h-9 w-9 items-center justify-center space-y-0 border">
-          <AvatarImage src="/avatars/02.png" alt="Avatar" />
-          <AvatarFallback>JL</AvatarFallback>
-        </Avatar>
-        <div className="ml-4 space-y-1">
-          <p className="text-sm font-medium leading-none">Jackson Lee</p>
-          <p className="text-sm text-muted-foreground">jackson.lee@email.com</p>
-        </div>
-        <div className="ml-auto font-medium">+$39.00</div>
-      </div>
-      <div className="flex items-center">
-        <Avatar className="h-9 w-9">
-          <AvatarImage src="/avatars/03.png" alt="Avatar" />
-          <AvatarFallback>IN</AvatarFallback>
-        </Avatar>
-        <div className="ml-4 space-y-1">
-          <p className="text-sm font-medium leading-none">Isabella Nguyen</p>
-          <p className="text-sm text-muted-foreground">
-            isabella.nguyen@email.com
-          </p>
-        </div>
-        <div className="ml-auto font-medium">+$299.00</div>
-      </div>
-      <div className="flex items-center">
-        <Avatar className="h-9 w-9">
-          <AvatarImage src="/avatars/04.png" alt="Avatar" />
-          <AvatarFallback>WK</AvatarFallback>
-        </Avatar>
-        <div className="ml-4 space-y-1">
-          <p className="text-sm font-medium leading-none">William Kim</p>
-          <p className="text-sm text-muted-foreground">will@email.com</p>
-        </div>
-        <div className="ml-auto font-medium">+$99.00</div>
-      </div>
-      <div className="flex items-center">
-        <Avatar className="h-9 w-9">
-          <AvatarImage src="/avatars/05.png" alt="Avatar" />
-          <AvatarFallback>SD</AvatarFallback>
-        </Avatar>
-        <div className="ml-4 space-y-1">
-          <p className="text-sm font-medium leading-none">Sofia Davis</p>
-          <p className="text-sm text-muted-foreground">sofia.davis@email.com</p>
-        </div>
-        <div className="ml-auto font-medium">+$39.00</div>
-      </div>
-    </div>
-  )
+    )
 }

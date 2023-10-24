@@ -16,6 +16,7 @@ import {DbResult} from "@/lib/types";
 import {CreditCard, DollarSign} from "lucide-react";
 import {Icons} from "@/components/icons";
 import {Skeleton} from "@/components/ui/skeleton";
+import {cn} from "@/lib/utils";
 
 
 export default function DashboardPage() {
@@ -27,14 +28,12 @@ export default function DashboardPage() {
   const supabase = createClientComponentClient<Database>()
   const [sales, setSales] = useState<Tables<'MonthlySales'>[]>();
   const [loading, setLoading] = useState(true);
-  const [overviewChartItems, setOverviewChartItems] = useState<{ name: string; total: number; }[]>();
+  const [salesByMonth, setSalesByMonth] = useState<{ name: string; total: number; }[]>();
   const [totalRevenue, setTotalRevenue] = useState<number>(0);
   const [salesGoals, setSalesGoals] = useState<number>(0);
 
   useEffect(() => {
-    // console.log('before: ',loading)
     fetchTable();
-    // console.log('after: ',loading)
   }, [date]);
 
   const fetchTable = async () => {
@@ -51,11 +50,14 @@ export default function DashboardPage() {
       if (Sales) {
         setSales( Sales as DbResult<typeof Sales[]>)
         console.log(sales)
-        setOverviewChartItems(Sales.map((sale) => {
+        setSalesByMonth(
+            Sales.map((sale) => {
                   return {
                     name: format(new Date(sale?.TimePeriod?.toString() || ''), 'MMM'),
                     total: sale?.Total
-                  }}))
+                  }})
+        )
+
         setTotalRevenue(Sales.map((sale) => sale?.Total).reduce((a, b) => a + b, 0))
 
       }
@@ -93,9 +95,10 @@ export default function DashboardPage() {
                   </CardHeader>
                   <CardContent>
                     <div className="text-2xl font-bold">{`$${totalRevenue.toLocaleString()}`}</div>
-                    {/*<p className="text-xs text-muted-foreground">*/}
-                    {/*  +20.1% from last month*/}
-                    {/*</p>*/}
+                    <p className="text-xs text-muted-foreground">
+                      <span className={cn('text-[#adfa1d]')}>+20.1% </span>
+                      from last month
+                    </p>
                   </CardContent>
                 </Card>
 
@@ -109,7 +112,8 @@ export default function DashboardPage() {
                   <CardContent>
                     <div className="text-2xl font-bold">+2350</div>
                     <p className="text-xs text-muted-foreground">
-                      +180.1% from last month
+                      <span className={cn('text-[#adfa1d]')}>+180.1% </span>
+                      from last month
                     </p>
                   </CardContent>
                 </Card>
@@ -121,7 +125,8 @@ export default function DashboardPage() {
                   <CardContent>
                     <div className="text-2xl font-bold">+12,234</div>
                     <p className="text-xs text-muted-foreground">
-                      +19% from last month
+                      <span className={'text-[#FA7A1E]'}>+19% </span>
+                      from last month
                     </p>
                   </CardContent>
                 </Card>
@@ -146,7 +151,7 @@ export default function DashboardPage() {
                     <CardTitle>Sales</CardTitle>
                   </CardHeader>
                   <CardContent className="pl-2">
-                    <Overview data={overviewChartItems}/>
+                    <Overview data={salesByMonth}/>
                   </CardContent>
                 </Card>
                 <Card className="col-span-3">
