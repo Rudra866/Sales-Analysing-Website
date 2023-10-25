@@ -7,24 +7,46 @@ import { Icons } from "@/components/icons"
 import { Button } from "@/registry/new-york/ui/button"
 import { Input } from "@/registry/new-york/ui/input"
 import { Label } from "@/registry/new-york/ui/label"
+import {createClientComponentClient} from "@supabase/auth-helpers-nextjs";
+import {Database} from "@/lib/database.types";
+import {FormEvent, useState} from "react";
+import {useRouter} from "next/navigation";
+import useAuth from "@/hooks/use-auth";
 
 interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {}
 
+
 export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
-  const [isLoading, setIsLoading] = React.useState<boolean>(false)
+  const [isLoading, setIsLoading] = useState<boolean>(false)
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const router = useRouter()
+  const [signedIn, setSignedIn] = useState(false)
 
-  async function onSubmit(event: React.SyntheticEvent) {
-    event.preventDefault()
-    setIsLoading(true)
+  const {signIn} = useAuth();
 
-    setTimeout(() => {
-      setIsLoading(false)
-    }, 3000)
+  const handleSignIn = async (e: FormEvent) => {
+    e.preventDefault()
+    setIsLoading(true);
+    try {
+      await signIn(
+          {
+            email,
+            password
+          })
+      } catch (e) {
+        console.error(e)
+        setSignedIn(false)
+      } finally {
+        setSignedIn(true)
+        setIsLoading(false)
+        router.refresh()
+      }
   }
 
   return (
     <div className={cn("grid gap-6", className)} {...props}>
-      <form onSubmit={onSubmit}>
+      <form onSubmit={handleSignIn}>
         <div className="grid gap-2">
           <div className="grid gap-1">
             <Label className="sr-only" htmlFor="email">
@@ -38,13 +60,27 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
               autoComplete="email"
               autoCorrect="off"
               disabled={isLoading}
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
             />
+            <Input
+              id="password"
+              placeholder="password"
+              type="password"
+              autoCapitalize="none"
+              autoComplete="password"
+              autoCorrect="off"
+              disabled={isLoading}
+              value={password}
+              onChange={(event) => setPassword(event.target.value)}
+            />
+
           </div>
           <Button disabled={isLoading}>
             {isLoading && (
               <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
             )}
-            Sign In with Email
+            Sign In
           </Button>
         </div>
       </form>
@@ -66,6 +102,7 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
         )}{" "}
         Github
       </Button>
+      {signedIn && <div>signed in</div>}
     </div>
   )
 }

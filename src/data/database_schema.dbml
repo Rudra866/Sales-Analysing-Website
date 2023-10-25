@@ -1,0 +1,179 @@
+/*
+Spread Sheet Columns (new sales)
+1. Sales number (or index)
+2. Stock #
+3. Sales Rep
+4. Fin Mgr (Finance Manager)
+5. Financing
+6. Customer Name
+7. City
+8. Vehicle Make
+9. Trade
+10. Actual Cash Value
+11. Trade-in Allowance
+12. Gross Profit
+13. Gross Profit MTD (Month To Date)
+14. F & I (Finance & Insurance)
+15. F & I MTD
+16. Holdback
+17. Holdback MTD
+18. Total
+19. Total MTD
+20. (Seems to be empty)
+21. (Seems to be empty)
+
+Table Relationships:
+1. **Sales**: This table will contain information about each sale, including the sales number, stock #, vehicle make, actual cash value, trade-in allowance, gross profit, and total.
+2. **Employees**: This table will list the employees with their roles (e.g., sales rep, finance manager).
+3. **Customers**: This table will have details about the customers, including their names and cities.
+4. **Financing**: This table will detail the financing method used for each sale.
+5. **TradeIns**: This table will hold information about trade-ins, including the trade and its actual cash value.
+
+here's the proposed database schema:
+*/
+
+
+/* Many of these still need tuning. As we setup restrictions on form entry, we can tune the max size of some of these. */
+table Sales {
+  id integer               [pk, not null, increment]
+  StockNumber varchar(255) [not null] /* Unique? */
+  VehicleMake varchar(255) [not null]
+
+
+  /* decimal(10,2) cap is 99999999.99 */
+  ActualCashValue   decimal(10,2) [not null]
+  GrossProfit       decimal(10,2) [not null]
+  FinAndInsurance   decimal(10,2) [not null]
+  SaleTime timestamp [default: `now()`]
+  NewSale       boolean       [note: "set based on New/Used sale"]
+
+  // new sale only
+  Holdback          decimal(10,2) [note: "new sale only"]
+
+  // used sale only
+  LotPack       decimal(10,2) [note: "used sale only"]
+  DaysInStock   int           [note: "used sale only"]
+  DealerCost    decimal(10,2) [note: "used sale only"]
+  ROI           decimal(3,2)  [note: "used sale, percentage as decimal."]
+
+  Total         decimal(10,2) [not null]
+
+  EmployeeID int [not null, ref: > Employees.id]
+  CustomerID int [not null, ref: > Customers.id]
+  FinancingID int [ref: > Financing.id]
+  TradeInID int [ref: > TradeIns.id]
+}
+
+/* Do we want seperate tables for NewSales / Used Sales?
+ * I'd assume they're going to be queried seperately anyways?
+ * If so, we assume Sales as NewSales and UsedSales has the following extra members: */
+
+table MonthlySales {
+  id int [pk, not null, increment]
+  TimePeriod timestamp [not null, note: "Timestamp in the form of YYYY-MM-01 00:00:00"]
+  // or double timestamp one for month/one for year? Performance shouldn't matter much, just depends on how we want to construct our queries.
+  /* may need to increase these to be safe? (only 10.00M) Whatever is reasonable.*/
+  GrossProfit     decimal(10,2) [not null]
+  FinAndInsurance decimal(10,2) [not null]
+  Holdback        decimal(10,2) [not null]
+  Total           decimal(10,2) [not null]
+}
+
+/* if we have the NewSales / UsedSales split, we also have these split? */
+
+table Roles {
+  id int [pk, not null, increment]
+  RoleName varchar(255)
+  // come up with some others for more control.
+  ReadPermission boolean          [not null, default: false, note: "Allow user to read created sales"]
+  WritePermission boolean         [not null, default: false, note: "Allow user to create new sales"]
+  ModifySelfPermission boolean    [not null, default: false, note: "Allow user to modify previously entered sales that were created by that user."]
+  ModifyAllPermission boolean     [not null, default: false, note: "Allow user to modify previously entered sales that were created by anyone."]
+  EmployeePermission boolean      [not null, default: false, note: "Allow user to manage employees (create, remove, etc..)"]
+  DatabasePermission boolean      [not null, default: false, note: "Allow user to modify database directly (drop tables etc...). Highest privilege."]
+}
+
+table Employees {
+  id int [pk, not null, increment]
+  Name varchar(255) [not null]
+  EmployeeNumber varchar(255) [not null]
+  Email TEXT  [not null, note: "max len(320)"]
+  Password TEXT [not null, note: "salted hash of a password"]
+  Role int [not null, ref: > Roles.id]
+  CreatedOn timestamp [not null, default: `now()`, note: "Extra optional metadata for `admin` type roles to access"]
+  LastAccessed timestamp [not null, default: `now()`, note: "Extra optional metadata for `admin` type roles to access"]
+}
+
+table Customers {
+  id int [pk, not null, increment]
+  Name varchar(255) [not null]
+  City varchar(255) [not null]
+}
+
+table Financing {
+  id int [pk, not null, increment]
+  Method varchar(255) [not null, unique] // (e.g., BNS)
+}
+
+table TradeIns {
+  id int [pk, not null, increment] /* one to many */
+  Trade varchar(255)            [not null, note: "Name of a car that was traded-in"]
+  ActualCashValue decimal(10,2) [not null]
+}
+
+table Tasks {
+  id int [pk, not null, increment]
+  Name varchar(255) [not null]
+  Description TEXT
+  PercentageComplete decimal(3,2)
+  StartDate timestamp   [not null, default: `now()`]
+  EndDate timestamp   [not null, default: `now()`]
+  Assignee int [ref: > Employees.id]
+  Creator int [ref: > Employees.id]
+}
+
+table SalesGoals {
+  id int [pk, not null, increment]
+  Name varchar(255) [not null]
+  Description TEXT
+  Creator int [not null, ref: > Employees.id]
+  StartDate timestamp   [not null, default: `now()`]
+  EndDate timestamp   [not null, default: `now()`]
+  TotalGoal decimal(10,2) [not null]
+}
+
+
+/* Keep track of notifications, query by EmployeeID */
+/* We could probably do this easier with the LastAccessed time stamp,
+ * but then notifications are only shown once. */
+table Notifications {
+  id bigint [pk, not null, increment]
+  Employee int [not null, ref: > Employees.id]
+  Sale int [not null, ref: > Sales.id]
+}
+
+/************* Other Tables: **********************/
+/* Could include sessions table to allow the server to keep track of authenticated users
+ * between restarts and allow multiple sessions with fixed expiry dates
+ * -- up to bill how he wants to setup auth setup.
+ */
+  // example -- copied from nextauth default schema and converted to our schema style
+ /*
+ table Sessions {
+    SessionID     INT [pk, increment, not null]
+    EmployeeID    INTEGER [not null, ref: > Employees.EmployeeID]
+    expires       TIMESTAMP(6) [not null]
+    session_token VARCHAR(255) [not null]
+    access_token  VARCHAR(255) [not null]
+    created_at    TIMESTAMP(6) [not null, default: `now()`]
+    updated_at    TIMESTAMP(6) [not null, default: `now()`]
+ }
+ */
+/*
+**Relationships:**
+- One sale can be associated with one employee, one customer, one financing method, and one trade-in.
+ However, one employee can be associated with many sales, one customer can have many sales,
+ one financing method can be used in many sales, and there can be many trade-ins associated with various sales.
+
+Would you like a visual representation of this schema or any further details?
+*/
