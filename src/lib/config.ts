@@ -15,21 +15,13 @@ export const docsConfig: DocsConfig = {
             href: "/authentication",
         },
         {
-            title: "Cards",
+            title: "Settings",
             href: "/cards",
         },
         {
-            title: "Forms",
+            title: "Settings2",
             href: "/forms",
         },
-        {
-            title: "Music",
-            href: "/music",
-        },
-        // {
-        //     title: "Playground",
-        //     href: "/playground",
-        // },
         {
             title: "Tasks",
             href: "/tasks",
@@ -38,6 +30,10 @@ export const docsConfig: DocsConfig = {
         {
             title: "Admin",
             href: "/admin/employees",
+        },
+        {
+            title: "Sales",
+            href: "/sales",
         },
     ],
 }

@@ -391,6 +391,7 @@ export type Tables<T extends keyof Database['public']['Tables']> = Database['pub
 export type Enums<T extends keyof Database['public']['Enums']> = Database['public']['Enums'][T];
 export type Employee = Tables<"Employees">;
 export type Role = Tables<"Roles">;
+export type Sale = Tables<"Sales">;
 
 // export interface Customer extends Tables<"Customers"> {}
 // export interface Financier extends Tables<"Financing"> {}
