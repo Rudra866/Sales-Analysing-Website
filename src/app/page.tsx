@@ -6,14 +6,7 @@ export default async function DashboardPage() {
 
     // TODO https://youtu.be/KmJN-bEayeY?si=IvDmsmw_xtZHiz1Y
 
-    const cookiesStore = cookies()
-    const supabase = createServerComponentClient({ cookies: () => cookiesStore })
-
-    const {data: {session},} = await supabase.auth.getSession();
-
-    if (!session) {
-      redirect('/authentication')
-    }
+    redirect('/dashboard')
     return (
         <>
             <div className="md:hidden">

@@ -5,7 +5,6 @@ import {Database, Employee, Role} from "@/lib/database.types";
 import {SignInWithPasswordCredentials, SignUpWithPasswordCredentials} from '@supabase/supabase-js';
 
 
-const AuthContext = createContext<AuthContextType | null>(null);
 type AuthContextType = {
   signUp: (data: SignUpWithPasswordCredentials) => Promise<any>;
   signIn: (data: SignInWithPasswordCredentials) => Promise<any>;
@@ -14,6 +13,8 @@ type AuthContextType = {
   employee: Employee | null;
   role: Role | null;
 };
+
+const AuthContext = createContext<AuthContextType | null>(null);
 
 
 export const AuthProvider = ({children}: any) => {

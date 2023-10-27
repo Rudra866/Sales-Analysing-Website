@@ -84,18 +84,16 @@ export default function EmployeeTable() {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
-              <DropdownMenuItem
-                  onClick={() => navigator.clipboard.writeText(employee.EmployeeNumber)}
-              >
+              <DropdownMenuSeparator/>
+              <DropdownMenuItem onClick={() => navigator.clipboard.writeText(employee.EmployeeNumber)}>
                 Copy employees id
               </DropdownMenuItem>
-              <DropdownMenuSeparator/>
               <DropdownMenuItem onClick={() => setShowEmployeeModal(true)}>
                 <span>Show Employee</span>
               </DropdownMenuItem>
               <DropdownMenuItem onClick={()=> setShowRoleModal(true)}>
                 <span>Change Role</span>
-              </DropdownMenuItem>   {/* Pop open modal for role selection/create new role */}
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
 
@@ -105,6 +103,7 @@ export default function EmployeeTable() {
           <FormModal title={"Employee"} showDialog={showRoleModal} setShowDialog={setShowRoleModal}>
             <RoleSelectModalForm row={row} roles={roles} updateEmployee={updateEmployee} />
           </FormModal>
+
         </>
     );
   }
@@ -202,7 +201,7 @@ export function DataTable<TData, TValue>({
     },
   })
   return (
-    <>
+    <div className="space-y-4">
       <div className="flex items-center py-4">
         <Input
             placeholder="Filter employees..."
@@ -323,6 +322,6 @@ export function DataTable<TData, TValue>({
           </div>
         </div>
       </div>
-    </>
+    </div>
   )
 }
