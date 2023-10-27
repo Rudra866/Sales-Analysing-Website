@@ -35,34 +35,39 @@ export async function middleware(req: NextRequest) {
         createMiddlewareClient<Database>({ req, res })
 
 /*     Disabled for now. */
-//     // Send all unauthenticated users to the login page.
-//     const {data: { session}}  = await supabase.auth.getSession()
-//     if ((!session || !session.user) && req.nextUrl.pathname !== "/authentication") {
-//         return NextResponse.redirect(new URL("/authentication", req.url))
-//     }
-//
-//     if (session) {
-//         const {data: employee} = await getEmployeeFromAuthUser(supabase, session?.user);
-//         const {data: role} = await getRoleFromEmployee(supabase, employee);
-//         // if no role at this point, user is set up incorrectly or db failed.
-//         if (!role) {
-//             return NextResponse.redirect(new URL("/authentication", req.url))
-//         }
-//
-//         // don't allow logged-in users back to the sign-in page
-//         if (req.nextUrl.pathname === "/authentication") {
-//             return NextResponse.redirect(new URL("/dashboard", req.url))
-//         }
-//
-//         if (!role.EmployeePermission && admin_routes.includes(req.nextUrl.pathname)) {
-//             return NextResponse.redirect(new URL("/unauthorized", req.url))
-//         }
-//
-//         if (req.nextUrl.pathname in database_routes && !role.DatabasePermission) {
-//             return NextResponse.redirect(new URL("/unauthorized", req.url))
-//         }
-//     }
-//
+    // Send all unauthenticated users to the login page.
+    const {data: { session}}  = await supabase.auth.getSession()
+    if ((!session || !session.user) && req.nextUrl.pathname !== "/authentication") {
+        return NextResponse.redirect(new URL("/authentication", req.url))
+    }
+
+    if (session) {
+        const {data: employee} = await getEmployeeFromAuthUser(supabase, session?.user);
+        const {data: role} = await getRoleFromEmployee(supabase, employee);
+        // if no role at this point, user is set up incorrectly or db failed.
+        if (!role) {
+            return NextResponse.redirect(new URL("/authentication", req.url))
+        }
+
+        // don't allow logged-in users back to the sign-in page
+        if (req.nextUrl.pathname === "/authentication") {
+            return NextResponse.redirect(new URL("/dashboard", req.url))
+        }
+
+        if (!role.EmployeePermission && admin_routes.includes(req.nextUrl.pathname)) {
+            return NextResponse.rewrite(
+                `${req.nextUrl.protocol}//${req.nextUrl.host}/401`,
+                {
+                    status: 401
+                }
+            )
+        }
+
+        if (req.nextUrl.pathname in database_routes && !role.DatabasePermission) {
+            return NextResponse.redirect(new URL("/unauthorized", req.url))
+        }
+    }
+
     return res
 }
 
