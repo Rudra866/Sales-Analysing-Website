@@ -98,7 +98,9 @@ export const AuthProvider = ({children}: any) => {
 
   // create signUp, signIn, signOut functions
   const value: AuthContextType = {
-    signUp: async (data) => await supabase.auth.signUp(data),
+    signUp: async (data) => await supabase.auth.signUp(data), /* todo custom signup */
+    /* add details about the employee registered as additional data on the user entry to pass to db,
+    then use a postgresql function to create the employee entry. */
     signIn: async (data) => await supabase.auth.signInWithPassword(data),
     signOut: async () => await supabase.auth.signOut(),
     user: user ?? null,

@@ -10,13 +10,19 @@ export async function POST(request: Request) {
     const email = String(formData.get('email'))
     const password = String(formData.get('password'))
     const cookieStore = cookies()
-    const supabase = createRouteHandlerClient<Database>({ cookies: () => cookieStore })
+    const supabase =
+        createRouteHandlerClient<Database>({ cookies: () => cookieStore })
 
+    /* NEED TO VERIFY THAT LOGGED-IN USER IS ALLOWED TO CREATE AN EMPLOYEE */
+    /* Otherwise if we are allowing users to self-enroll, we need some admin tasks and a default user role of no perms? */
     await supabase.auth.signUp({
         email,
         password,
         options: {
             emailRedirectTo: `${requestUrl.origin}/auth/callback`,
+            /* add details about the employee registered as additional data on the user entry to pass to db,
+                then use a postgresql function to create the employee entry.
+             */
         },
     });
 
