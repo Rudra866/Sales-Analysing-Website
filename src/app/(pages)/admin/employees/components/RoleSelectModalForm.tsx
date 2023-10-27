@@ -1,7 +1,6 @@
 import * as z from "zod";
 import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
-import supabase from "@/lib/supabase";
 import {DialogFooter} from "@/components/ui/dialog";
 import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
 import {DialogBody} from "next/dist/client/components/react-dev-overlay/internal/components/Dialog";
@@ -10,7 +9,8 @@ import {Button} from "@/components/ui/button";
 import {DialogClose} from "@radix-ui/react-dialog";
 import React from "react";
 import {Row} from "@tanstack/react-table";
-import {Employee, Role} from "@/lib/database.types";
+import {Database, Employee, Role} from "@/lib/database.types";
+import {createClientComponentClient} from "@supabase/auth-helpers-nextjs";
 
 interface RoleSelectModalFormProps {
   row: Row<Employee>
@@ -18,12 +18,13 @@ interface RoleSelectModalFormProps {
   updateEmployee: (employee: Employee) => void
 }
 export function RoleSelectModalForm({ row, roles, updateEmployee }: RoleSelectModalFormProps) {
+  const supabase = createClientComponentClient<Database>();
   const employee = row.original;
   const roleFormSchema = z.object({
     Role:
         z.string().refine(
             (value) => {
-              return !isNaN(Number(value)) && Number(value) >= 1
+              return !isNaN(Number(value)) && Number(value) >= 1;
             }, {
               message: "Invalid role selected."
             }
