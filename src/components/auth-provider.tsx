@@ -1,11 +1,10 @@
-"use client"
-import {createContext, useContext, useEffect, useState} from 'react'
+'use client'
+import {SignInWithPasswordCredentials, SignUpWithPasswordCredentials} from "@supabase/supabase-js";
 import {createClientComponentClient, User} from "@supabase/auth-helpers-nextjs";
 import {Database, Employee, Role} from "@/lib/database.types";
-import {SignInWithPasswordCredentials, SignUpWithPasswordCredentials} from '@supabase/supabase-js';
+import {createContext, useEffect, useState} from "react";
 
-
-type AuthContextType = {
+export type AuthContextType = {
   signUp: (data: SignUpWithPasswordCredentials) => Promise<any>;
   signIn: (data: SignInWithPasswordCredentials) => Promise<any>;
   signOut: () => Promise<any>;
@@ -14,7 +13,7 @@ type AuthContextType = {
   role: Role | null;
 };
 
-const AuthContext = createContext<AuthContextType | null>(null);
+export const AuthContext = createContext<AuthContextType | null>(null);
 
 
 export const AuthProvider = ({children}: any) => {
@@ -33,6 +32,7 @@ export const AuthProvider = ({children}: any) => {
         const {data: {session}} = await supabase.auth.getSession();
         setUser(session?.user ?? null);
         if (session) {
+          // todo replace with internal database functions
           const employeeResult = await supabase
               .from("Employees")
               .select("*")
@@ -40,7 +40,7 @@ export const AuthProvider = ({children}: any) => {
               .single();
 
           if (employeeResult.data) {
-            const roleId = employeeResult.data.Role; // Assuming "Role" is the foreign key field
+            const roleId = employeeResult.data.Role;
             const roleResult = await supabase
                 .from("Roles")
                 .select("*")
@@ -58,6 +58,7 @@ export const AuthProvider = ({children}: any) => {
               setUser(session?.user ?? null);
               // TODO clean this duplicate
               if (session) {
+                // todo replace with internal database functions
                 const employeeResult = await supabase
                     .from("Employees")
                     .select("*")
@@ -108,18 +109,6 @@ export const AuthProvider = ({children}: any) => {
   // use a provider to pass down the value
   return (
       <AuthContext.Provider value={value}>
-          {!loading && children}
+        {!loading && children}
       </AuthContext.Provider>);
 };
-
-// export the useAuth hook, use this to access employee/role variables and restrict ability on low security features
-// for high security routes use the middleware options or use server component/server action
-export const useAuth = (): AuthContextType => {
-  const auth = useContext(AuthContext);
-  if (auth === null) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return auth;
-};
-
-export default useAuth;
