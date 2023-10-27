@@ -33,7 +33,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import {createClientComponentClient} from "@supabase/auth-helpers-nextjs";
 import {Database} from "@/lib/database.types";
-import FormModal from "../components/FormModal";
+import FormModal from "@/components/FormModal";
 import {Badge} from "@/components/ui/badge";
 import {AddRowDialog} from "@/app/(pages)/sales/components/AddRowDialog";
 

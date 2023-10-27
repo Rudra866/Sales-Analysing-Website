@@ -23,7 +23,7 @@ import {
   DropdownMenuLabel, DropdownMenuSeparator,
   DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
-import FormModal from "@/app/(pages)/admin/employees/components/FormModal";
+import FormModal from "@/components/FormModal";
 import {EmployeeSelectModalForm} from "@/app/(pages)/admin/employees/components/EmployeeSelectModalForm";
 import {RoleSelectModalForm} from "@/app/(pages)/admin/employees/components/RoleSelectModalForm";
 import {createClientComponentClient} from "@supabase/auth-helpers-nextjs";
