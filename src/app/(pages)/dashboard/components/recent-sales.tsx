@@ -3,7 +3,7 @@ import {useRouter} from "next/navigation";
 import {useDashboard} from "@/app/(pages)/dashboard/components/dashboard-provider";
 
 export function RecentSales() {
-    const {date, setDate} = useDashboard()
+    const {data, employees, date, setDate} = useDashboard()
 
     function SalesRow({name, email, amount, id}: { name: string; email: string; amount: number; id: string }) {
         const random = (max: number) => Math.floor(Math.random() * max) + 1
@@ -30,14 +30,20 @@ export function RecentSales() {
 
         )
     }
+    // iterate over each sale
+
+
+
 
 
     return (
         <div className="space-y-2">
-            {SalesRow({name: 'Sofia Davis', email: 'sofia.davis@email.com', amount: 39.00, id:'123'})}
-            {SalesRow({name: 'Sofia Davis', email: 'sofia.davis@email.com', amount: 39.00, id:'123'})}
-            {SalesRow({name: 'Sofia Davis', email: 'sofia.davis@email.com', amount: 39.00, id:'123'})}
-            {SalesRow({name: 'Sofia Davis', email: 'sofia.davis@email.com', amount: 39.00, id:'123'})}
+
+
+            {/*{SalesRow({name: 'Sofia Davis', email: 'sofia.davis@email.com', amount: 39.00, id:'123'})}*/}
+            {/*{SalesRow({name: 'Sofia Davis', email: 'sofia.davis@email.com', amount: 39.00, id:'123'})}*/}
+            {/*{SalesRow({name: 'Sofia Davis', email: 'sofia.davis@email.com', amount: 39.00, id:'123'})}*/}
+            {/*{SalesRow({name: 'Sofia Davis', email: 'sofia.davis@email.com', amount: 39.00, id:'123'})}*/}
         </div>
     )
 }

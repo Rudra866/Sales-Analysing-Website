@@ -11,6 +11,7 @@ import {DbResult} from "@/lib/types";
 
 interface DataContextProps {
     data?: Tables<'Sales'>[];
+    employees?: Tables<'Employees'>[];
     date?: DateRange;
     setDate?: React.Dispatch<React.SetStateAction<DateRange | undefined>>;
 }
@@ -35,7 +36,8 @@ export const DashboardProvider: React.FC<DashboardProviderProps> = ({ children }
     })
 
     const [data, setData] = useState<Tables<'Sales'>[]>();
-    const [monthlySales, setMonthlySales] = useState<{ name: string; total: number}[]>();
+    const [employees, setEmployees] = useState<Tables<'Employees'>[]>();
+    // const [monthlySales, setMonthlySales] = useState<{ name: string; total: number}[]>();
 
     useEffect(() => {
         const fetchData = async () => {
@@ -58,10 +60,25 @@ export const DashboardProvider: React.FC<DashboardProviderProps> = ({ children }
         fetchData()
 
 
+        const fetchEmployees = async () => {
+            const { data, error } = await supabase
+                .from('Employees')
+                .select('id, Name, Email')
+                .order('Name', { ascending: true })
+
+            if (error) {
+                console.error(error);
+                return;
+            }
+
+            setEmployees(data as DbResult<typeof data[]>);
+        };
+        fetchEmployees()
+
     }, [date?.from, date?.to]);
 
     return (
-        <DashboardContext.Provider value={{ data, date, setDate }}>
+        <DashboardContext.Provider value={{ data, employees, date, setDate }}>
             {children}
         </DashboardContext.Provider>
     );

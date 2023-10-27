@@ -5,26 +5,8 @@ import {useDashboard} from "@/app/(pages)/dashboard/components/dashboard-provide
 import {useEffect, useState} from "react";
 import {Tables} from "@/lib/database.types";
 import {format} from "date-fns";
+import {groupByMonth} from "@/lib/utils";
 
-function groupByMonth(data: Tables<"Sales">[]): { [p: string]: number } {
-    const groupedData: { [key: string]: number } = {};
-
-    data.forEach(item => {
-        const date = new Date(
-            item.SaleTime?.toString() || ''
-        );
-
-        const monthYearKey = format(date, 'MMM');
-
-        if (!groupedData[monthYearKey]) {
-            groupedData[monthYearKey] = 0;
-        }
-
-        groupedData[monthYearKey] += item.Total;
-    });
-
-    return groupedData;
-}
 
 
 
