@@ -45,7 +45,7 @@ export default function SalesTable() {
     const [sales, setSales] = useState<Tables<'Sales'>[]>([]);
     const [employees, setEmployees] = useState<Employee[]>([]);
     const supabase = createClientComponentClient<Database>();
-    const [salesModal, setSalesModal] = useState(false);
+
 
     useEffect(() => {
         function fetchData() {
@@ -88,6 +88,7 @@ export default function SalesTable() {
 
     function DropDownMenu(sale: Row<Sale>) {
         const [item, setItem] = useState<Sale>();
+        const [salesModal, setSalesModal] = useState(false);
 
         return (
             <>
