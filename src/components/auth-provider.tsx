@@ -3,6 +3,7 @@ import {SignInWithPasswordCredentials, SignUpWithPasswordCredentials} from "@sup
 import {createClientComponentClient, User} from "@supabase/auth-helpers-nextjs";
 import {Database, Employee, Role} from "@/lib/database.types";
 import {createContext, useEffect, useState} from "react";
+import {getEmployeeFromAuthUser, getRoleFromEmployee} from "@/lib/dbwrap";
 
 export type AuthContextType = {
   signUp: (data: SignUpWithPasswordCredentials) => Promise<any>;
@@ -17,69 +18,41 @@ export const AuthContext = createContext<AuthContextType | null>(null);
 
 
 export const AuthProvider = ({children}: any) => {
-  const [user, setUser] = useState<User | null>();
-  const [employee, setEmployee] = useState<Employee | null>();
-  const [role, setRole] = useState<Role | null>();
+  const [user, setUser] = useState<User | null>(null);
+  const [employee, setEmployee] = useState<Employee | null>(null);
+  const [role, setRole] = useState<Role | null>(null);
   const [loading, setLoading] = useState(true);
   const supabase = createClientComponentClient<Database>()
-
 
   // todo add local storage caching?
   useEffect(() => {
     const initializeAuth = async () => {
       try {
+        const loadEmployeeAndRole = async (user: User) => {
+          const employee = await getEmployeeFromAuthUser(supabase, user);
+          if (!employee) throw new Error("Failed to get employee from authenticated user."); // this happens with current misconfigured users, shouldn't be possible in the future
+
+          const role = await getRoleFromEmployee(supabase, employee);
+          if (!role) throw new Error("Failed to get the role of the current employee.");
+
+          setEmployee(employee);
+          setRole(role);
+          setLoading(false);
+        }
+
+        setLoading(true);
         // get session data if there is an active session
         const {data: {session}} = await supabase.auth.getSession();
         setUser(session?.user ?? null);
-        if (session) {
-          // todo replace with internal database functions
-          const employeeResult = await supabase
-              .from("Employees")
-              .select("*")
-              .eq("AuthUser", session.user.id)
-              .single();
 
-          if (employeeResult.data) {
-            const roleId = employeeResult.data.Role;
-            const roleResult = await supabase
-                .from("Roles")
-                .select("*")
-                .eq("id", roleId)
-                .single();
-            setEmployee(employeeResult.data);
-            setRole(roleResult.data)
-            setLoading(false);
-          }
-        }
+        if (session?.user) await loadEmployeeAndRole(session.user);
 
-        // listen for changes to auth
+        // subscribe to auth changes.
         const { data: listener } = supabase.auth.onAuthStateChange(
             async (event, session) => {
               setUser(session?.user ?? null);
-              // TODO clean this duplicate
               if (session) {
-                // todo replace with internal database functions
-                const employeeResult = await supabase
-                    .from("Employees")
-                    .select("*")
-                    .eq("AuthUser", session.user.id)
-                    .single();
-
-                if (employeeResult.data) {
-                  const roleId = employeeResult.data.Role; // Assuming "Role" is the foreign key field
-                  const roleResult = await supabase
-                      .from("Roles")
-                      .select("*")
-                      .eq("id", roleId)
-                      .single();
-                  setEmployee(employeeResult.data);
-                  setRole(roleResult.data)
-                  setLoading(false);
-                }
-              } else {
-                setUser(null);
-                setEmployee(null);
-                setRole(null)
+                await loadEmployeeAndRole(session.user);
               }
               setLoading(false);
             }
@@ -89,10 +62,14 @@ export const AuthProvider = ({children}: any) => {
         return () => {
           listener?.subscription.unsubscribe();
         };
-      } catch (error) {
+
+      }
+
+      catch (error) {
         console.error("Error initializing authentication:", error);
       }
     };
+
     initializeAuth();
   }, [supabase, supabase.auth]);
 

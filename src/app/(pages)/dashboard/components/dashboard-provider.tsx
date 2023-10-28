@@ -9,7 +9,7 @@ import {DbResult} from "@/lib/types";
 
 
 
-interface DataContextProps {
+export type DataContextProps = {
     data?: Tables<'Sales'>[];
     date?: DateRange;
     setDate?: React.Dispatch<React.SetStateAction<DateRange | undefined>>;

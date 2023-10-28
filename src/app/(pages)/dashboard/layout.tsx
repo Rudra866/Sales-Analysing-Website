@@ -1,5 +1,6 @@
 import {DashboardProvider} from "@/app/(pages)/dashboard/components/dashboard-provider";
 
+/** @ignore */
 interface ExamplesLayoutProps {
   children: React.ReactNode
 }

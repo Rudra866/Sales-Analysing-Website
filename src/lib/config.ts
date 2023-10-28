@@ -1,6 +1,6 @@
 import { MainNavItem  } from "@/lib/types"
 
-interface DocsConfig {
+export type DocsConfig = {
     mainNav: MainNavItem[]
 }
 

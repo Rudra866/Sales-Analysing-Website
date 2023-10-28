@@ -3,25 +3,24 @@ import { NextResponse } from 'next/server'
 
 import type { NextRequest } from 'next/server'
 import type { Database } from '@/lib/database.types'
-import {getEmployeeFromAuthUser, getRoleFromEmployee} from "@/lib/database";
+import {getEmployeeFromAuthUser, getRoleFromEmployee} from "@/lib/dbwrap";
 
 
 /**
  * Add routes here that should be restricted to employees with a Role.EmployeePermission (manages employees)
  */
-const admin_routes:string[] = [
+export const admin_routes:string[] = [
     "/admin/employees",
 ]
 
 /**
  * Add routes here that should be restricted to employees with a Role.DatabasePermission (absolute permission)
  */
-const database_routes:string[] = [
+export const database_routes:string[] = [
 
 ]
 
 // todo -- implement server side route handlers
-// todo -- !local db functions need compatibility with this!
 /**
  * Middleware rules will disallow any unauthorized user from accessing routes besides the login page. We can also
  * set up specific routes based on the user's role permissions. Because this verification happens on the server side,
@@ -34,7 +33,6 @@ export async function middleware(req: NextRequest) {
     const supabase =
         createMiddlewareClient<Database>({ req, res })
 
-/*     Disabled for now. */
     // Send all unauthenticated users to the login page.
     const {data: { session}}  = await supabase.auth.getSession()
     if ((!session || !session.user) && req.nextUrl.pathname !== "/authentication") {
@@ -42,9 +40,13 @@ export async function middleware(req: NextRequest) {
     }
 
     if (session) {
-        const {data: employee} = await getEmployeeFromAuthUser(supabase, session?.user);
-        const {data: role} = await getRoleFromEmployee(supabase, employee);
-        // if no role at this point, user is set up incorrectly or db failed.
+        /* do something about these */
+        const employee = await getEmployeeFromAuthUser(supabase, session?.user);
+        if (!employee) {
+            return NextResponse.redirect(new URL("/authentication", req.url));
+        }
+
+        const role = await getRoleFromEmployee(supabase, employee);
         if (!role) {
             return NextResponse.redirect(new URL("/authentication", req.url))
         }

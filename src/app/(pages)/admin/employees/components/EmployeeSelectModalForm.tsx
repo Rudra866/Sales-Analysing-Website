@@ -13,8 +13,10 @@ import {DialogClose} from "@radix-ui/react-dialog";
 import {createClientComponentClient} from "@supabase/auth-helpers-nextjs";
 import {existingEmployeeFormSchema} from "@/lib/types";
 
-
-interface EmployeeSelectModalFormProps {
+/**
+ * Type
+ */
+export type EmployeeSelectModalFormProps = {
   employee: Employee
   roles: Role[]
   updateEmployee: (employee: Employee) => void
@@ -24,10 +26,8 @@ interface EmployeeSelectModalFormProps {
 /**
  * Component to allow for viewing a user's details and modifying them. Has two states, view mode and edit mode.
  * Maybe add a toast notification here in the future so the user has more evidence it was successful?
- * @param employee the employee to change roles of
- * @param roles list of roles to choose from
- * @param setShowDialog callback function to close the modal if successful.
- * @param updateEmployee callback function to reload an employee in an upper component.
+ * @param {EmployeeSelectModalFormProps} props @link EmployeeSelectModalFormProps
+ * @group React Component
  */
 export function EmployeeSelectModalForm({ employee, roles, setShowDialog, updateEmployee }: EmployeeSelectModalFormProps) {
   const supabase =
