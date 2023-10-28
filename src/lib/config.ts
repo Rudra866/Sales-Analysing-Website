@@ -11,10 +11,6 @@ export const docsConfig: DocsConfig = {
             href: "/dashboard",
         },
         {
-            title: "Authentication",
-            href: "/authentication",
-        },
-        {
             title: "Settings",
             href: "/cards",
         },
