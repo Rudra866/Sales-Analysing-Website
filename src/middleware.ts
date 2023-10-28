@@ -54,7 +54,7 @@ export async function middleware(req: NextRequest) {
             return NextResponse.redirect(new URL("/dashboard", req.url))
         }
 
-        if (!role.EmployeePermission && admin_routes.includes(req.nextUrl.pathname)) {
+        if (admin_routes.includes(req.nextUrl.pathname) && !role.EmployeePermission) {
             return NextResponse.rewrite(
                 `${req.nextUrl.protocol}//${req.nextUrl.host}/401`,
                 {
@@ -63,8 +63,13 @@ export async function middleware(req: NextRequest) {
             )
         }
 
-        if (req.nextUrl.pathname in database_routes && !role.DatabasePermission) {
-            return NextResponse.redirect(new URL("/unauthorized", req.url))
+        if (database_routes.includes(req.nextUrl.pathname) && !role.DatabasePermission) {
+            return NextResponse.rewrite(
+                `${req.nextUrl.protocol}//${req.nextUrl.host}/401`,
+                {
+                    status: 401
+                }
+            )
         }
     }
 
