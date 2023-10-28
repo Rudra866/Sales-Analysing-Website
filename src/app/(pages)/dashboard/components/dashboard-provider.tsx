@@ -9,7 +9,7 @@ import {DbResult} from "@/lib/types";
 
 
 
-interface DataContextProps {
+export type DataContextProps = {
     data?: Tables<'Sales'>[];
     employees?: Tables<'Employees'>[];
     date?: DateRange;

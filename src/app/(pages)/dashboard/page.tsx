@@ -13,29 +13,35 @@ import {CreditCard, DollarSign} from "lucide-react";
 import {Icons} from "@/components/icons";
 import {cn, groupByMonth} from "@/lib/utils";
 import {useDashboard} from "./components/dashboard-provider";
-import {Tables} from "@/lib/database.types";
-import supabase from "@/lib/supabase";
+import {Database, Tables} from "@/lib/database.types";
 import {linkGc} from "next/dist/client/app-link-gc";
 import {Span} from "next/dist/server/lib/trace/tracer";
 import {DbResult} from "@/lib/types";
+import {createClientComponentClient} from "@supabase/auth-helpers-nextjs";
 
 
 export default function DashboardPage() {
     const {data, date, setDate} = useDashboard()
     const [totalRevenue, setTotalRevenue] = useState<number>(0);
     const [totalGoal, setTotalGoal] = useState<number>(0);
+    const supabase =
+        createClientComponentClient<Database>();
     const [totalRevenueForTheYear, setTotalRevenueForTheYear] = useState<number>(0);
     const [totalRevMonth, setTotalRevMonth] = useState<number>(0);
 
     useEffect(() => {
+
       const fetchTable = async () => {
+
           let { data: SalesGoals, error } = await supabase
               .from('SalesGoals')
               .select('TotalGoal, EndDate')
 
           setTotalGoal(SalesGoals as DbResult<typeof SalesGoals[]>);
         }
+
         fetchTable()
+
         setTotalRevenue(data?.map((sale) => sale?.Total).reduce((a, b) => a + b, 0) || 0)
 
     }, [data, date]);
@@ -103,6 +109,7 @@ export default function DashboardPage() {
                                         </p>
                                     </CardContent>
                                 </Card>
+
                                 <Card>
                                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                                         <CardTitle className="text-sm font-medium">

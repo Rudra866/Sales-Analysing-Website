@@ -1,4 +1,8 @@
-const Unauthorized = () => {
+/**
+ * Page shown to a user who's been restricted from an area of the site.
+ * @constructor
+ */
+export default function Unauthorized() {
   // add shadcn layout
   return (
       <div>
@@ -7,5 +11,3 @@ const Unauthorized = () => {
       </div>
   );
 };
-
-export default Unauthorized;

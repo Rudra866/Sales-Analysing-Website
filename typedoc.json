@@ -1,0 +1,10 @@
+{
+  "plugin": ["typedoc-plugin-zod", "typedoc-plugin-mark-react-functional-components"],
+  "entryPoints": ["src"],
+  "excludeCategories": ["SupabaseClient<Database>"],
+  "exclude": ["**/(examples)/**/*.{ts,tsx}"],
+  "entryPointStrategy": "expand",
+  "theme": "default",
+  "categorizeByGroup": true,
+  "hideGenerator": true
+}

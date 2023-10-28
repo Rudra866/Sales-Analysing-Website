@@ -13,7 +13,7 @@ function Navigation() {
   const {user} = useAuth();
     return (
         <header className="border-b">
-          {user &&
+          {/*{user &&*/}
               <>
                   <div className="hidden md:flex md:flex-row h-16 items-center px-4">
                       <Image src={'/icon.png'} alt={'icon'} width={25} height={25} className={'mr-2'}/>
@@ -29,7 +29,7 @@ function Navigation() {
                       <MobileNav/>
                   </div>
               </>
-          }
+          {/*}*/}
         </header>
     );
 }

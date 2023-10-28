@@ -2,16 +2,16 @@ import React, {Dispatch, SetStateAction, useState} from "react";
 import {useForm} from "react-hook-form";
 import * as z from "zod";
 import {zodResolver} from "@hookform/resolvers/zod";
-import supabase from "@/lib/supabase";
 import {DialogFooter} from "@/components/ui/dialog";
 import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
 import {DialogBody} from "next/dist/client/components/react-dev-overlay/internal/components/Dialog";
 import {Input} from "@/components/ui/input";
 import {Button} from "@/components/ui/button";
-import {Employee, Role, Sale, Tables} from "@/lib/database.types";
+import {Database, Employee, Role, Sale, Tables} from "@/lib/database.types";
 import {DialogClose} from "@radix-ui/react-dialog";
 import {Checkbox} from "@/components/ui/checkbox";
 import {ScrollArea, ScrollBar} from "@/components/ui/scroll-area";
+import {createClientComponentClient} from "@supabase/auth-helpers-nextjs";
 
 
 interface EmployeeSelectModalFormProps {
@@ -96,6 +96,7 @@ const employeeFormSchema = z.object({
 
 
 export function AddRowDialog({ sale, setShowDialog, updateSale }: EmployeeSelectModalFormProps) {
+  const supabase = createClientComponentClient<Database>();
   const [editState, setEditState] = useState(false);
   const form = useForm<z.infer<typeof employeeFormSchema>>({
     resolver: zodResolver(employeeFormSchema),

@@ -1,7 +1,6 @@
 import * as z from "zod";
 import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
-import supabase from "@/lib/supabase";
 import {DialogFooter} from "@/components/ui/dialog";
 import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
 import {DialogBody} from "next/dist/client/components/react-dev-overlay/internal/components/Dialog";
@@ -10,32 +9,41 @@ import {Button} from "@/components/ui/button";
 import {DialogClose} from "@radix-ui/react-dialog";
 import React from "react";
 import {Row} from "@tanstack/react-table";
-import {Employee, Role} from "@/lib/database.types";
+import {Database, Employee, Role} from "@/lib/database.types";
+import {createClientComponentClient} from "@supabase/auth-helpers-nextjs";
 
 interface RoleSelectModalFormProps {
-  row: Row<Employee>
+  employee: Employee
   roles: Role[]
   updateEmployee: (employee: Employee) => void
 }
-export function RoleSelectModalForm({ row, roles, updateEmployee }: RoleSelectModalFormProps) {
-  const employee = row.original;
-  const roleFormSchema = z.object({
+
+/**
+ * Component to allow selecting a role for an employee from a dropdown select list.
+ * @param employee the employee to change roles of
+ * @param roles list of roles to choose from
+ * @param updateEmployee callback function to reload an employee in an upper component.
+ */
+export function RoleSelectModalForm({ employee, roles, updateEmployee }: RoleSelectModalFormProps) {
+  const supabase =
+      createClientComponentClient<Database>();
+  const roleSelectFormSchema = z.object({
     Role:
         z.string().refine(
             (value) => {
-              return !isNaN(Number(value)) && Number(value) >= 1
+              return !isNaN(Number(value)) && Number(value) >= 1;
             }, {
               message: "Invalid role selected."
             }
         )
   })
-  const form = useForm<z.infer<typeof roleFormSchema>>({
-    resolver: zodResolver(roleFormSchema),
+  const form = useForm<z.infer<typeof roleSelectFormSchema>>({
+    resolver: zodResolver(roleSelectFormSchema),
     defaultValues: {
       Role: employee?.Role.toString() ?? "",
     }});
 
-  async function onSubmit(values: z.infer<typeof roleFormSchema>) {
+  async function onSubmit(values: z.infer<typeof roleSelectFormSchema>) {
     try {
       const { data, error} = await supabase
           .from('Employees')
