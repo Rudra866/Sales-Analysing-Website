@@ -136,8 +136,6 @@ export default function SalesTable() {
     }
 
     function SortButton(name: string, column: Column<Tables<'Sales'>>) {
-        // todo does not work for employee names
-
         return (
             <Button
                 size="sm"
@@ -184,10 +182,6 @@ export default function SalesTable() {
                 )
             },
         },
-        // {
-        //     accessorKey: "EmployeeID",
-        //     header: ({column}) => SortButton("EmployeeID", column)
-        // },
         {
             accessorKey: "Name",
             header: ({column}) => SortButton("Name", column),
@@ -272,26 +266,6 @@ export function DataTable<TData, TValue>({data, columns, loading}: DataTableProp
 
     })
 
-    // const newRow: Sale = {
-    //     id: 0,
-    //     EmployeeID: 1,
-    //     SaleTime: new Date().toDateString(),
-    //     VehicleMake: '',
-    //     ActualCashValue: 0,
-    //     GrossProfit: 0,
-    //     FinAndInsurance: 0,
-    //     Holdback: 0,
-    //     Total: 0,
-    //     StockNumber: '',
-    //     CustomerID: 0,
-    //     FinancingID: 0,
-    //     TradeInID: 0,
-    //     NewSale: false,
-    //     LotPack: 0,
-    //     DaysInStock: 0,
-    //     DealerCost: 0,
-    //     ROI: 0,
-    // };
 
     return (
         <div className="space-y-4">
