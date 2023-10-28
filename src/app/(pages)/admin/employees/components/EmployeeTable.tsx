@@ -7,7 +7,7 @@ import {
   SortingState,
   useReactTable
 } from "@tanstack/react-table";
-import React, {useEffect, useState} from "react";
+import React, {Dispatch, SetStateAction, useEffect, useState} from "react";
 import {Input} from "@/components/ui/input";
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
@@ -29,6 +29,10 @@ import {RoleSelectModalForm} from "@/app/(pages)/admin/employees/components/Role
 import {createClientComponentClient} from "@supabase/auth-helpers-nextjs";
 import {Database} from "@/lib/database.types";
 
+/**
+ * Component to create a table to render all employees in the database.
+ * @constructor
+ */
 export default function EmployeeTable() {
   const [loading, setLoading] = useState(true);
   const [employees, setEmployees] = useState<Employee[]>([]);
@@ -69,7 +73,12 @@ export default function EmployeeTable() {
         .map((oldEmployee) => oldEmployee.id === employee.id ? employee: oldEmployee)
     setEmployees(updatedEmployees)
   }
-  function DropDownMenu(row:Row<Employee>, roles: Role[]) {
+
+  type DropDownMenuProps = {
+    row: Row<Employee>,
+    roles: Role[],
+  }
+  function DropDownMenu({row, roles}: DropDownMenuProps) {
     const [showEmployeeModal, setShowEmployeeModal] = useState(false);
     const [showRoleModal, setShowRoleModal] = useState(false);
     const employee = row.original;
@@ -101,7 +110,7 @@ export default function EmployeeTable() {
             <EmployeeSelectModalForm roles={roles} updateEmployee={updateEmployee} employee={row.original} setShowDialog={setShowEmployeeModal}/>
           </FormModal>
           <FormModal title={"Employee"} showDialog={showRoleModal} setShowDialog={setShowRoleModal}>
-            <RoleSelectModalForm row={row} roles={roles} updateEmployee={updateEmployee} />
+            <RoleSelectModalForm employee={row.original} roles={roles} updateEmployee={updateEmployee} />
           </FormModal>
 
         </>
@@ -164,7 +173,7 @@ export default function EmployeeTable() {
     },
     {
       id: "actions",
-      cell: ({ row }) => DropDownMenu(row, roles),
+      cell: ({ row }) => <DropDownMenu row={row}  roles={roles}/>,
     },
   ]
 
