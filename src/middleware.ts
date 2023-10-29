@@ -3,18 +3,21 @@ import { NextResponse } from 'next/server'
 
 import type { NextRequest } from 'next/server'
 import type { Database } from '@/lib/database.types'
+import {Role} from '@/lib/database.types'
 import {getEmployeeFromAuthUser, getRoleFromEmployee} from "@/lib/dbwrap";
 
 
 /**
- * Add routes here that should be restricted to employees with a Role.EmployeePermission (manages employees)
+ * Add routes here that should be restricted to employees with {@link Role | Role.EmployeePermission}.
+ * @group NextJS Middleware
  */
 export const admin_routes:string[] = [
     "/admin/employees",
 ]
 
 /**
- * Add routes here that should be restricted to employees with a Role.DatabasePermission (absolute permission)
+ * Add routes here that should be restricted to employees with {@link Role | Role.DatabasePermission}.
+ * @group NextJS Middleware
  */
 export const database_routes:string[] = [
 
@@ -27,6 +30,7 @@ export const database_routes:string[] = [
  * it should be used for any pages that (exclusively) grant higher level access. If you want to restrict only certain
  * parts of your page, use server side route handlers along with the Supabase serverside client.
  * @param req incoming NextRequest to route
+ * @group NextJS Middleware
  */
 export async function middleware(req: NextRequest) {
     const res = NextResponse.next()
@@ -74,10 +78,17 @@ export async function middleware(req: NextRequest) {
             )
         }
     }
-
     return res
 }
 
+/**
+ * Specifies which urls to ignore matching. Currently, this includes the routes:
+ * - `/api`
+ * - `/_next/static`
+ * - `/_next/image`
+ * - `/images`
+ * @group NextJS Middleware
+ */
 export const config = {
     matcher: ['/((?!api|_next/static|_next/image|images|favicon.ico).*)'],
 }

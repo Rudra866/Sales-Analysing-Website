@@ -5,7 +5,7 @@ import React from "react";
 
 /**
  * Dashboard page that displays an EmployeeTable component.
- * @constructor
+ * @group NextJS Page
  */
 export default function DashboardPage() {
     return (
@@ -16,8 +16,6 @@ export default function DashboardPage() {
               <EmployeeTable/>
           </div>
         </>
-
-
     );
 }
 

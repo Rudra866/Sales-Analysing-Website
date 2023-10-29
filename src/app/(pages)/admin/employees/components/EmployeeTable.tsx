@@ -31,7 +31,7 @@ import {Database} from "@/lib/database.types";
 
 /**
  * Component to create a table to render all employees in the database.
- * @constructor
+ * @group React Components
  */
 export default function EmployeeTable() {
   const [loading, setLoading] = useState(true);
@@ -183,7 +183,7 @@ export default function EmployeeTable() {
 }
 
 
-interface DataTableProps<TData, TValue> {
+export interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
 }

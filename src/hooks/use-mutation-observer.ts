@@ -1,5 +1,12 @@
 import * as React from "react"
 
+/**
+ *
+ * @param ref
+ * @param callback
+ * @param options
+ * @group React Hook
+ */
 export const useMutationObserver = (
   ref: React.MutableRefObject<HTMLElement | null>,
   callback: MutationCallback,

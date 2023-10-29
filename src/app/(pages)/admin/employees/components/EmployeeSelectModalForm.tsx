@@ -26,8 +26,8 @@ export type EmployeeSelectModalFormProps = {
 /**
  * Component to allow for viewing a user's details and modifying them. Has two states, view mode and edit mode.
  * Maybe add a toast notification here in the future so the user has more evidence it was successful?
- * @param {EmployeeSelectModalFormProps} props @link EmployeeSelectModalFormProps
- * @group React Component
+ * @param {EmployeeSelectModalFormProps} props
+ * @group React Components
  */
 export function EmployeeSelectModalForm({ employee, roles, setShowDialog, updateEmployee }: EmployeeSelectModalFormProps) {
   const supabase =

@@ -8,6 +8,7 @@ export type Json =
 
 /**
  * @group Database
+ * @hidden
  */
 export interface Database {
   public: {
@@ -395,95 +396,118 @@ export type UpdateTables<T extends keyof Database['public']['Tables']> = Databas
 export type InsertTables<T extends keyof Database['public']['Tables']> = Database['public']['Tables'][T]['Insert'];
 export type Enums<T extends keyof Database['public']['Enums']> = Database['public']['Enums'][T];
 
-/** @interface
- *  @category Row*/
+/**Represents a complete employee row in the database with all required fields. If you need an incomplete
+ *  type instead, consider using {@link EmployeeInsert} or {@link EmployeeUpdate}.
+ *  @interface
+ *  @category Database Row */
 export type Employee =             Tables<"Employees">;
-/** @interface
- *  @category Row*/
+
+/** Represents a complete role row in the database with all required fields. If you need an incomplete
+ *  type instead, consider using {@link RoleInsert} or {@link RoleUpdate}.
+ *  @interface
+ *  @category Database Row */
 export type Role =                 Tables<"Roles">;
-/** @interface
- *  @category Row*/
+
+/** Represents a complete sale row in the database with all required fields. If you need an incomplete
+ *  type instead, consider using {@link SaleInsert} or {@link SaleUpdate}.
+ *  @interface
+ *  @category Database Row */
 export type Sale =                 Tables<"Sales">;
-/** @interface
- *  @category Row*/
+/** Represents a complete sales goal row in the database with all required fields. If you need an incomplete
+ *  type instead, consider using {@link SalesGoalInsert} or {@link SalesGoalUpdate}.
+ *  @interface
+ *  @category Database Row */
 export type SalesGoal =            Tables<"SalesGoals">;
-/** @interface
- *  @category Row*/
+/** Represents a complete monthly sales row in the database with all required fields. If you need an incomplete
+ *  type instead, consider using {@link MonthlySaleInsert} or {@link MonthlySaleUpdate}.
+ *  @interface
+ *  @category Database Row */
 export type MonthlySale =          Tables<"MonthlySales">;
-/** @interface
- *  @category Row*/
+/** Represents a complete customer row in the database with all required fields. If you need an incomplete
+ *  type instead, consider using {@link CustomerInsert} or {@link CustomerUpdate}.
+ *  @interface
+ *  @category Database Row */
 export type Customer  =            Tables<"Customers">;
-/** @interface
- *  @category Row*/
+/** Represents a complete financier row in the database with all required fields. If you need an incomplete
+ *  type instead, consider using {@link FinancierInsert} or {@link FinancierUpdate}.
+ *  @interface
+ *  @category Database Row */
 export type Financier =            Tables<"Financing">;
-/** @interface
- *  @category Row*/
+/** Represents a complete notification row in the database with all required fields. If you need an incomplete
+ *  type instead, consider using {@link NotificationInsert} or {@link NotificationUpdate}.
+ *  @interface
+ *  @category Database Row */
 export type Notification =         Tables<"Notifications">;
-/** @interface
- *  @category Row*/
+/** Represents a complete task row in the database with all required fields. If you need an incomplete
+    type instead, consider using {@link TaskInsert} or {@link TaskUpdate}.
+ *  @interface
+ *  @category Database Row */
 export type Task =                 Tables<"Tasks">;
-/** @interface
- *  @category Row*/
+/** Represents a complete trade in row in the database with all required fields. If you need an incomplete
+    type instead, consider using {@link TradeInInsert} or {@link TradeInUpdate}.
+ *  @interface
+ *  @category Database Row */
 export type TradeIn =              Tables<"TradeIns">;
 
+// todo the rest::
 /** @interface
- *  @category Insert*/
+ *  @category Database Insert */
 export type EmployeeInsert =       InsertTables<"Employees">;
 /** @interface
- *  @category Insert*/
+ *  @category Database Insert */
 export type RoleInsert =           InsertTables<"Roles">;
 /** @interface
- *  @category Insert*/
+ *  @category Database Insert */
 export type SaleInsert =           InsertTables<"Sales">;
 /** @interface
- *  @category Insert*/
+ *  @category Database Insert */
 export type SalesGoalInsert =      InsertTables<"SalesGoals">;
 /** @interface
- *  @category Insert*/
+ *  @category Database Insert */
 export type MonthlySaleInsert =    InsertTables<"MonthlySales">;
 /** @interface
- *  @category Insert*/
+ *  @category Database Insert */
 export type CustomerInsert  =      InsertTables<"Customers">;
 /** @interface
- *  @category Insert*/
+ *  @category Database Insert */
 export type FinancierInsert =      InsertTables<"Financing">;
 /** @interface
- *  @category Insert*/
+ *  @category Database Insert */
 export type NotificationInsert =   InsertTables<"Notifications">;
 /** @interface
- *  @category Insert*/
+ *  @category Database Insert */
 export type TaskInsert =           InsertTables<"Tasks">;
 /** @interface
- *  @category Insert*/
+ *  @category Database Insert */
 export type TradeInInsert =        InsertTables<"TradeIns">;
 
 /** @interface
- *  @category Update */
+ *  @category Database Update */
 export type EmployeeUpdate =       UpdateTables<"Employees">;
 /** @interface
- *  @category Update */
+ *  @category Database Update */
 export type RoleUpdate =           UpdateTables<"Roles">;
 /** @interface
- *  @category Update */
+ *  @category Database Update */
 export type SaleUpdate =           UpdateTables<"Sales">;
 /** @interface
- *  @category Update */
+ *  @category Database Update */
 export type SalesGoalUpdate =      UpdateTables<"SalesGoals">;
 /** @interface
- *  @category Update */
+ *  @category Database Update */
 export type MonthlySaleUpdate =    UpdateTables<"MonthlySales">;
 /** @interface
- *  @category Update */
+ *  @category Database Update */
 export type CustomerUpdate  =      UpdateTables<"Customers">;
 /** @interface
- *  @category Update */
+ *  @category Database Update */
 export type FinancierUpdate =      UpdateTables<"Financing">;
 /** @interface
- *  @category Update */
+ *  @category Database Update */
 export type NotificationUpdate =   UpdateTables<"Notifications">;
 /** @interface
- *  @category Update */
+ *  @category Database Update */
 export type TaskUpdate =           UpdateTables<"Tasks">;
 /** @interface
- *  @category Update */
+ *  @category Database Update */
 export type TradeInUpdate =        UpdateTables<"TradeIns">;

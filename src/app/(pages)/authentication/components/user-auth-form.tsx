@@ -7,15 +7,19 @@ import { Icons } from "@/components/icons"
 import { Button } from "@/registry/new-york/ui/button"
 import { Input } from "@/registry/new-york/ui/input"
 import { Label } from "@/registry/new-york/ui/label"
-import {createClientComponentClient} from "@supabase/auth-helpers-nextjs";
-import {Database} from "@/lib/database.types";
 import {FormEvent, useState} from "react";
 import {useRouter} from "next/navigation";
 import useAuth from "@/hooks/use-auth";
 
-interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {}
+export type UserAuthFormProps = React.HTMLAttributes<HTMLDivElement>;
 
 
+/**
+ * Lays out a basic user login form.
+ * @param className
+ * @param props
+ * @group React Components
+ */
 export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [email, setEmail] = useState('')

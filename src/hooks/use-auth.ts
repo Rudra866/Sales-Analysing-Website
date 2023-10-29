@@ -16,6 +16,7 @@ import {AuthContext, AuthContextType} from "@/components/auth-provider";
  *  - `signIn`: Function for signing in.
  *  - `signOut`: Function for signing out.
  *  - `signUp`: Function for signing up.
+ *  @group React Hook
  */
 export default function useAuth(): AuthContextType {
   const auth = useContext(AuthContext);

@@ -52,7 +52,6 @@ export type { PostgrestError };
  * // Either log the error, or use toasts or some other way to notify the user that it has failed.
  *    console.error("Database error...", e);
  * }
- *
  */
 export interface DatabaseUsage{}
 
@@ -83,14 +82,14 @@ class EmployeeIDNotFoundError implements Error {
  * @param {string} fullName String in the form firstname lastname
  * @returns {Promise<Customer | null>} The first customer with a matching name.
  * @throws {@link PostgrestError} on database error
- * @category Customer
+ * @group Database Functions
  */
-export async function getCustomer(supabase: SupabaseClient  , fullName: string): Promise<Customer>
+export async function getCustomer(supabase: SupabaseClient<Database>  , fullName: string): Promise<Customer | null>
 {
   const {data:customer, error} = await supabase
       .from('Customers')
       .select('*')
-      .eq('Name', "AAAAAA")
+      .eq('Name', fullName)
       .limit(1)
       .maybeSingle();
 
@@ -104,7 +103,7 @@ export async function getCustomer(supabase: SupabaseClient  , fullName: string):
  * @param {string} employeeNumber The employee number of the employee to get.
  * @returns {Promise<Employee | null>} The first employee with a matching employee number, else null.
  * @throws {@link PostgrestError} on database error
- * @category Employee
+ * @group Database Functions
  */
 export async function getEmployee(supabase: SupabaseClient, employeeNumber: string): Promise<Employee | null>
 {
@@ -124,7 +123,7 @@ export async function getEmployee(supabase: SupabaseClient, employeeNumber: stri
  * @param {string} name Name of the financing option
  * @returns {Promise<Financier | null>} The first financier with a matching name, else null.
  * @throws {@link PostgrestError} on database error
- * @category Financing
+ * @group Database Functions
  */
 export async function getFinancing(supabase: SupabaseClient, name: string): Promise<Financier | null>
 {
@@ -144,7 +143,7 @@ export async function getFinancing(supabase: SupabaseClient, name: string): Prom
  * @param {Date} startDate The start date of the month sale.
  * @returns {Promise<MonthlySale | null>} The first monthly sale with the matching start date, else null.
  * @throws {@link PostgrestError} on database error
- * @category Monthly Sale
+ * @group Database Functions
  */
 export async function getMonthSale(supabase: SupabaseClient, startDate: Date): Promise<MonthlySale | null>
 {
@@ -165,7 +164,7 @@ export async function getMonthSale(supabase: SupabaseClient, startDate: Date): P
  * @param {string} roleName Name of the role
  * @returns {Promise<Role | null>} The first role matching the name as given, else null.
  * @throws {@link PostgrestError} on database error
- * @category Role
+ * @group Database Functions
  */
 export async function getRole(supabase: SupabaseClient, roleName: string): Promise<Role | null>
 {
@@ -188,7 +187,7 @@ export async function getRole(supabase: SupabaseClient, roleName: string): Promi
  * @param {string} employeeId The employee number that the notification belongs to.
  * @returns {Promise<Notification | null>} The first notification matching the employee number, else null.
  * @throws {@link PostgrestError} on database error
- * @category Notification
+ * @group Database Functions
  */
 export async function getNotification(supabase: SupabaseClient, employeeId: number): Promise<Notification | null>
 {
@@ -210,7 +209,7 @@ export async function getNotification(supabase: SupabaseClient, employeeId: numb
  * @param {string} employeeId The employee number that the notification belongs to.
  * @returns {Promise<Notification | null>} The first notification matching the employee number, else null.
  * @throws {@link PostgrestError} on database error
- * @category Notification
+ * @group Database Functions
  */
 export async function getNotificationsForEmployee(supabase: SupabaseClient, employeeId: number): Promise<Notification[] | null>
 {
@@ -229,7 +228,7 @@ export async function getNotificationsForEmployee(supabase: SupabaseClient, empl
  * @param {string} stockNum The stock number of the sale.
  * @returns {Promise<Sale | null>} The first sale matching the stock number, else null.
  * @throws {@link PostgrestError} on database error
- * @category Sale
+ * @group Database Functions
  */
 export async function getSale(supabase: SupabaseClient, stockNum: string): Promise<Sale | null>
 {
@@ -250,7 +249,7 @@ export async function getSale(supabase: SupabaseClient, stockNum: string): Promi
  * @param {string} goalName The name of the goal.
  * @returns {Promise<SalesGoal | null>} The first sales goal matching the goal name, else null.
  * @throws {@link PostgrestError} on database error
- * @category Sales Goal
+ * @group Database Functions
  */
 export async function getSalesGoal(supabase: SupabaseClient, goalName: string): Promise<SalesGoal | null>
 {
@@ -272,7 +271,7 @@ export async function getSalesGoal(supabase: SupabaseClient, goalName: string): 
  * @param {string} taskName The name of the task.
  * @returns {Promise<Task | null>} The first task matching the task name, else null.
  * @throws {@link PostgrestError} on database error
- * @category Task
+ * @group Database Functions
  */
 export async function getTask(supabase: SupabaseClient, taskName: string): Promise<Task | null>
 {
@@ -295,7 +294,7 @@ export async function getTask(supabase: SupabaseClient, taskName: string): Promi
  * @param {string} tradeName The name of the tradein.
  * @returns {Promise<TradeIn | null>} The first tradeIn the trade name, else null.
  * @throws {@link PostgrestError} on database error
- * @category Trade In
+ * @group Database Functions
  */
 export async function getTradeIn(supabase: SupabaseClient, tradeName: string): Promise<TradeIn | null>
 {
@@ -315,7 +314,7 @@ export async function getTradeIn(supabase: SupabaseClient, tradeName: string): P
  * @param {SupabaseClient} supabase Any type of Supabase client (client, server, middleware, route).
  * @param {User} authUser Supabase auth user object. A user has access to this when signed in.
  * @throws {@link PostgrestError} if authUser is null or doesn't exist, or database error.
- * @category Employee
+ * @group Database Functions
  */
 export async function getEmployeeFromAuthUser(supabase: SupabaseClient, authUser: User): Promise<Employee | null> {
   const {data: employee, error} = await supabase
@@ -334,7 +333,7 @@ export async function getEmployeeFromAuthUser(supabase: SupabaseClient, authUser
  * @param {Employee} employee An employee object from the database.
  * @returns {Promise<Role | null>}
  * @throws {@link PostgrestError} if employee is null or doesn't exist, or database error.
- * @category Role
+ * @group Database Functions
  */
 export async function getRoleFromEmployee(supabase: SupabaseClient, employee: Employee): Promise<Role | null> {
   const {data: role, error} = await supabase
@@ -352,7 +351,7 @@ export async function getRoleFromEmployee(supabase: SupabaseClient, employee: Em
  * @param {SupabaseClient} supabase Any type of Supabase client (client, server, middleware, route).
  * @returns {Promise<Customer[] | null>} All the customers in the database, or null if none exist.
  * @throws {@link PostgrestError} on database error.
- * @category Customer
+ * @group Database Functions
  */
 export async function getAllCustomers(supabase: SupabaseClient): Promise<Customer[] | null>
 {
@@ -369,7 +368,7 @@ export async function getAllCustomers(supabase: SupabaseClient): Promise<Custome
  * @param {SupabaseClient} supabase Any type of Supabase client (client, server, middleware, route).
  * @returns {Promise<Employee[] | null>} All the employees in the database, or null if none exist.
  * @throws {@link PostgrestError} on database error.
- * @category Employee
+ * @group Database Functions
  */
 export async function getAllEmployees(supabase: SupabaseClient): Promise<Employee[] | null>
 {
@@ -386,7 +385,7 @@ export async function getAllEmployees(supabase: SupabaseClient): Promise<Employe
  * @param supabase Any type of Supabase client (client, server, middleware, route).
  * @returns {Promise<Financier[] | null>} All the financiers in the database, or null if none exist.
  * @throws {@link PostgrestError} on database error.
- * @category Financing
+ * @group Database Functions
  */
 export async function getAllFinancingOptions(supabase: SupabaseClient): Promise<Financier[] | null>
 {
@@ -403,7 +402,7 @@ export async function getAllFinancingOptions(supabase: SupabaseClient): Promise<
  * @param {SupabaseClient} supabase Any type of Supabase client (client, server, middleware, route).
  * @returns {Promise<MonthlySale[] | null>} All the financiers in the database, or null if none exist.
  * @throws {@link PostgrestError} on database error.
- * @category Monthly Sale
+ * @group Database Functions
  */
 export async function getAllMonthlySales(supabase: SupabaseClient): Promise<MonthlySale[] | null>
 {
@@ -420,7 +419,7 @@ export async function getAllMonthlySales(supabase: SupabaseClient): Promise<Mont
  * @param {SupabaseClient} supabase Any type of Supabase client (client, server, middleware, route).
  * @returns {Promise<Role[] | null>} All roles in the database, or none.
  * @throws {@link PostgrestError} on database error.
- * @category Role
+ * @group Database Functions
  */
 export async function getAllRoles(supabase: SupabaseClient): Promise<Role[] | null>
 {
@@ -436,7 +435,7 @@ export async function getAllRoles(supabase: SupabaseClient): Promise<Role[] | nu
  * Get all rows in the notifications table.
  * @param {SupabaseClient} supabase Any type of Supabase client (client, server, middleware, route).
  * @throws {@link PostgrestError} on database error.
- * @category Notification
+ * @group Database Functions
  */
 export async function getAllNotifications(supabase: SupabaseClient): Promise<Notification[] | null>
 {
@@ -452,7 +451,7 @@ export async function getAllNotifications(supabase: SupabaseClient): Promise<Not
  * Get all rows in the Sales table.
  * @param {SupabaseClient} supabase Any type of Supabase client (client, server, middleware, route).
  * @throws {@link PostgrestError} on database error.
- * @category Sale
+ * @group Database Functions
  */
 export async function getAllSales(supabase: SupabaseClient): Promise<Sale[] | null>
 {
@@ -469,7 +468,7 @@ export async function getAllSales(supabase: SupabaseClient): Promise<Sale[] | nu
  * @param {SupabaseClient} supabase Any type of Supabase client (client, server, middleware, route).
  * @returns {Promise<SalesGoal[] | null>} A list of all sales goals, or null if none exist.
  * @throws {@link PostgrestError} on database error.
- * @category Sales Goal
+ * @group Database Functions
  */
 export async function getAllSalesGoals(supabase: SupabaseClient): Promise<SalesGoal[] | null>
 {
@@ -486,7 +485,7 @@ export async function getAllSalesGoals(supabase: SupabaseClient): Promise<SalesG
  * @param {SupabaseClient} supabase Any type of Supabase client (client, server, middleware, route).
  * @returns {Promise<Task[] | null>} A list of all tasks, or null if none exist.
  * @throws {@link PostgrestError} on database error.
- * @category Task
+ * @group Database Functions
  */
 export async function getAllTasks(supabase: SupabaseClient): Promise<Task[] | null>
 {
@@ -503,7 +502,7 @@ export async function getAllTasks(supabase: SupabaseClient): Promise<Task[] | nu
  * @param {SupabaseClient} supabase Any type of Supabase client (client, server, middleware, route).
  * @returns {Promise<TradeIn[] | null>} A list of all tasks, or null if none exist.
  * @throws {@link PostgrestError} on database error.
- * @category Trade In
+ * @group Database Functions
  */
 export async function getAllTradeIns(supabase: SupabaseClient): Promise<TradeIn[] | null>
 {
@@ -521,7 +520,7 @@ export async function getAllTradeIns(supabase: SupabaseClient): Promise<TradeIn[
  * @param {SupabaseClient} supabase Any type of Supabase client (client, server, middleware, route).
  * @param {SalesGoalInsert} newSaleGoal
  * @throws {@link PostgrestError} if Creator is null or doesn't exist, or on database insert error.
- * @category Sales Goal
+ * @group Database Functions
  */
 export async function postToSalesGoals(supabase: SupabaseClient, newSaleGoal: SalesGoalInsert): Promise<SalesGoal>
 {
@@ -566,7 +565,7 @@ export async function postToSalesGoals(supabase: SupabaseClient, newSaleGoal: Sa
  * @param dealercost
  * @param roi
  * @throws {@link PostgrestError} on database insert error.
- * @category Sale
+ * @group Database Functions
  */
 export async function postToSales(supabase: SupabaseClient, stockNum: string, make: string, cashVal: number,
                                   grossProfit: number, finAndInsurance: number, holdback: number, total: number,
@@ -670,7 +669,7 @@ export async function postToSales(supabase: SupabaseClient, stockNum: string, ma
  * @param {SupabaseClient} supabase Any type of Supabase client (client, server, middleware, route).
  * @param {CustomerInsert} newCustomer
  * @throws {@link PostgrestError} on database insert error.
- * @category Customer
+ * @group Database Functions
  */
 export async function postToCustomers(supabase: SupabaseClient, newCustomer: CustomerInsert): Promise<Customer | null>
 {
@@ -692,7 +691,7 @@ export async function postToCustomers(supabase: SupabaseClient, newCustomer: Cus
  * @param {SupabaseClient} supabase Any type of Supabase client (client, server, middleware, route).
  * @param {EmployeeInsert} newEmployee
  * @throws {@link PostgrestError} if EmployeeInsert.Role is null, or on database insert error.
- * @category Employee
+ * @group Database Functions
  */
 export async function postToEmployees(supabase: SupabaseClient, newEmployee: EmployeeInsert): Promise<Employee>
 {
@@ -713,7 +712,7 @@ export async function postToEmployees(supabase: SupabaseClient, newEmployee: Emp
  * @param {SupabaseClient} supabase Any type of Supabase client (client, server, middleware, route).
  * @param {FinancierInsert} newFinancier
  * @throws {@link PostgrestError} on database insert error.
- * @category Financing
+ * @group Database Functions
  */
 export async function postToFinancing(supabase: SupabaseClient, newFinancier: FinancierInsert): Promise<Financier>
 {
@@ -733,7 +732,7 @@ export async function postToFinancing(supabase: SupabaseClient, newFinancier: Fi
  * @param {SupabaseClient} supabase Any type of Supabase client (client, server, middleware, route).
  * @param {MonthlySaleInsert} newMonthlySale
  * @throws {@link PostgrestError} on database insert error.
- * @category Monthly Sale
+ * @group Database Functions
  */
 export async function postToMonthlySales(supabase: SupabaseClient, newMonthlySale: MonthlySaleInsert): Promise<MonthlySale>
 {
@@ -755,7 +754,7 @@ export async function postToMonthlySales(supabase: SupabaseClient, newMonthlySal
  * @param {SupabaseClient} supabase Any type of Supabase client (client, server, middleware, route).
  * @param {NotificationInsert} newNotification
  * @throws {@link PostgrestError} if employee or sale doesn't exist, or database insert error.
- * @category Notification
+ * @group Database Functions
  */
 export async function postToNotifications(supabase: SupabaseClient, newNotification: NotificationInsert): Promise<Notification>
 {
@@ -779,7 +778,7 @@ export async function postToNotifications(supabase: SupabaseClient, newNotificat
  * @param {SupabaseClient} supabase Any type of Supabase client (client, server, middleware, route).
  * @param {TaskInsert} newTask new task with required fields.
  * @throws {@link PostgrestError} if `Creator` or `Assignee` doesn't exist, or on database insert error.
- * @category Task
+ * @group Database Functions
  */
 export async function postToTasks(supabase: SupabaseClient, newTask: TaskInsert): Promise<Task>
 {
@@ -826,7 +825,7 @@ export async function postToTasks(supabase: SupabaseClient, newTask: TaskInsert)
  * @param {SupabaseClient} supabase Any type of Supabase client (client, server, middleware, route).
  * @param newTradeIn
  * @throws {@link PostgrestError} on database insert error.
- * @category Trade In
+ * @group Database Functions
  */
 export async function postToTradeIns(supabase: SupabaseClient, newTradeIn: TradeInInsert): Promise<TradeIn>
 {

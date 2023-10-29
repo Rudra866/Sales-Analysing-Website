@@ -17,6 +17,11 @@ export type AuthContextType = {
 export const AuthContext = createContext<AuthContextType | null>(null);
 
 
+/**
+ *
+ * @param children
+ * @group React Component
+ */
 export const AuthProvider = ({children}: any) => {
   const [user, setUser] = useState<User | null>(null);
   const [employee, setEmployee] = useState<Employee | null>(null);
