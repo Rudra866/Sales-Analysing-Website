@@ -108,6 +108,6 @@ export const columns: ColumnDef<Tables<'Sales'>, Employee>[] = [
     },
     {
         id: "actions",
-        cell: ({row}) => DropDownMenu(row),
+        cell: ({row}) => DropDownMenu({row, sales, setSales}),
     },
 ]

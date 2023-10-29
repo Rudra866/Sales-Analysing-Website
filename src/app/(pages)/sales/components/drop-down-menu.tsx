@@ -1,7 +1,5 @@
-'use client'
-
 import {Row} from "@tanstack/react-table";
-import {Sale} from "@/lib/database.types";
+import {Database, Sale} from "@/lib/database.types";
 import React, {useState} from "react";
 import {
     DropdownMenu,
@@ -12,9 +10,9 @@ import {
 } from "@/components/ui/dropdown-menu";
 import {Button} from "@/components/ui/button";
 import {MoreHorizontal} from "lucide-react";
-import FormModal from "@/app/(pages)/sales/components/FormModal";
 import {AddRowDialog} from "@/app/(pages)/sales/components/AddRowDialog";
-import supabase from "@/lib/supabase";
+import FormModal from "@/components/FormModal";
+import {createClientComponentClient} from "@supabase/auth-helpers-nextjs";
 
 
 type Props = {
@@ -23,10 +21,12 @@ type Props = {
     setSales: (sales: Sale[]) => void
 }
 
+// TODO TS71007: Props must be serializable for components in the "use client" entry file, "setSales" is invalid
 
 export function DropDownMenu({row, sales, setSales}: Props) {
     const [item, setItem] = useState<Sale>();
     const [salesModal, setSalesModal] = useState(false);
+    const supabase = createClientComponentClient<Database>()
 
     function updateSales(sale: Sale) {
         const originalSales = [...sales]
@@ -47,7 +47,7 @@ export function DropDownMenu({row, sales, setSales}: Props) {
                 <DropdownMenuContent align="end">
                     <DropdownMenuLabel>Actions</DropdownMenuLabel>
                     <DropdownMenuSeparator/>
-                    <DropdownMenuItem onClick={() => navigator.clipboard.writeText(row.original.EmployeeID.toString())}>
+                    <DropdownMenuItem onClick={() => navigator.clipboard.writeText(JSON.stringify(row.original))}>
                         Copy
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={

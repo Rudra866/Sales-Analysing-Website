@@ -12,10 +12,7 @@ export default function RootLayout({children,}: { children: ReactNode }) {
       <body className={cn("min-h-screen bg-background font-sans antialiased", fontSans.variable)}>
         <AuthProvider>
           <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
-              <Navigation />
-              <div className="container flex-1 rounded-[0.5rem]">
-                  {children}
-              </div>
+              {children}
           </ThemeProvider>
         </AuthProvider>
       </body>

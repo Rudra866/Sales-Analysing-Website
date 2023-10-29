@@ -24,6 +24,40 @@ export interface MainNavItem extends NavItem {}
 
 export interface SidebarNavItem extends NavItemWithChildren {}
 
+export const existingEmployeeFormSchema = z.object({
+    EmployeeNumber:
+        z.string().min(1, {
+            message: "EmployeeNumber must not be empty."})
+            .max(255, {
+                message: "EmployeeNumber must be shorter than 255 characters."}),
+
+    Name:
+        z.string()
+            .min(1, {
+                message: "Employee Name must not be empty."})
+            .max(255, {
+                message: "Employee Name must be less than 255 characters."}),
+
+    Email:
+        z.string()
+            .min(1, {
+                message: "Employee Email must not be empty."})
+            .max(320, {
+                message: "Employee Email must be less than 255 characters."})
+            .email({
+                message: "Employee Email must be a valid email address."}),
+
+    Role:
+        z.string().refine(
+            (value) => {
+                return !isNaN(Number(value)) && Number(value) >= 1
+            }, {
+                message: "Invalid."
+            }
+        )
+})
+
+
 
 export const navigationMenu = [
     "Dashboard",

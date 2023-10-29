@@ -21,10 +21,10 @@ export function Overview() {
                 name: key,
                 total: value,
             })))
+        console.log(salesByMonth)
     }, [data, date]);
 
     const customToolTip = (props: any) => {
-        // console.log(props)
         try {
             if (props.active && props.payload && props.payload.length) {
                 return (

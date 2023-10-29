@@ -1,7 +1,5 @@
 import React from 'react';
 import SalesTable from "@/app/(pages)/sales/components/SalesTable";
-import {DataTable} from "@/app/(pages)/(examples)/tasks/components/data-table";
-import {test_columns} from "@/app/(pages)/(examples)/tasks/components/test-column";
 
 function Page() {
     return (
