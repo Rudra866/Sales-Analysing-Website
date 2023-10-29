@@ -50,27 +50,28 @@ deploy_production:
 
 generate_typedoc_info:
   stage: build_typedoc
-  # only main when done testing
+  #  only:
+  #    - main
   script:
+    - npm config set -g production false
     - npm install --only=dev
     - npm run docs
     - rm -rf /var/www/docs/*
     - cp -r docs/* /var/www/docs
-#  artifacts:
+  #  artifacts:
   environment:
     name: "Documentation"
     url: https://docs.codeallergy.dev
 
 generate_dbdocs_info:
   stage: build_dbdocs
-  # only main when done testing
   script:
     - dbdocs build src/data/database_schema.dbml --project="370 Binary Bandits"
-  # only:
-  #   changes:
-  #     - src/data/database_schema.dbml
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+      changes:
+        - "src/data/database_schema.dbml"
 
-#  artifacts:
 
 # don't bother removing old ones from vercel, just remove from gitlab
 end_deployment:
