@@ -55,7 +55,7 @@ generate_typedoc_info:
     - npm install --only=dev
     - npm run docs
     - rm -rf /var/www/docs/*
-    - cp -r docs/* /var/www/docs/*
+    - cp -r docs/* /var/www/docs
 #  artifacts:
   environment:
     name: "Documentation"
@@ -66,9 +66,9 @@ generate_dbdocs_info:
   # only main when done testing
   script:
     - dbdocs build src/data/database_schema.dbml --project="370 Binary Bandits"
-  only:
-    changes:
-      - src/data/database_schema.dbml
+  # only:
+  #   changes:
+  #     - src/data/database_schema.dbml
 
 #  artifacts:
 
