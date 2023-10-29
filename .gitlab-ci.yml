@@ -50,18 +50,16 @@ deploy_production:
 
 generate_typedoc_info:
   stage: build_typedoc
-  #  only:
-  #    - main
+  only:
+    - main
   script:
-    - npm config set -g production false
-    - npm install --only=dev
+    - npm install
     - npm run docs
     - rm -rf /var/www/docs/*
     - cp -r docs/* /var/www/docs
-  #  artifacts:
-  environment:
-    name: "Documentation"
-    url: https://docs.codeallergy.dev
+  # environment:
+  #   name: "Documentation"
+  #   url: https://docs.codeallergy.dev
 
 generate_dbdocs_info:
   stage: build_dbdocs
