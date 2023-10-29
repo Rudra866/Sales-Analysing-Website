@@ -52,10 +52,14 @@ generate_typedoc_info:
   stage: build_typedoc
   # only main when done testing
   script:
+    - npm install --only=dev
     - npm run docs
     - rm -rf /var/www/docs/*
     - cp -r docs/* /var/www/docs/*
 #  artifacts:
+  environment:
+    name: "Documentation"
+    url: https://docs.codeallergy.dev
 
 generate_dbdocs_info:
   stage: build_dbdocs
