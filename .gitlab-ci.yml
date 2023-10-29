@@ -1,5 +1,7 @@
 stages:
   - deploy
+  - build_typedoc
+  - build_dbdocs
   - teardown
 
 deploy_preview:
@@ -45,6 +47,31 @@ deploy_production:
     paths:
       - node_modules/
       - .next/cache/
+
+generate_typedoc_info:
+  stage: build_typedoc
+#  only:
+#    - main
+  script:
+    - npm config set -g production false
+    - npm install --only=dev
+    - npm run docs
+    - rm -rf /var/www/docs/*
+    - cp -r docs/* /var/www/docs
+  #  artifacts:
+  environment:
+    name: "Documentation"
+    url: https://docs.codeallergy.dev
+
+generate_dbdocs_info:
+  stage: build_dbdocs
+  script:
+    - dbdocs build src/data/database_schema.dbml --project="370 Binary Bandits"
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+      changes:
+        - "src/data/database_schema.dbml"
+
 
 # don't bother removing old ones from vercel, just remove from gitlab
 end_deployment:
