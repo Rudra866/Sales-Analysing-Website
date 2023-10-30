@@ -19,7 +19,12 @@ import {Span} from "next/dist/server/lib/trace/tracer";
 import {DbResult} from "@/lib/types";
 import {createClientComponentClient} from "@supabase/auth-helpers-nextjs";
 
-
+// TODO maybe we can split this page to some public components? We can also add db method to handle this db request.
+/**
+ * Main dashboard page for the app.
+ * @group Next.js Pages
+ * @route `/dashboard`
+ */
 export default function DashboardPage() {
     const {data, date, setDate} = useDashboard()
     const [totalRevenue, setTotalRevenue] = useState<number>(0);

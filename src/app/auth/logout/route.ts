@@ -4,14 +4,20 @@ import { NextResponse } from 'next/server'
 
 import type { Database } from '@/lib/database.types'
 
+/**
+ * This route handler will have the signed-in user log out.
+ * @param request
+ * @group Next.js Routes
+ */
 export async function POST(request: Request) {
     const requestUrl = new URL(request.url)
     const cookieStore = cookies()
-    const supabase = createRouteHandlerClient<Database>({ cookies: () => cookieStore })
+    const supabase =
+        createRouteHandlerClient<Database>({ cookies: () => cookieStore })
 
     await supabase.auth.signOut()
 
-    return NextResponse.redirect(`${requestUrl.origin}/login`, {
+    return NextResponse.redirect(`${requestUrl.origin}/authentication`, {
         status: 301,
     })
 }

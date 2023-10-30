@@ -4,18 +4,11 @@ import {createClientComponentClient, User} from "@supabase/auth-helpers-nextjs";
 import {Database, Employee, Role} from "@/lib/database.types";
 import {createContext, useEffect, useState} from "react";
 import {getEmployeeFromAuthUser, getRoleFromEmployee} from "@/lib/dbwrap";
+import {AuthContextType} from "@/hooks/use-auth";
 
-export type AuthContextType = {
-  signUp: (data: SignUpWithPasswordCredentials) => Promise<any>;
-  signIn: (data: SignInWithPasswordCredentials) => Promise<any>;
-  signOut: () => Promise<any>;
-  user: User | null;
-  employee: Employee | null;
-  role: Role | null;
-};
+
 
 export const AuthContext = createContext<AuthContextType | null>(null);
-
 
 /**
  *

@@ -3,6 +3,10 @@ import {Skeleton} from "@/components/ui/skeleton";
 
 // todo loading skeleton & spinner,
 
+/**
+ * React component to display while the page is loading.
+ * @group React Components
+ */
 export default function Loading() {
     return (
         <div className="hidden flex-col md:flex">

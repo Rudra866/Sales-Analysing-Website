@@ -14,7 +14,7 @@ import type {User} from "@supabase/auth-helpers-nextjs";
 import type {SupabaseClient} from "@supabase/auth-helpers-nextjs";
 
 // export type for docs
-import {PostgrestError} from "@supabase/supabase-js";
+import {PostgrestError} from "@supabase/postgrest-js";
 export type { PostgrestError };
 
 // todo find a less stupid way to do this for TypeDoc?

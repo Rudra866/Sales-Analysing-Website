@@ -1,9 +1,11 @@
 import React from 'react';
 import SalesTable from "@/app/(pages)/sales/components/SalesTable";
-import {DataTable} from "@/app/(pages)/(examples)/tasks/components/data-table";
-import {test_columns} from "@/app/(pages)/(examples)/tasks/components/test-column";
 
-function Page() {
+/**
+ * Creates the sales viewing page using a {@link SalesTable} component.
+ * @group Next.js Pages
+ */
+export default function SalesPage() {
     return (
         <div className="hidden h-full flex-1 flex-col space-y-8 p-8 md:flex">
             <div className="flex items-center justify-between space-y-2">
@@ -21,5 +23,3 @@ function Page() {
         </div>
     );
 }
-
-export default Page;

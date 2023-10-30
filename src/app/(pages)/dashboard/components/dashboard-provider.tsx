@@ -4,13 +4,13 @@ import React, { createContext, useState, useEffect, ReactNode } from 'react';
 import {addDays, format} from "date-fns";
 import {DateRange} from "react-day-picker";
 import {createClientComponentClient} from "@supabase/auth-helpers-nextjs";
-import {Database, Tables} from "@/lib/database.types";
+import {Database, Sale, Tables} from "@/lib/database.types";
 import {DbResult} from "@/lib/types";
 
 
 
 export type DataContextProps = {
-    data?: Tables<'Sales'>[];
+    data?: Sale[];
     date?: DateRange;
     setDate?: React.Dispatch<React.SetStateAction<DateRange | undefined>>;
 }
@@ -18,13 +18,17 @@ export type DataContextProps = {
 const supabase = createClientComponentClient<Database>()
 export const DashboardContext = createContext<DataContextProps | undefined>(undefined);
 
+/**
+ * Provides child pages being provided by DashboardProvider the fields within {@link DataContextProps}.
+ * @group React Hook
+ */
 export function useDashboard(): DataContextProps {
     const context = React.useContext(DashboardContext);
     if (!context) throw new Error('useDashboard must be used within a DashboardProvider');
     return context;
 }
 
-interface DashboardProviderProps {
+export interface DashboardProviderProps {
     children: ReactNode;
 }
 

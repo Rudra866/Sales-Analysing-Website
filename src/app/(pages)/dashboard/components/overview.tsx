@@ -6,6 +6,7 @@ import {useEffect, useState} from "react";
 import {Tables} from "@/lib/database.types";
 import {format} from "date-fns";
 
+/** @ignore these for now */
 function groupByMonth(data: Tables<"Sales">[]): { [p: string]: number } {
     const groupedData: { [key: string]: number } = {};
 
@@ -27,7 +28,7 @@ function groupByMonth(data: Tables<"Sales">[]): { [p: string]: number } {
 }
 
 
-
+/** @ignore these for now */
 export function Overview() {
 
     const {data, date, setDate} = useDashboard()

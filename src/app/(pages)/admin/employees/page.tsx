@@ -5,9 +5,10 @@ import React from "react";
 
 /**
  * Dashboard page that displays an EmployeeTable component.
- * @group NextJS Page
+ * @group Next.js Pages
+ * @route `/admin/employees`
  */
-export default function DashboardPage() {
+export default function EmployeeManagementPage() {
     return (
         // todo the table disappears for any small update
         <>

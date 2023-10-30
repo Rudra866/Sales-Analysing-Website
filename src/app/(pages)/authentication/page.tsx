@@ -4,9 +4,12 @@ import { UserAuthForm } from "./components/user-auth-form"
 import Image from "next/image";
 import * as React from "react";
 
-
+/**
+ * Allows the user to login using the {@link UserAuthForm} component.
+ * @group Next.js Pages
+ * @route `/authentication`
+ */
 export default function AuthenticationPage() {
-
   return (
     <>
       <div className="md:hidden">

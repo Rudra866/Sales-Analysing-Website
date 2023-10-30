@@ -1,3 +1,4 @@
+/** @ignore */
 export type Json =
     | string
     | number
@@ -6,11 +7,8 @@ export type Json =
     | { [key: string]: Json | undefined }
     | Json[]
 
-/**
- * @group Database
- * @hidden
- */
 export interface Database {
+  /** @hidden */
   public: {
     Tables: {
       Customers: {
@@ -390,10 +388,12 @@ export interface Database {
     }
   }
 }
-
+/** @ignore */
 export type Tables<T extends keyof Database['public']['Tables']> = Database['public']['Tables'][T]['Row'];
-export type UpdateTables<T extends keyof Database['public']['Tables']> = Database['public']['Tables'][T]['Update'];
-export type InsertTables<T extends keyof Database['public']['Tables']> = Database['public']['Tables'][T]['Insert'];
+type UpdateTables<T extends keyof Database['public']['Tables']> = Database['public']['Tables'][T]['Update'];
+
+type InsertTables<T extends keyof Database['public']['Tables']> = Database['public']['Tables'][T]['Insert'];
+/** @ignore */
 export type Enums<T extends keyof Database['public']['Enums']> = Database['public']['Enums'][T];
 
 /**Represents a complete employee row in the database with all required fields. If you need an incomplete

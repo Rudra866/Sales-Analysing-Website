@@ -187,7 +187,12 @@ export interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
 }
-export function DataTable<TData, TValue>({
+
+/**
+ * Component to create a table as model for {@link EmployeeTable}
+ * @group React Components
+ */
+function DataTable<TData, TValue>({
                                         data,
                                         columns
                                       }: DataTableProps<TData, TValue>) {

@@ -2,6 +2,7 @@ import Link from "next/link"
 
 import { cn } from "@/lib/utils"
 
+/** @ignore these for now */
 export function MainNav({
   className,
   ...props

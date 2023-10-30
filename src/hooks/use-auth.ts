@@ -1,6 +1,18 @@
 "use client"
 import {useContext} from 'react'
-import {AuthContext, AuthContextType} from "@/components/auth-provider";
+import {AuthContext} from "@/components/auth-provider";
+import {SignInWithPasswordCredentials, SignUpWithPasswordCredentials} from "@supabase/supabase-js";
+import {User} from "@supabase/auth-helpers-nextjs";
+import {Employee, Role} from "@/lib/database.types";
+
+export type AuthContextType = {
+  signUp: (data: SignUpWithPasswordCredentials) => Promise<any>;
+  signIn: (data: SignInWithPasswordCredentials) => Promise<any>;
+  signOut: () => Promise<any>;
+  user: User | null;
+  employee: Employee | null;
+  role: Role | null;
+};
 
 /**
  * Hook to access user/employee/role variables and authentication functions.

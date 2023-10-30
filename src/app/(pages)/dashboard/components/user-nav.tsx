@@ -15,6 +15,7 @@ import {
   DropdownMenuTrigger,
 } from "@/registry/new-york/ui/dropdown-menu"
 
+/** @ignore these for now */
 export function UserNav() {
   return (
     <DropdownMenu>

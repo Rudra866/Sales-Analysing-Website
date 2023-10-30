@@ -14,11 +14,13 @@ import {ScrollArea, ScrollBar} from "@/components/ui/scroll-area";
 import {createClientComponentClient} from "@supabase/auth-helpers-nextjs";
 
 
-interface EmployeeSelectModalFormProps {
+export interface EmployeeSelectModalFormProps {
   sale: Sale
   updateSale: (sale: Sale) => void
   setShowDialog: Dispatch<SetStateAction<boolean>>;
 }
+
+// todo duplicate and should be saleFormSchema?
 const employeeFormSchema = z.object({
   EmployeeID:
       z.number().min(1, {
@@ -94,8 +96,12 @@ const employeeFormSchema = z.object({
 
 })
 
-
-export function AddRowDialog({ sale, setShowDialog, updateSale }: EmployeeSelectModalFormProps) {
+// todo database calls update
+/**
+ * Component used to render adding a new sale on the sales page.
+ * @group React Components
+ */
+export function AddSalesRowDialog({ sale, setShowDialog, updateSale }: EmployeeSelectModalFormProps) {
   const supabase = createClientComponentClient<Database>();
   const [editState, setEditState] = useState(false);
   const form = useForm<z.infer<typeof employeeFormSchema>>({

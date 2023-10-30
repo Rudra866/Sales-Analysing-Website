@@ -1,10 +1,15 @@
 import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
 import { cookies } from 'next/headers'
-import { NextResponse } from 'next/server'
+import {NextRequest, NextResponse} from 'next/server'
 
 import type { Database } from '@/lib/database.types'
 
-export async function POST(request: Request) {
+/** This route handler will verify that the user trying to create an employee is authorized to do so, then it will
+ *  create the employee provided all the required fields were entered correctly.
+ *  @param {NextRequest} request
+ *  @group Next.js Routes
+ */
+export async function POST(request: NextRequest) {
     const requestUrl = new URL(request.url)
     const formData = await request.formData()
     const email = String(formData.get('email'))
@@ -13,7 +18,7 @@ export async function POST(request: Request) {
     const supabase =
         createRouteHandlerClient<Database>({ cookies: () => cookieStore })
 
-    /* NEED TO VERIFY THAT LOGGED-IN USER IS ALLOWED TO CREATE AN EMPLOYEE */
+    /* TODO NEED TO VERIFY THAT LOGGED-IN USER IS ALLOWED TO CREATE AN EMPLOYEE */
     /* Otherwise if we are allowing users to self-enroll, we need some admin tasks and a default user role of no perms? */
     await supabase.auth.signUp({
         email,
@@ -25,8 +30,6 @@ export async function POST(request: Request) {
              */
         },
     });
-
-
     return NextResponse.redirect(requestUrl.origin, {
         status: 301,
     })

@@ -35,11 +35,14 @@ import {createClientComponentClient} from "@supabase/auth-helpers-nextjs";
 import {Database} from "@/lib/database.types";
 import FormModal from "@/components/FormModal";
 import {Badge} from "@/components/ui/badge";
-import {AddRowDialog} from "@/app/(pages)/sales/components/AddRowDialog";
+import {AddSalesRowDialog} from "@/app/(pages)/sales/components/AddSalesRowDialog";
 
 // todo align rows and columns
 
-
+/**
+ * Component used to render sales page table at `/sales`
+ * @group React Components
+ */
 export default function SalesTable() {
     const [loading, setLoading] = useState(true);
     const [sales, setSales] = useState<Tables<'Sales'>[]>([]);
@@ -127,7 +130,7 @@ export default function SalesTable() {
                 </DropdownMenu>
                 {sale.original &&
                     <FormModal title={"Sale"} showDialog={salesModal} setShowDialog={setSalesModal}>
-                         <AddRowDialog sale={sale.original} updateSale={updateSales} setShowDialog={setSalesModal}/>
+                         <AddSalesRowDialog sale={sale.original} updateSale={updateSales} setShowDialog={setSalesModal}/>
                     </FormModal>
                 }
             </>
@@ -250,7 +253,7 @@ interface DataTableProps<TData, TValue> {
     loading?: boolean
 }
 
-export function DataTable<TData, TValue>({data, columns, loading}: DataTableProps<TData, TValue>) {
+function DataTable<TData, TValue>({data, columns, loading}: DataTableProps<TData, TValue>) {
     const [sorting, setSorting] = useState<SortingState>([])
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
     const pageSizes = [10, 25, 50, 100]

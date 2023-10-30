@@ -11,7 +11,12 @@ import {
 } from "@/lib/dbwrap"
 import {createClientComponentClient} from "@supabase/auth-helpers-nextjs";
 import {Database} from "@/lib/database.types";
-export default function Page() {
+
+/**
+ * Temporary page to be able to quickly test functions of `dbwrap.ts`
+ * @group Next.js Pages
+ */
+export default function DatabaseTestPage() {
   const supabase = createClientComponentClient<Database>()
 
   function handleOnClick()
