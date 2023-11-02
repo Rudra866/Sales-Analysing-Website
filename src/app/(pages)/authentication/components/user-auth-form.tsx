@@ -7,8 +7,6 @@ import { Icons } from "@/components/icons"
 import { Button } from "@/registry/new-york/ui/button"
 import { Input } from "@/registry/new-york/ui/input"
 import { Label } from "@/registry/new-york/ui/label"
-import {createClientComponentClient} from "@supabase/auth-helpers-nextjs";
-import {Database} from "@/lib/database.types";
 import {FormEvent, useState} from "react";
 import {useRouter} from "next/navigation";
 import useAuth from "@/hooks/use-auth";

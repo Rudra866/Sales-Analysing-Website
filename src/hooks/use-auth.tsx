@@ -1,8 +1,8 @@
 "use client"
 import {createContext, useContext, useEffect, useState} from 'react'
-import {createClientComponentClient, User} from "@supabase/auth-helpers-nextjs";
-import {Database, Employee, Role} from "@/lib/database.types";
-import {SignInWithPasswordCredentials, SignUpWithPasswordCredentials} from '@supabase/supabase-js';
+import {Employee, Role} from "@/lib/database.types";
+import {SignInWithPasswordCredentials, SignUpWithPasswordCredentials, User} from '@supabase/supabase-js';
+import {getSupabaseBrowserClient} from "@/lib/supabase";
 
 
 type AuthContextType = {
@@ -22,7 +22,7 @@ export const AuthProvider = ({children}: any) => {
   const [employee, setEmployee] = useState<Employee | null>();
   const [role, setRole] = useState<Role | null>();
   const [loading, setLoading] = useState(true);
-  const supabase = createClientComponentClient<Database>()
+  const supabase = getSupabaseBrowserClient();
 
 
   // todo add local storage caching?

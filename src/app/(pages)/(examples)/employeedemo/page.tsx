@@ -2,16 +2,14 @@
 
 import {Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table"
 import {useEffect, useState} from "react";
-import {Database, Tables} from "@/lib/database.types";
+import {Employee} from "@/lib/database.types";
 import {DbResult} from "@/lib/types";
-import {createClientComponentClient} from "@supabase/auth-helpers-nextjs";
-// import {useSupabase} from "@/components/providers";
+import {getSupabaseBrowserClient} from "@/lib/supabase";
 
 export default function TableDemo() {
-    const [employee, setEmployee] = useState<Tables<'Employees'>[]>();
+    const [employee, setEmployee] = useState<Employee[]>();
     const [loading, setLoading] = useState(true);
-    // const supabase = useSupabase()
-    const supabase = createClientComponentClient<Database>()
+    const supabase = getSupabaseBrowserClient();
 
     useEffect(() => {
         fetchTable();

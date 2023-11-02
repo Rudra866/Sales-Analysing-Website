@@ -2,19 +2,18 @@
 
 // unneeded
 import {useRouter} from 'next/navigation'
-import * as React from 'react'
 import {useState} from 'react'
 import {Input} from "@/components/ui/input";
 import {Button} from "@/components/ui/button";
-import {createClientComponentClient} from "@supabase/auth-helpers-nextjs";
 import {Database} from "@/lib/database.types";
 import {Icons} from "@/components/icons";
+import {getSupabaseBrowserClient} from "@/lib/supabase";
 
 export default function Login() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const router = useRouter()
-  const supabase = createClientComponentClient<Database>()
+  const supabase = getSupabaseBrowserClient();
   const [signIn, setSignIn] = useState(false)
 
 

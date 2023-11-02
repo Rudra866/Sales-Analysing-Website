@@ -1,7 +1,6 @@
 import * as z from "zod";
 import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
-import supabase from "@/lib/supabase";
 import {DialogFooter} from "@/components/ui/dialog";
 import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
 import {DialogBody} from "next/dist/client/components/react-dev-overlay/internal/components/Dialog";
@@ -11,6 +10,7 @@ import {DialogClose} from "@radix-ui/react-dialog";
 import React from "react";
 import {Row} from "@tanstack/react-table";
 import {Employee, Role} from "@/lib/database.types";
+import {getSupabaseBrowserClient} from "@/lib/supabase";
 
 interface RoleSelectModalFormProps {
   row: Row<Employee>
@@ -19,6 +19,7 @@ interface RoleSelectModalFormProps {
 }
 export function RoleSelectModalForm({ row, roles, updateEmployee }: RoleSelectModalFormProps) {
   const employee = row.original;
+  const supabase = getSupabaseBrowserClient();
   const roleFormSchema = z.object({
     Role:
         z.string().refine(

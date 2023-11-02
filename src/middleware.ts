@@ -1,9 +1,10 @@
-import { createMiddlewareClient } from '@supabase/auth-helpers-nextjs'
 import { NextResponse } from 'next/server'
 
 import type { NextRequest } from 'next/server'
 import type { Database } from '@/lib/database.types'
 import {getEmployeeFromAuthUser, getRoleFromEmployee} from "@/lib/database";
+import {CookieOptions, createServerClient} from "@supabase/ssr";
+import {getSupabaseMiddlewareClient} from "@/lib/supabase";
 
 
 const admin_routes:string[] = [
@@ -15,9 +16,13 @@ const database_routes:string[] = [
 ]
 
 export async function middleware(req: NextRequest) {
-    const res = NextResponse.next()
-    const supabase =
-        createMiddlewareClient<Database>({ req, res })
+    let res = NextResponse.next({
+        request: {
+            headers: req.headers,
+        },
+    })
+    const supabase = getSupabaseMiddlewareClient(req, res);
+
 
 
     // Send all unauthenticated users to the login page.
@@ -43,7 +48,7 @@ export async function middleware(req: NextRequest) {
             return NextResponse.redirect(new URL("/unauthorized", req.url))
         }
 
-        if (req.nextUrl.pathname in database_routes && !role.DatabasePermission) {
+        if (!role.DatabasePermission && database_routes.includes(req.nextUrl.pathname)) {
             return NextResponse.redirect(new URL("/unauthorized", req.url))
         }
     }
