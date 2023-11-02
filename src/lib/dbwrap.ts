@@ -321,12 +321,12 @@ export async function getTradeIn(supabase: SupabaseClient, tradeName: string): P
  * @throws {@link PostgrestError} if authUser is null or doesn't exist, or database error.
  * @group Database Functions
  */
-export async function getEmployeeFromAuthUser(supabase: SupabaseClient, authUser: User): Promise<Employee | null> {
+export async function getEmployeeFromAuthUser(supabase: SupabaseClient, authUser: User): Promise<Employee> {
   const {data: employee, error} = await supabase
       .from('Employees')
       .select()
-      .eq("AuthUser", authUser.id)
-      .single();
+      .limit(1)
+      .single()
 
   if (error) throw error;
   return employee;
@@ -340,7 +340,7 @@ export async function getEmployeeFromAuthUser(supabase: SupabaseClient, authUser
  * @throws {@link PostgrestError} if employee is null or doesn't exist, or database error.
  * @group Database Functions
  */
-export async function getRoleFromEmployee(supabase: SupabaseClient, employee: Employee): Promise<Role | null> {
+export async function getRoleFromEmployee(supabase: SupabaseClient, employee: Employee): Promise<Role> {
   const {data: role, error} = await supabase
       .from('Roles')
       .select()

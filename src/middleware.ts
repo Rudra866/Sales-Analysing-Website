@@ -9,6 +9,7 @@ import {getSupabaseMiddlewareClient} from "@/lib/supabase";
  */
 export const admin_routes:string[] = [
     "/admin/employees",
+    "/api/admin/register"
 ]
 
 /**
@@ -35,7 +36,6 @@ export async function middleware(req: NextRequest) {
         },
     })
     const supabase = getSupabaseMiddlewareClient(req, res);
-
 
     // Send all unauthenticated users to the login page.
     const {data: { session}}  = await supabase.auth.getSession()
@@ -83,12 +83,11 @@ export async function middleware(req: NextRequest) {
 
 /**
  * Specifies which urls to ignore matching. Currently, this includes the routes:
- * - `/api`
  * - `/_next/static`
  * - `/_next/image`
  * - `/images`
  * @group Next.js Middleware
  */
 export const config = {
-    matcher: ['/((?!api|_next/static|_next/image|images|favicon.ico).*)'],
+    matcher: ['/((?!_next/static|_next/image|images|favicon.ico).*)'],
 }

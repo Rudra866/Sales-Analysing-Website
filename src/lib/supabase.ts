@@ -8,12 +8,6 @@ if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_A
   throw new Error("Missing environment variables: NEXT_PUBLIC_SUPABASE_URL and/or NEXT_PUBLIC_SUPABASE_ANON_KEY");
 }
 
-// if you are using this still replace!!
-const supabase = createClient<Database>(
-    process.env.NEXT_PUBLIC_SUPABASE_URL,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-)
-
 /**
  * Create a supabase client for use on a client side component.
  * @group Supabase Clients
@@ -99,10 +93,10 @@ export function getSupabaseMiddlewareClient(req: NextRequest, res: NextResponse)
  * Create a supabase client for use in a route handler.
  * @group Supabase Clients
  */
-export function getSupabaseRouteHandlerClient(cookies: ReadonlyRequestCookies) {
+export function getSupabaseRouteHandlerClient(cookies: ReadonlyRequestCookies, key?:string) {
   return createServerClient<Database>(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      key ?? process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
       {
         cookies: {
           get(name: string) {
@@ -128,6 +122,4 @@ export function getSupabaseRouteHandlerClient(cookies: ReadonlyRequestCookies) {
 export function getSupabaseServerActionClient(cookies: ReadonlyRequestCookies) {
   return getSupabaseRouteHandlerClient(cookies);
 }
-
-export default supabase
 

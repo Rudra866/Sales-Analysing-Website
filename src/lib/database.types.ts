@@ -8,7 +8,6 @@ export type Json =
     | Json[]
 
 export interface Database {
-  /** @hidden */
   public: {
     Tables: {
       Customers: {
@@ -31,42 +30,33 @@ export interface Database {
       }
       Employees: {
         Row: {
-          AuthUser: string | null
           CreatedOn: string
-          Email: string
           EmployeeNumber: string
-          id: number
+          id: string
           LastAccessed: string
           Name: string
-          Password: string
           Role: number
         }
         Insert: {
-          AuthUser?: string | null
           CreatedOn?: string
-          Email: string
           EmployeeNumber: string
-          id?: number
+          id: string
           LastAccessed?: string
           Name: string
-          Password: string
           Role: number
         }
         Update: {
-          AuthUser?: string | null
           CreatedOn?: string
-          Email?: string
           EmployeeNumber?: string
-          id?: number
+          id?: string
           LastAccessed?: string
           Name?: string
-          Password?: string
           Role?: number
         }
         Relationships: [
           {
-            foreignKeyName: "Employees_AuthUser_fkey"
-            columns: ["AuthUser"]
+            foreignKeyName: "Employees_id_fkey"
+            columns: ["id"]
             referencedRelation: "users"
             referencedColumns: ["id"]
           },
@@ -138,12 +128,6 @@ export interface Database {
         }
         Relationships: [
           {
-            foreignKeyName: "Notifications_Employee_fkey"
-            columns: ["Employee"]
-            referencedRelation: "Employees"
-            referencedColumns: ["id"]
-          },
-          {
             foreignKeyName: "Notifications_Sale_fkey"
             columns: ["Sale"]
             referencedRelation: "Sales"
@@ -190,7 +174,7 @@ export interface Database {
           CustomerID: number
           DaysInStock: number | null
           DealerCost: number | null
-          EmployeeID: number
+          EmployeeID: string
           FinancingID: number | null
           FinAndInsurance: number
           GrossProfit: number
@@ -210,7 +194,7 @@ export interface Database {
           CustomerID: number
           DaysInStock?: number | null
           DealerCost?: number | null
-          EmployeeID: number
+          EmployeeID: string
           FinancingID?: number | null
           FinAndInsurance: number
           GrossProfit: number
@@ -230,7 +214,7 @@ export interface Database {
           CustomerID?: number
           DaysInStock?: number | null
           DealerCost?: number | null
-          EmployeeID?: number
+          EmployeeID?: string
           FinancingID?: number | null
           FinAndInsurance?: number
           GrossProfit?: number
@@ -300,14 +284,7 @@ export interface Database {
           StartDate?: string
           TotalGoal?: number
         }
-        Relationships: [
-          {
-            foreignKeyName: "SalesGoals_Creator_fkey"
-            columns: ["Creator"]
-            referencedRelation: "Employees"
-            referencedColumns: ["id"]
-          }
-        ]
+        Relationships: []
       }
       Tasks: {
         Row: {
@@ -340,20 +317,7 @@ export interface Database {
           PercentageComplete?: number | null
           StartDate?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "Tasks_Assignee_fkey"
-            columns: ["Assignee"]
-            referencedRelation: "Employees"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "Tasks_Creator_fkey"
-            columns: ["Creator"]
-            referencedRelation: "Employees"
-            referencedColumns: ["id"]
-          }
-        ]
+        Relationships: []
       }
       TradeIns: {
         Row: {
