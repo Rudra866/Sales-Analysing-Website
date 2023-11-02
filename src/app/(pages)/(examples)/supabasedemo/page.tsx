@@ -13,31 +13,33 @@ export default function TableDemo() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        fetchTable();
-    }, []);
+        const fetchTable = async () => {
+            try {
+                setLoading(true)
 
-    const fetchTable = async () => {
-        try {
-            setLoading(true)
+                let { data: Sales, error } = await supabase
+                    .from('Sales')
+                    .select('*')
+                    .order('id', { ascending: true })
+                    .limit(10)
 
-            let { data: Sales, error } = await supabase
-                .from('Sales')
-                .select('*')
-                .order('id', { ascending: true })
-                .limit(10)
+                if (error) throw error
+                if (Sales) {
+                    setSales( Sales as DbResult<typeof Sales[]>)
+                    console.log(Sales)
+                }
 
-            if (error) throw error
-            if (Sales) {
-                setSales( Sales as DbResult<typeof Sales[]>)
-                console.log(Sales)
+            } catch (error) {
+                console.log(error)
+            } finally {
+                setLoading(false)
             }
-
-        } catch (error) {
-            console.log(error)
-        } finally {
-            setLoading(false)
         }
-    }
+
+        fetchTable();
+    }, [supabase]);
+
+
     return (
         <div className="flex flex-col p-4">
             <Login/>

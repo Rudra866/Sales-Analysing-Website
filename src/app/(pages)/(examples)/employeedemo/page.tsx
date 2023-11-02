@@ -11,27 +11,30 @@ export default function TableDemo() {
     const [loading, setLoading] = useState(true);
     const supabase = getSupabaseBrowserClient();
 
+
+
     useEffect(() => {
-        fetchTable();
-    }, []);
+        const fetchTable = async () => {
+            try {
+                setLoading(true)
 
-    const fetchTable = async () => {
-        try {
-            setLoading(true)
+                let { data: Employee, error } = await supabase
+                    .from('Employees')
+                    .select('*')
 
-            let { data: Employee, error } = await supabase
-                .from('Employees')
-                .select('*')
+                if (error) console.log(error)
+                if (Employee) setEmployee( Employee as DbResult<typeof Employee[]>)
 
-            if (error) console.log(error)
-            if (Employee) setEmployee( Employee as DbResult<typeof Employee[]>)
-
-        } catch (error) {
-            console.log(error)
-        } finally {
-            setLoading(false)
+            } catch (error) {
+                console.log(error)
+            } finally {
+                setLoading(false)
+            }
         }
-    }
+
+
+        fetchTable();
+    }, [supabase]);
     return (
         <Table>
             <TableCaption>{loading ? 'Loading...': 'A list of Employees.'}</TableCaption>

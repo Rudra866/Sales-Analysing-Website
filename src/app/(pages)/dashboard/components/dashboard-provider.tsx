@@ -37,7 +37,8 @@ export const DashboardProvider: React.FC<DashboardProviderProps> = ({ children }
 
 
     const [data, setData] = useState<Sale[]>();
-    const [monthlySales, setMonthlySales] = useState<{ name: string; total: number}[]>();
+    const [monthlySales, setMonthlySales] =
+        useState<{ name: string; total: number}[]>();
 
     useEffect(() => {
         const fetchData = async () => {
@@ -55,12 +56,10 @@ export const DashboardProvider: React.FC<DashboardProviderProps> = ({ children }
 
             setData(data as DbResult<typeof data[]>);
         };
-        console.log(date?.from, date?.to)
-        console.log(data)
         fetchData()
 
 
-    }, [date?.from, date?.to]);
+    }, [date?.from, date?.to, supabase]);
 
     return (
         <DashboardContext.Provider value={{ data, date, setDate }}>

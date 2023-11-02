@@ -36,8 +36,10 @@ export default function DashboardPage() {
 
         fetchTable()
 
-        setTotalRevenue(data?.map((sale) => sale?.Total).reduce((a, b) => a + b, 0) || 0)
-    }, [data, date]);
+        setTotalRevenue(data
+            ?.map((sale) => sale?.Total)
+            .reduce((a, b) => a + b, 0) ?? 0)
+    }, [data, date, supabase]);
 
     return (
         <>
