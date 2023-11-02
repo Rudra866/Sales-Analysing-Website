@@ -16,6 +16,8 @@ import type {SupabaseClient, User} from "@supabase/supabase-js";
 import {PostgrestError} from "@supabase/postgrest-js";
 export type { PostgrestError };
 
+
+
 // todo find a less stupid way to do this for TypeDoc?
 /**
  * How to use the database functions:
@@ -23,24 +25,28 @@ export type { PostgrestError };
  * @example
  * First, create a SupabaseClient:
  * ```ts
- * //Client:
  *
- * const supabase = createClientComponentClient<Database>();
+ * //Client:
+ * import { getSupabaseBrowserClient } from "@/lib/supabase"
+ * const supabase = getSupabaseBrowserClient();
  *
  * //Server:
- *
- * const supabase = createServerComponentClient<Database>();
+ * import { getSupabaseServerClient } from "@/lib/supabase"
+ * import { cookies } from 'next/headers'
+ * ...
+ * const cookieStore = cookies();
+ * const supabase = getSupabaseServerClient(cookieStore);
  *
  * //Middleware:
- *
- * const supabase = createMiddlewareClient<Database>({ req, res });
+ * import { getSupabaseMiddlewareClient } from "@/lib/supabase"
+ * const supabase = getSupabaseMiddlewareClient( req, res );
  *
  * //Route:
- *
+ * import { getSupabaseRouteHandlerClient } from "@/lib/supabase"
  * import { cookies } from 'next/headers'
- * //... inside route
+ * ...
  * const cookieStore = cookies();
- * const supabase = createRouteHandlerClient<Database>({ cookies: () => cookieStore });
+ * const supabase = getSupabaseRouteHandlerClient( cookieStore );
  * ```
  * Then, pass whichever client to any of the database functions, making sure to check for errors and ensuring that
  * you did not receive null:
@@ -83,7 +89,7 @@ class EmployeeIDNotFoundError implements Error {
  * @throws {@link PostgrestError} on database error
  * @group Database Functions
  */
-export async function getCustomer(supabase: SupabaseClient<Database>  , fullName: string): Promise<Customer | null>
+export async function getCustomer(supabase: SupabaseClient, fullName: string): Promise<Customer | null>
 {
   const {data:customer, error} = await supabase
       .from('Customers')
@@ -454,12 +460,12 @@ export async function getAllNotifications(supabase: SupabaseClient): Promise<Not
  */
 export async function getAllSales(supabase: SupabaseClient): Promise<Sale[] | null>
 {
-  const row = await supabase
+  const {data: sales, error} = await supabase
       .from('Sales')
       .select('*')
 
-  if (row.error) throw row.error;
-  return row.data;
+  if (error) throw error;
+  return sales;
 }
 
 /**
