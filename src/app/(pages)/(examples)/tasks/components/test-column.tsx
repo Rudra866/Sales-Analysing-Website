@@ -7,28 +7,28 @@ import { labels, priorities, statuses } from "../data/data"
 import { Task } from "../data/schema"
 import { DataTableColumnHeader } from "./data-table-column-header"
 import { DataTableRowActions } from "./data-table-row-actions"
-import {Avatar} from "@/components/ui/avatar";
-import {ArrowRightIcon, ArrowUpIcon} from "@radix-ui/react-icons";
+// import {Avatar} from "@/components/ui/avatar";
+// import {ArrowRightIcon, ArrowUpIcon} from "@radix-ui/react-icons";
 import Image from "next/image";
 
 
-const members = [
-    {
-        label: "bill",
-        value: "bill",
-        // icon: <Avatar size="xs" name="Bill Mahoney" />,
-    },
-    {
-        label: "Medium",
-        value: "medium",
-        icon: ArrowRightIcon,
-    },
-    {
-        label: "High",
-        value: "high",
-        icon: ArrowUpIcon,
-    },
-]
+// const members = [
+//     {
+//         label: "bill",
+//         value: "bill",
+//         // icon: <Avatar size="xs" name="Bill Mahoney" />,
+//     },
+//     {
+//         label: "Medium",
+//         value: "medium",
+//         icon: ArrowRightIcon,
+//     },
+//     {
+//         label: "High",
+//         value: "high",
+//         icon: ArrowUpIcon,
+//     },
+// ]
 
 
 

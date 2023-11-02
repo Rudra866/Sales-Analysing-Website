@@ -17,7 +17,6 @@ import {Button} from "@/components/ui/button";
 import {
     ChevronLeftIcon,
     ChevronRightIcon,
-    Cross2Icon,
     DoubleArrowLeftIcon,
     DoubleArrowRightIcon
 } from "@radix-ui/react-icons";

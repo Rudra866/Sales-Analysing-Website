@@ -2,7 +2,7 @@
 
 import {Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table"
 import {useEffect, useState} from "react";
-import {Database, Sale} from "@/lib/database.types";
+import {Sale} from "@/lib/database.types";
 import {DbResult} from "@/lib/types";
 import Login from "@/components/auth-components/login";
 import {getSupabaseBrowserClient} from "@/lib/supabase";

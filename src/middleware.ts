@@ -1,9 +1,5 @@
-import { NextResponse } from 'next/server'
-
-import type { NextRequest } from 'next/server'
-import type { Database } from '@/lib/database.types'
+import { NextRequest, NextResponse } from 'next/server'
 import {getEmployeeFromAuthUser, getRoleFromEmployee} from "@/lib/database";
-import {CookieOptions, createServerClient} from "@supabase/ssr";
 import {getSupabaseMiddlewareClient} from "@/lib/supabase";
 
 

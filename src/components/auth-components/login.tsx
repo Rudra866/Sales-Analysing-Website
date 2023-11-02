@@ -5,7 +5,6 @@ import {useRouter} from 'next/navigation'
 import {useState} from 'react'
 import {Input} from "@/components/ui/input";
 import {Button} from "@/components/ui/button";
-import {Database} from "@/lib/database.types";
 import {Icons} from "@/components/icons";
 import {getSupabaseBrowserClient} from "@/lib/supabase";
 

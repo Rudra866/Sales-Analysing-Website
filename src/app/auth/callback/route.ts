@@ -1,9 +1,5 @@
-import {CookieOptions, createServerClient} from '@supabase/ssr'
 import { cookies } from 'next/headers'
-import { NextResponse } from 'next/server'
-
-import type { NextRequest } from 'next/server'
-import type { Database } from '@/lib/database.types'
+import { NextRequest, NextResponse } from 'next/server'
 import {getSupabaseRouteHandlerClient} from "@/lib/supabase";
 
 export async function GET(request: NextRequest) {
