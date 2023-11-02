@@ -17,7 +17,6 @@ import {Button} from "@/components/ui/button";
 import {
     ChevronLeftIcon,
     ChevronRightIcon,
-    Cross2Icon,
     DoubleArrowLeftIcon,
     DoubleArrowRightIcon
 } from "@radix-ui/react-icons";
@@ -31,11 +30,10 @@ import {
     DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuShortcut,
     DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
-import {createClientComponentClient} from "@supabase/auth-helpers-nextjs";
-import {Database} from "@/lib/database.types";
 import FormModal from "@/components/FormModal";
 import {Badge} from "@/components/ui/badge";
 import {AddSalesRowDialog} from "@/app/(pages)/sales/components/AddSalesRowDialog";
+import {getSupabaseBrowserClient} from "@/lib/supabase";
 
 // todo align rows and columns
 
@@ -47,7 +45,7 @@ export default function SalesTable() {
     const [loading, setLoading] = useState(true);
     const [sales, setSales] = useState<Tables<'Sales'>[]>([]);
     const [employees, setEmployees] = useState<Employee[]>([]);
-    const supabase = createClientComponentClient<Database>();
+    const supabase = getSupabaseBrowserClient();
     const [salesModal, setSalesModal] = useState(false);
 
     useEffect(() => {

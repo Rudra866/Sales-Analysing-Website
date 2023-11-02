@@ -1,8 +1,7 @@
 "use client"
 import {useContext} from 'react'
 import {AuthContext} from "@/components/auth-provider";
-import {SignInWithPasswordCredentials, SignUpWithPasswordCredentials} from "@supabase/supabase-js";
-import {User} from "@supabase/auth-helpers-nextjs";
+import {SignInWithPasswordCredentials, SignUpWithPasswordCredentials, User} from "@supabase/supabase-js";
 import {Employee, Role} from "@/lib/database.types";
 
 export type AuthContextType = {

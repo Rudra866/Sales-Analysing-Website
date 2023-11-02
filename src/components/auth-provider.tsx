@@ -1,10 +1,11 @@
 'use client'
 import {SignInWithPasswordCredentials, SignUpWithPasswordCredentials} from "@supabase/supabase-js";
-import {createClientComponentClient, User} from "@supabase/auth-helpers-nextjs";
-import {Database, Employee, Role} from "@/lib/database.types";
+import {Employee, Role} from "@/lib/database.types";
 import {createContext, useEffect, useState} from "react";
 import {getEmployeeFromAuthUser, getRoleFromEmployee} from "@/lib/dbwrap";
 import {AuthContextType} from "@/hooks/use-auth";
+import {getSupabaseBrowserClient} from "@/lib/supabase";
+import {User} from "@supabase/supabase-js"
 
 
 
@@ -20,7 +21,7 @@ export const AuthProvider = ({children}: any) => {
   const [employee, setEmployee] = useState<Employee | null>(null);
   const [role, setRole] = useState<Role | null>(null);
   const [loading, setLoading] = useState(true);
-  const supabase = createClientComponentClient<Database>()
+  const supabase = getSupabaseBrowserClient()
 
   // todo add local storage caching?
   useEffect(() => {

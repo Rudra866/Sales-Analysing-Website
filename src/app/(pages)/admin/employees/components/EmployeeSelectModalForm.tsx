@@ -2,15 +2,15 @@ import React, {Dispatch, SetStateAction, useState} from "react";
 import {useForm} from "react-hook-form";
 import * as z from "zod";
 import {zodResolver} from "@hookform/resolvers/zod";
+import {getSupabaseBrowserClient} from "@/lib/supabase";
 import {DialogFooter} from "@/components/ui/dialog";
 import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
 import {DialogBody} from "next/dist/client/components/react-dev-overlay/internal/components/Dialog";
 import {Input} from "@/components/ui/input";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 import {Button} from "@/components/ui/button";
-import {Database, Employee, Role} from "@/lib/database.types";
+import {Employee, Role} from "@/lib/database.types";
 import {DialogClose} from "@radix-ui/react-dialog";
-import {createClientComponentClient} from "@supabase/auth-helpers-nextjs";
 import {existingEmployeeFormSchema} from "@/lib/types";
 
 /**
@@ -30,9 +30,8 @@ export type EmployeeSelectModalFormProps = {
  * @group React Components
  */
 export function EmployeeSelectModalForm({ employee, roles, setShowDialog, updateEmployee }: EmployeeSelectModalFormProps) {
-  const supabase =
-      createClientComponentClient<Database>();
   const [editState, setEditState] = useState(false);
+  const supabase = getSupabaseBrowserClient();
   const form = useForm<z.infer<typeof existingEmployeeFormSchema>>({
     resolver: zodResolver(existingEmployeeFormSchema),
     defaultValues: {
@@ -56,6 +55,7 @@ export function EmployeeSelectModalForm({ employee, roles, setShowDialog, update
         console.log("Supabase error: ", error);
         throw new Error("An error occurred while updating the employee record.");
       }
+
       updateEmployee(data);
     } catch (error) {
       console.log(error)

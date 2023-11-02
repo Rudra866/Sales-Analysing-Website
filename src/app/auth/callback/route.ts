@@ -1,9 +1,6 @@
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
 import { cookies } from 'next/headers'
-import { NextResponse } from 'next/server'
-
-import type { NextRequest } from 'next/server'
-import type { Database } from '@/lib/database.types'
+import { NextRequest, NextResponse } from 'next/server'
+import {getSupabaseRouteHandlerClient} from "@/lib/supabase";
 
 /**
  * Handles new user email confirmation/login.
@@ -17,14 +14,10 @@ export async function GET(request: NextRequest) {
     if (code) {
         const cookieStore = cookies();
         const supabase =
-            createRouteHandlerClient<Database>({ cookies: () => cookieStore });
+            getSupabaseRouteHandlerClient(cookieStore);
         await supabase.auth.exchangeCodeForSession(code);
     }
 
     // URL to redirect to after sign in process completes
     return NextResponse.redirect(requestUrl.origin);
 }
-
-/** Alias for Next.js
- *  @ignore
- */

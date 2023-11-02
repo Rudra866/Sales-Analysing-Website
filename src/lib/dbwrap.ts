@@ -10,8 +10,7 @@ import {Database,
   Task, TaskInsert, TaskUpdate,
   TradeIn, TradeInInsert, TradeInUpdate}
   from "@/lib/database.types"
-import type {User} from "@supabase/auth-helpers-nextjs";
-import type {SupabaseClient} from "@supabase/auth-helpers-nextjs";
+import type {SupabaseClient, User} from "@supabase/supabase-js";
 
 // export type for docs
 import {PostgrestError} from "@supabase/postgrest-js";

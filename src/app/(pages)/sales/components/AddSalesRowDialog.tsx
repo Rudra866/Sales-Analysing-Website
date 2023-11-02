@@ -11,7 +11,7 @@ import {Database, Employee, Role, Sale, Tables} from "@/lib/database.types";
 import {DialogClose} from "@radix-ui/react-dialog";
 import {Checkbox} from "@/components/ui/checkbox";
 import {ScrollArea, ScrollBar} from "@/components/ui/scroll-area";
-import {createClientComponentClient} from "@supabase/auth-helpers-nextjs";
+import {getSupabaseBrowserClient} from "@/lib/supabase";
 
 
 export interface EmployeeSelectModalFormProps {
@@ -102,8 +102,8 @@ const employeeFormSchema = z.object({
  * @group React Components
  */
 export function AddSalesRowDialog({ sale, setShowDialog, updateSale }: EmployeeSelectModalFormProps) {
-  const supabase = createClientComponentClient<Database>();
   const [editState, setEditState] = useState(false);
+  const supabase = getSupabaseBrowserClient();
   const form = useForm<z.infer<typeof employeeFormSchema>>({
     resolver: zodResolver(employeeFormSchema),
     defaultValues: {

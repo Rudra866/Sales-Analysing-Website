@@ -1,10 +1,6 @@
-import { createMiddlewareClient } from '@supabase/auth-helpers-nextjs'
-import { NextResponse } from 'next/server'
-
-import type { NextRequest } from 'next/server'
-import type { Database } from '@/lib/database.types'
-import {Role} from '@/lib/database.types'
+import { NextRequest, NextResponse } from 'next/server'
 import {getEmployeeFromAuthUser, getRoleFromEmployee} from "@/lib/dbwrap";
+import {getSupabaseMiddlewareClient} from "@/lib/supabase";
 
 
 /**
@@ -33,9 +29,13 @@ export const database_routes:string[] = [
  * @group Next.js Middleware
  */
 export async function middleware(req: NextRequest) {
-    const res = NextResponse.next()
-    const supabase =
-        createMiddlewareClient<Database>({ req, res })
+    let res = NextResponse.next({
+        request: {
+            headers: req.headers,
+        },
+    })
+    const supabase = getSupabaseMiddlewareClient(req, res);
+
 
     // Send all unauthenticated users to the login page.
     const {data: { session}}  = await supabase.auth.getSession()

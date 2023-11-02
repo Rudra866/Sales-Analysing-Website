@@ -7,10 +7,10 @@ import {DialogBody} from "next/dist/client/components/react-dev-overlay/internal
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 import {Button} from "@/components/ui/button";
 import {DialogClose} from "@radix-ui/react-dialog";
-import React, {ReactElement} from "react";
+import React from "react";
 import {Row} from "@tanstack/react-table";
-import {Database, Employee, Role} from "@/lib/database.types";
-import {createClientComponentClient} from "@supabase/auth-helpers-nextjs";
+import {Employee, Role} from "@/lib/database.types";
+import {getSupabaseBrowserClient} from "@/lib/supabase";
 
 export type RoleSelectModalFormProps = {
   employee: Employee;
@@ -27,7 +27,7 @@ export type RoleSelectModalFormProps = {
  */
 export function RoleSelectModalForm({ employee, roles, updateEmployee }: RoleSelectModalFormProps) {
   const supabase =
-      createClientComponentClient<Database>();
+      getSupabaseBrowserClient();
   const roleSelectFormSchema = z.object({
     Role:
         z.string().refine(

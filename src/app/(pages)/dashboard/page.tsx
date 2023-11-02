@@ -13,11 +13,8 @@ import {CreditCard, DollarSign} from "lucide-react";
 import {Icons} from "@/components/icons";
 import {cn} from "@/lib/utils";
 import {useDashboard} from "./components/dashboard-provider";
-import {Database, Tables} from "@/lib/database.types";
-import {linkGc} from "next/dist/client/app-link-gc";
-import {Span} from "next/dist/server/lib/trace/tracer";
+import {getSupabaseBrowserClient} from "@/lib/supabase";
 import {DbResult} from "@/lib/types";
-import {createClientComponentClient} from "@supabase/auth-helpers-nextjs";
 
 // TODO maybe we can split this page to some public components? We can also add db method to handle this db request.
 /**
@@ -29,8 +26,7 @@ export default function DashboardPage() {
     const {data, date, setDate} = useDashboard()
     const [totalRevenue, setTotalRevenue] = useState<number>(0);
     const [totalGoal, setTotalGoal] = useState<number>(0);
-    const supabase =
-        createClientComponentClient<Database>();
+    const supabase = getSupabaseBrowserClient();
     useEffect(() => {
 
       const fetchTable = async () => {
@@ -45,8 +41,10 @@ export default function DashboardPage() {
 
         fetchTable()
 
-        setTotalRevenue(data?.map((sale) => sale?.Total).reduce((a, b) => a + b, 0) || 0)
-    }, [data, date]);
+        setTotalRevenue(data
+            ?.map((sale) => sale?.Total)
+            .reduce((a, b) => a + b, 0) ?? 0)
+    }, [data, date, supabase]);
 
     return (
         <>
