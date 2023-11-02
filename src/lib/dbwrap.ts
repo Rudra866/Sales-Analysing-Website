@@ -369,6 +369,7 @@ export async function getAllCustomers(supabase: SupabaseClient): Promise<Custome
  * @category Employee
  */
 export async function getAllEmployees(supabase: SupabaseClient): Promise<Employee[] | null>
+// todo this function might be a bad idea because it's returning all employee passwords?
 {
   const row = await supabase
       .from('Employees')

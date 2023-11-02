@@ -36,7 +36,6 @@ export default function DashboardPage() {
           let { data: SalesGoals, error } = await supabase
               .from('SalesGoals')
               .select('TotalGoal, EndDate')
-
           setTotalGoal(SalesGoals as DbResult<typeof SalesGoals[]>);
         }
 
@@ -58,12 +57,9 @@ export default function DashboardPage() {
                 new Date(sale?.TimePeriod || new Date())
                 , 'yyyy-MMM') === month)?.map((sale) => sale?.Total)?.reduce((a, b) => a + b, 0) || 0
             console.log(monthlySales)
-
-
             setTotalRevMonth(monthlySales as DbResult<typeof monthlySales[]>);
         }
         fetchTable()
-
     }, [])
 
 
@@ -176,17 +172,19 @@ export default function DashboardPage() {
 
 
                                 {/* RECENT SALES */}
-                                <Card className="col-span-3">
-                                    <CardHeader>
-                                        <CardTitle>Recent Sales</CardTitle>
-                                        <CardDescription>
-                                            You made 265 sales this month.
-                                        </CardDescription>
-                                    </CardHeader>
-                                    <CardContent>
-                                        <RecentSales/>
-                                    </CardContent>
-                                </Card>
+                                <RecentSales/>
+                                {/*<Card className="col-span-3">*/}
+                                {/*    <CardHeader>*/}
+                                {/*        <CardTitle>Recent Sales</CardTitle>*/}
+                                {/*        <CardDescription>*/}
+                                {/*            You made 265 sales this month.*/}
+                                {/*        </CardDescription>*/}
+                                {/*    </CardHeader>*/}
+                                {/*    <CardContent>*/}
+                                {/*        <RecentSales/>*/}
+                                {/*    </CardContent>*/}
+                                {/*</Card>*/}
+
 
                                 <Card className="col-span-4">
                                     <CardHeader>

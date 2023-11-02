@@ -7,10 +7,10 @@ interface ExamplesLayoutProps {
 
 export default async function Layout({ children }: ExamplesLayoutProps) {
   return (
-    <div className="relative py-10">
+    <>
       <DashboardProvider>
           {children}
       </DashboardProvider>
-    </div>
+    </>
   )
 }

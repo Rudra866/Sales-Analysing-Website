@@ -1,12 +1,11 @@
 'use client'
 
-import React, { createContext, useState, useEffect, ReactNode } from 'react';
-import {addDays, format} from "date-fns";
+import React, {createContext, ReactNode, useEffect, useState} from 'react';
+import {subDays} from "date-fns";
 import {DateRange} from "react-day-picker";
 import {createClientComponentClient} from "@supabase/auth-helpers-nextjs";
-import {Database, Tables} from "@/lib/database.types";
-import {DbResult} from "@/lib/types";
-
+import {Database, Tables, Sale} from "@/lib/database.types";
+import {getAllEmployees, getAllSales} from "@/lib/dbwrap";
 
 
 export type DataContextProps = {
@@ -29,56 +28,83 @@ interface DashboardProviderProps {
     children: ReactNode;
 }
 
-export const DashboardProvider: React.FC<DashboardProviderProps> = ({ children }) => {
+export const DashboardProvider: React.FC<DashboardProviderProps> = ({children}) => {
     const [date, setDate] = React.useState<DateRange | undefined>({
-        from: new Date(2022, 0, 20),
-        to: addDays(new Date(2023, 0, 20), 20),
+        from: subDays(new Date(), 120),
+        to: new Date(),
     })
 
     const [data, setData] = useState<Tables<'Sales'>[]>();
     const [employees, setEmployees] = useState<Tables<'Employees'>[]>();
-    // const [monthlySales, setMonthlySales] = useState<{ name: string; total: number}[]>();
+
 
     useEffect(() => {
-        const fetchData = async () => {
+        getAllSales(supabase).then((res) => {
+            const sales = res && res.length > 0 ? res : []
+            setData(filterSalesByDate(sales, date) as Tables<'Sales'>[])
+            return res
+        }).then((res) => {
+            console.log('filtered sales: ', res)
+        }).catch((err) => {
+            console.error(err)
+        })
+
+        getAllEmployees(supabase).then((res) => {
+            setEmployees(res as Tables<'Employees'>[])
+            return res
+        }).then((res) => {
+            console.log('employees: ', res)
+        }).catch((err) => {
+            console.error(err)
+        })
+
+        function filterSalesByDate(sales: Sale[], date: DateRange | undefined) {
+            return sales.filter((sale) => {
+                const saleDate = new Date(sale.SaleTime.toString())
+                if (date?.from === undefined || date?.to === undefined) return false
+                return saleDate >= date?.from && saleDate <= date?.to
+            })
+        }
+
+        async function getEmployeeSales() {
             const { data, error } = await supabase
                 .from('Sales')
-                .select('SaleTime, Total')
-                .order('SaleTime', { ascending: true })
-                .filter('SaleTime', 'gte', format(date?.from || new Date(), 'yyyy-MM-dd'))
-                .filter('SaleTime', 'lte', format(date?.to || new Date(), 'yyyy-MM-dd'))
+                .select(`
+                    EmployeeID,
+                    Employees (
+                        Name,
+                        Email,
+                        EmployeeNumber,
+                        Role
+                    ),
+                      ActualCashValue,
+                      CustomerID,
+                      DaysInStock,
+                      DealerCost,
+                      EmployeeID,
+                      FinancingID,
+                      FinAndInsurance,
+                      GrossProfit,
+                      LotPack,
+                      NewSale,
+                      ROI,
+                      SaleTime,
+                      StockNumber,
+                      Total,
+                      TradeInID,
+                      VehicleMake
+                `)
+                .order('EmployeeID').then((res) => {
+                    console.log('res: ', res)
+                    return res
+                })
+        }
+        getEmployeeSales()
 
-            if (error) {
-                console.error(error);
-                return;
-            }
-
-            setData(data as DbResult<typeof data[]>);
-        };
-        console.log(date?.from, date?.to)
-        console.log(data)
-        fetchData()
-
-
-        const fetchEmployees = async () => {
-            const { data, error } = await supabase
-                .from('Employees')
-                .select('id, Name, Email')
-                .order('Name', { ascending: true })
-
-            if (error) {
-                console.error(error);
-                return;
-            }
-
-            setEmployees(data as DbResult<typeof data[]>);
-        };
-        fetchEmployees()
-
-    }, [date?.from, date?.to]);
+    }, [date]); // todo on every date change, it should not pull data form the db, only filter the data that is already in state.
 
     return (
-        <DashboardContext.Provider value={{ data, employees, date, setDate }}>
+        <DashboardContext.Provider value={{data, employees, date, setDate}}>
             {children}
         </DashboardContext.Provider>
     );

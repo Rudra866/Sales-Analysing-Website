@@ -26,7 +26,7 @@ export function groupByMonth(data: Tables<"Sales">[]): { [p: string]: number } {
             item.SaleTime?.toString() || ''
         );
 
-        const monthYearKey = format(date, 'yyyy-MMM');
+        const monthYearKey = format(date, 'MMM-yy');
 
         if (!groupedData[monthYearKey]) {
             groupedData[monthYearKey] = 0;

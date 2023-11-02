@@ -9,7 +9,7 @@ export default async function Layout({ children }: ExamplesLayoutProps) {
       <>
           <Navigation />
           <div className="relative py-10">
-              <section className="container flex-1 rounded-[0.5rem]">
+              <section className="container">
                   <div className="overflow-hidden rounded-[0.5rem] border bg-background shadow">
                       {children}
                   </div>

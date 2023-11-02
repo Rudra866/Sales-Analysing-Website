@@ -200,7 +200,7 @@ export interface Database {
           LotPack: number | null
           NewSale: boolean | null
           ROI: number | null
-          SaleTime: string | null
+          SaleTime: string
           StockNumber: string
           Total: number
           TradeInID: number | null
@@ -220,7 +220,7 @@ export interface Database {
           LotPack?: number | null
           NewSale?: boolean | null
           ROI?: number | null
-          SaleTime?: string | null
+          SaleTime?: string
           StockNumber: string
           Total: number
           TradeInID?: number | null
@@ -240,7 +240,7 @@ export interface Database {
           LotPack?: number | null
           NewSale?: boolean | null
           ROI?: number | null
-          SaleTime?: string | null
+          SaleTime?: string
           StockNumber?: string
           Total?: number
           TradeInID?: number | null

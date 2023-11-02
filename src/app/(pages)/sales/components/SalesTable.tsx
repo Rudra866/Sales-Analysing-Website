@@ -249,6 +249,15 @@ export function DataTable<TData, TValue>({data, columns, loading}: DataTableProp
                     <Plus className="mr-2 h-4 w-4" />
                     Add Row
                 </Button>
+                <Button
+                    size="sm"
+                    className="ml-auto hidden h-8 lg:flex"
+                    onClick={() => {
+                        // todo add row
+                    }}
+                >
+                    save
+                </Button>
             </div>
             <div className="rounded-md border">
                 <Table>

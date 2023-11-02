@@ -1,7 +1,13 @@
 import {Avatar, AvatarFallback, AvatarImage,} from "@/components/ui/avatar"
 import {useRouter} from "next/navigation";
-import {useDashboard} from "@/app/(pages)/dashboard/components/dashboard-provider";
+import {useDashboard} from "./dashboard-provider";
+import {useEffect} from "react";
+import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card";
+import * as React from "react";
 
+/**
+ * returns a Card component with a list of recent sales.
+ */
 export function RecentSales() {
     const {data, employees, date, setDate} = useDashboard()
 
@@ -30,20 +36,28 @@ export function RecentSales() {
 
         )
     }
-    // iterate over each sale
 
+    useEffect(() => {
 
-
-
+    }, [date])
 
     return (
-        <div className="space-y-2">
+        <Card className="col-span-3">
+            <CardHeader>
+                <CardTitle>Recent Sales</CardTitle>
+                <CardDescription>
+                    You made 265 sales this month.
+                </CardDescription>
+            </CardHeader>
+            <CardContent>
+                <div className="space-y-2">
+                    {SalesRow({name: 'Sofia Davis', email: 'sofia.davis@email.com', amount: 39.00, id:'123'})}
+                    {SalesRow({name: 'Sofia Davis', email: 'sofia.davis@email.com', amount: 39.00, id:'123'})}
+                    {SalesRow({name: 'Sofia Davis', email: 'sofia.davis@email.com', amount: 39.00, id:'123'})}
+                    {SalesRow({name: 'Sofia Davis', email: 'sofia.davis@email.com', amount: 39.00, id:'123'})}
+                </div>
+            </CardContent>
+        </Card>
 
-
-            {/*{SalesRow({name: 'Sofia Davis', email: 'sofia.davis@email.com', amount: 39.00, id:'123'})}*/}
-            {/*{SalesRow({name: 'Sofia Davis', email: 'sofia.davis@email.com', amount: 39.00, id:'123'})}*/}
-            {/*{SalesRow({name: 'Sofia Davis', email: 'sofia.davis@email.com', amount: 39.00, id:'123'})}*/}
-            {/*{SalesRow({name: 'Sofia Davis', email: 'sofia.davis@email.com', amount: 39.00, id:'123'})}*/}
-        </div>
     )
 }

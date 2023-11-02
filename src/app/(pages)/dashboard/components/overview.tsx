@@ -7,9 +7,6 @@ import {Tables} from "@/lib/database.types";
 import {format} from "date-fns";
 import {groupByMonth} from "@/lib/utils";
 
-
-
-
 export function Overview() {
 
     const {data, date, setDate} = useDashboard()
@@ -21,7 +18,6 @@ export function Overview() {
                 name: key,
                 total: value,
             })))
-        console.log(salesByMonth)
     }, [data, date]);
 
     const customToolTip = (props: any) => {
