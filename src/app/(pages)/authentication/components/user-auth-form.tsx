@@ -11,6 +11,7 @@ import {FormEvent, useState} from "react";
 import {useRouter} from "next/navigation";
 import useAuth from "@/hooks/use-auth";
 import {getSupabaseBrowserClient} from "@/lib/supabase";
+import {AuthError, AuthTokenResponse} from "@supabase/supabase-js";
 
 export type UserAuthFormProps = React.HTMLAttributes<HTMLDivElement>;
 
@@ -28,34 +29,28 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
   const [password, setPassword] = useState('')
   const router = useRouter()
   const [signedIn, setSignedIn] = useState(false)
-  const supabase = getSupabaseBrowserClient();
+  const [error, setError] = useState<AuthError | null>(null)
 
   const {signIn} = useAuth();
-
-  // TEMP FOR DEV
-  const loginDiscord = async () => {
-    const { data, error } = await supabase.auth.signInWithOAuth({
-      provider: 'discord',
-      options: {
-        redirectTo: "/dashboard"
-      }
-    })
-  }
 
   const handleSignIn = async (e: FormEvent) => {
     e.preventDefault()
     setIsLoading(true);
     try {
-      await signIn(
+      const {error} = await signIn(
           {
             email,
             password
           })
+        if (error) {
+          setError(error);
+          throw error;
+        }
+        setError(null);
+        setSignedIn(true)
       } catch (e) {
-        console.error(e)
         setSignedIn(false)
       } finally {
-        setSignedIn(true)
         setIsLoading(false)
         router.refresh()
       }
@@ -105,21 +100,11 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
         <div className="absolute inset-0 flex items-center">
           <span className="w-full border-t" />
         </div>
-        <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-background px-2 text-muted-foreground">
-            Or continue with
-          </span>
-        </div>
       </div>
-      <Button variant="outline" type="button" disabled={isLoading} onClick={() => loginDiscord()}>
-        {isLoading ? (
-          <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
-        ) : (
-          <Icons.gitHub className="mr-2 h-4 w-4" />
-        )}{" "}
-        Github
-      </Button>
-      {signedIn && <div>signed in</div>}
+      <div className={"flex flex-col items-center"}>
+        {error && <div className={"text-red-600"}>{error.message}</div>}
+        {signedIn && <div className={""}>success!</div>}
+      </div>
     </div>
   )
 }
