@@ -4,6 +4,7 @@ import {Database, Employee, Role,
   getEmployeeFromAuthUser, getRoleFromEmployee, User,
   getSupabaseBrowserClient, SupabaseClient} from "@/lib/database";
 import {AuthContextType} from "@/hooks/use-auth";
+import {Session} from "@supabase/gotrue-js";
 
 export const AuthContext = createContext<AuthContextType | null>(null);
 
@@ -19,25 +20,36 @@ export const AuthProvider = ({children}: any) => {
   const [loading, setLoading] = useState(true);
   const supabase: SupabaseClient<Database> = getSupabaseBrowserClient();
 
-  // todo add local storage caching?
+  // todo add local storage caching so we don't need to read database each refresh.
+  // todo clean up this code
   useEffect(() => {
     const initializeAuth = async () => {
       try {
+        const loadEmployeeData = async (session: Session) => {
+          const employee = await getEmployeeFromAuthUser(supabase, session.user)
+          if (!employee) throw Error("No employee found but user is signed in.")
+          const role = await getRoleFromEmployee(supabase, employee);
+          if (!role) throw Error("No role found but employee was found.")
+
+          setEmployee(employee);
+          setRole(role);
+
+        }
+        const {data: {session}} = await supabase.auth.getSession();
+        if (session) {
+          setLoading(true)
+          await loadEmployeeData(session)
+          setLoading(false)
+        }
+
         // subscribe to auth changes.
         const { data: listener } = supabase.auth.onAuthStateChange(
             async (event, session) => {
               setLoading(true);
               setUser(session?.user ?? null);
               if (session) {
-                const employee = await getEmployeeFromAuthUser(supabase, session.user)
-                if (!employee) throw Error("No employee found but user is signed in.")
-                const role = await getRoleFromEmployee(supabase, employee);
-                if (!role) throw Error("No role found but employee was found.")
-
-                setEmployee(employee);
-                setRole(role);
+                await loadEmployeeData(session);
               }
-
               setLoading(false);
             }
         );
