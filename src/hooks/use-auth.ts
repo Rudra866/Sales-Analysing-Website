@@ -1,12 +1,18 @@
 "use client"
 import {useContext} from 'react'
 import {AuthContext} from "@/components/auth-provider";
-import {SignInWithPasswordCredentials, SignUpWithPasswordCredentials, User} from "@supabase/supabase-js";
+import {
+  AuthResponse,
+  AuthTokenResponse,
+  SignInWithPasswordCredentials,
+  SignUpWithPasswordCredentials,
+  User
+} from "@supabase/supabase-js";
 import {Employee, Role} from "@/lib/database.types";
 
 export type AuthContextType = {
-  signUp: (data: SignUpWithPasswordCredentials) => Promise<any>;
-  signIn: (data: SignInWithPasswordCredentials) => Promise<any>;
+  signUp: (data: SignUpWithPasswordCredentials) =>  Promise<AuthResponse>;
+  signIn: (data: SignInWithPasswordCredentials) =>  Promise<AuthTokenResponse>;
   signOut: () => Promise<any>;
   user: User | null;
   employee: Employee | null;
