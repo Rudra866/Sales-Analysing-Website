@@ -14,7 +14,7 @@ import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/c
 import {Button} from "@/components/ui/button";
 import {ChevronLeftIcon, ChevronRightIcon, DoubleArrowLeftIcon, DoubleArrowRightIcon} from "@radix-ui/react-icons";
 import {Checkbox} from "@/components/ui/checkbox";
-import {Employee, Role} from "@/lib/database.types";
+import {Database, Employee, Role} from "@/lib/database.types";
 import {ArrowUpDown, MoreHorizontal} from "lucide-react";
 import {
   DropdownMenu,
@@ -27,6 +27,7 @@ import FormModal from "@/components/FormModal";
 import {EmployeeSelectModalForm} from "@/app/(pages)/admin/employees/components/EmployeeSelectModalForm";
 import {RoleSelectModalForm} from "@/app/(pages)/admin/employees/components/RoleSelectModalForm";
 import {getSupabaseBrowserClient} from "@/lib/supabase";
+import {createBrowserClient} from "@supabase/ssr";
 
 /**
  * Component to create a table to render all employees in the database.
@@ -36,8 +37,10 @@ export default function EmployeeTable() {
   const [loading, setLoading] = useState(true);
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [roles, setRoles] = useState<Role[]>([]);
-  const supabase = getSupabaseBrowserClient();
-
+  const supabase = createBrowserClient<Database>(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  );
   useEffect(() => {
     function fetchData() {
       return Promise.all([
@@ -47,6 +50,7 @@ export default function EmployeeTable() {
     }
     async function loadData() {
       try {
+        console.log(await supabase.auth.getSession())
         setLoading(true);
         const [employeeData, roleData] = await fetchData();
         const { data: employees, count: employeeCount, error: employeeError} = employeeData;

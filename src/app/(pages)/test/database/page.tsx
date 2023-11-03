@@ -1,5 +1,5 @@
 'use client'
-import { Button } from "@/registry/new-york/ui/button"
+import { Button } from "@/components/ui/button"
 import {
   getAllCustomers,
   getCustomer, getEmployee, getFinancing, getMonthSale,
@@ -32,7 +32,7 @@ export default function DatabaseTestPage() {
       }
     }).catch(error => {console.log("Error occurred in customer get.")})
     getEmployee(supabase, "44351").then(r => {
-      if (r?.id == 6)
+      if (r?.id)
       {
         console.log("Employee get successful.")
       }
@@ -111,9 +111,6 @@ export default function DatabaseTestPage() {
         console.log("Trade in get unsuccessful.")
       }
     }).catch(error => {console.log("Error occurred in trade in get.")})
-    //postToEmployees("Madeup Fakename", "44323", "hello", "Administrator", "madeup.fakename@icloud.com")
-    // postToCustomers("Ellis Mackray", "Saskatoon").then(r => {console.log(r)}).catch(error => {console.log(error)})
-    //postToSales("123", "a2", 123, 123, 123, 123, 123, 44351, "Eleonor", "Naudet", "Dealer", "GMC Canyon 4WD", 123, true, 123, 123, 123, 123)
   }
 
   return (

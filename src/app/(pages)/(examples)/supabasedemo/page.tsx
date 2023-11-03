@@ -4,7 +4,6 @@ import {Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, Table
 import {useEffect, useState} from "react";
 import {Sale} from "@/lib/database.types";
 import {DbResult} from "@/lib/types";
-import Login from "@/components/auth-components/login";
 import {getSupabaseBrowserClient} from "@/lib/supabase";
 
 export default function TableDemo() {
@@ -42,7 +41,6 @@ export default function TableDemo() {
 
     return (
         <div className="flex flex-col p-4">
-            <Login/>
             <Table>
                 <TableCaption>{loading ? 'Loading...': 'A list of Car Sales.'}</TableCaption>
                 <TableHeader>

@@ -1,11 +1,12 @@
 'use client'
 import {SignInWithPasswordCredentials, SignUpWithPasswordCredentials} from "@supabase/supabase-js";
-import {Employee, Role} from "@/lib/database.types";
+import {Database, Employee, Role} from "@/lib/database.types";
 import {createContext, useEffect, useState} from "react";
 import {getEmployeeFromAuthUser, getRoleFromEmployee} from "@/lib/dbwrap";
 import {AuthContextType} from "@/hooks/use-auth";
 import {getSupabaseBrowserClient} from "@/lib/supabase";
 import {User} from "@supabase/supabase-js"
+import {createBrowserClient} from "@supabase/ssr";
 
 
 
@@ -21,19 +22,20 @@ export const AuthProvider = ({children}: any) => {
   const [employee, setEmployee] = useState<Employee | null>(null);
   const [role, setRole] = useState<Role | null>(null);
   const [loading, setLoading] = useState(true);
-  const supabase = getSupabaseBrowserClient()
+  const supabase = createBrowserClient<Database>(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  )
 
   // todo add local storage caching?
   useEffect(() => {
     const initializeAuth = async () => {
       try {
         const loadEmployeeAndRole = async (user: User) => {
-          const employee = await getEmployeeFromAuthUser(supabase, user);
-          if (!employee) throw new Error("Failed to get employee from authenticated user."); // this happens with current misconfigured users, shouldn't be possible in the future
-
+          // const res = await fetch("/api/user")
+          // const json = await res.json();
+          const employee = await getEmployeeFromAuthUser(supabase, user)
           const role = await getRoleFromEmployee(supabase, employee);
-          if (!role) throw new Error("Failed to get the role of the current employee.");
-
           setEmployee(employee);
           setRole(role);
           setLoading(false);

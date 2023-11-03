@@ -26,18 +26,19 @@ export async function POST(request: NextRequest) {
   const data = await request.json() as ExpectedJSON;
 
   /* Otherwise if we are allowing users to self-enroll, we need some admin tasks and a default user role of no perms? */
+  console.log(data.Name)
   const result = await supabase.auth.admin.createUser({
-          email: data.email,
-          password: data.password,
-          user_metadata: {
-              // Pass Employee attributes to database so trigger can create an employee.
-              Name: data.Name,
-              EmployeeNumber: data.EmployeeNumber,
-              Role: data.Role,
-          },
-          email_confirm: true, // todo this auto confirms emails. temp?
-      }
-  );
+    email: data.email,
+    password: data.password,
+    user_metadata: {
+        // Pass Employee attributes to database so trigger can create an employee.
+        Name: data.Name,
+        EmployeeNumber: data.EmployeeNumber,
+        Role: data.Role,
+    },
+
+    email_confirm: true, // todo this auto confirms emails. temp?
+  });
 
   // make these return less debug-like info, and integrate into our UIs
   // TODO add more error types

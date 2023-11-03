@@ -325,6 +325,7 @@ export async function getEmployeeFromAuthUser(supabase: SupabaseClient, authUser
   const {data: employee, error} = await supabase
       .from('Employees')
       .select()
+      .eq("id", authUser.id)
       .limit(1)
       .single()
 

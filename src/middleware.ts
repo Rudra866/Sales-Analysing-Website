@@ -9,8 +9,12 @@ import {getSupabaseMiddlewareClient} from "@/lib/supabase";
  */
 export const admin_routes:string[] = [
     "/admin/employees",
-    "/api/admin/register"
 ]
+
+/**
+ * ALL routes under `/api/admin` are automatically protected.
+ */
+export const admin_api_route = /^\/api\/admin\/.*$/
 
 /**
  * Add routes here that should be restricted to employees with {@link Role | Role.DatabasePermission}.
@@ -60,7 +64,8 @@ export async function middleware(req: NextRequest) {
             return NextResponse.redirect(new URL("/dashboard", req.url))
         }
 
-        if (admin_routes.includes(req.nextUrl.pathname) && !role.EmployeePermission) {
+        if ((admin_routes.includes(req.nextUrl.pathname) || admin_api_route.test(req.nextUrl.pathname))
+            && !role.EmployeePermission) {
             return NextResponse.rewrite(
                 `${req.nextUrl.protocol}//${req.nextUrl.host}/401`,
                 {

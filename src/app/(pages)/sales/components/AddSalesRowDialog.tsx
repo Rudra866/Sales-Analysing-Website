@@ -23,7 +23,7 @@ export interface EmployeeSelectModalFormProps {
 // todo duplicate and should be saleFormSchema?
 const employeeFormSchema = z.object({
   EmployeeID:
-      z.number().min(1, {
+      z.string().min(1, {
         message: "EmployeeID must not be empty."})
           .max(255, {
             message: "EmployeeID must be shorter than 255 characters."}),
@@ -107,7 +107,7 @@ export function AddSalesRowDialog({ sale, setShowDialog, updateSale }: EmployeeS
   const form = useForm<z.infer<typeof employeeFormSchema>>({
     resolver: zodResolver(employeeFormSchema),
     defaultValues: {
-      EmployeeID: sale?.EmployeeID ?? 0,
+      EmployeeID: sale?.EmployeeID ?? "",
         VehicleMake: sale?.VehicleMake ?? 0,
         ActualCashValue: sale?.ActualCashValue ?? 0,
         GrossProfit: sale?.GrossProfit ?? 0,

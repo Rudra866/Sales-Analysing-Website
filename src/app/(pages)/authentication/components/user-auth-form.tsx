@@ -10,8 +10,10 @@ import { Label } from "@/registry/new-york/ui/label"
 import {FormEvent, useState} from "react";
 import {useRouter} from "next/navigation";
 import useAuth from "@/hooks/use-auth";
+import {getSupabaseBrowserClient} from "@/lib/supabase";
 
 export type UserAuthFormProps = React.HTMLAttributes<HTMLDivElement>;
+
 
 
 /**
@@ -26,8 +28,19 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
   const [password, setPassword] = useState('')
   const router = useRouter()
   const [signedIn, setSignedIn] = useState(false)
+  const supabase = getSupabaseBrowserClient();
 
   const {signIn} = useAuth();
+
+  // TEMP FOR DEV
+  const loginDiscord = async () => {
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: 'discord',
+      options: {
+        redirectTo: "/dashboard"
+      }
+    })
+  }
 
   const handleSignIn = async (e: FormEvent) => {
     e.preventDefault()
@@ -98,7 +111,7 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
           </span>
         </div>
       </div>
-      <Button variant="outline" type="button" disabled={isLoading}>
+      <Button variant="outline" type="button" disabled={isLoading} onClick={() => loginDiscord()}>
         {isLoading ? (
           <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
         ) : (

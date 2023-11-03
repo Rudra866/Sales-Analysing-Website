@@ -31,6 +31,7 @@ export interface Database {
       Employees: {
         Row: {
           CreatedOn: string
+          Email: string | null
           EmployeeNumber: string
           id: string
           LastAccessed: string
@@ -39,6 +40,7 @@ export interface Database {
         }
         Insert: {
           CreatedOn?: string
+          Email?: string | null
           EmployeeNumber: string
           id: string
           LastAccessed?: string
@@ -47,6 +49,7 @@ export interface Database {
         }
         Update: {
           CreatedOn?: string
+          Email?: string | null
           EmployeeNumber?: string
           id?: string
           LastAccessed?: string
@@ -57,12 +60,14 @@ export interface Database {
           {
             foreignKeyName: "Employees_id_fkey"
             columns: ["id"]
+            isOneToOne: true
             referencedRelation: "users"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "Employees_Role_fkey"
             columns: ["Role"]
+            isOneToOne: false
             referencedRelation: "Roles"
             referencedColumns: ["id"]
           }
@@ -130,6 +135,7 @@ export interface Database {
           {
             foreignKeyName: "Notifications_Sale_fkey"
             columns: ["Sale"]
+            isOneToOne: false
             referencedRelation: "Sales"
             referencedColumns: ["id"]
           }
@@ -233,24 +239,28 @@ export interface Database {
           {
             foreignKeyName: "Sales_CustomerID_fkey"
             columns: ["CustomerID"]
+            isOneToOne: false
             referencedRelation: "Customers"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "Sales_EmployeeID_fkey"
             columns: ["EmployeeID"]
+            isOneToOne: false
             referencedRelation: "Employees"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "Sales_FinancingID_fkey"
             columns: ["FinancingID"]
+            isOneToOne: false
             referencedRelation: "Financing"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "Sales_TradeInID_fkey"
             columns: ["TradeInID"]
+            isOneToOne: false
             referencedRelation: "TradeIns"
             referencedColumns: ["id"]
           }

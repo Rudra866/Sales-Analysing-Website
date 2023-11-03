@@ -37,17 +37,16 @@ export function EmployeeSelectModalForm({ employee, roles, setShowDialog, update
     defaultValues: {
       EmployeeNumber: employee?.EmployeeNumber ?? "",
       Name: employee?.Name ?? "",
-      Email: employee?.Email ?? "",
       Role: employee?.Role.toString() ?? "",
     },
   })
 
   async function onSubmit(values: z.infer<typeof existingEmployeeFormSchema>) {
     try {
-      const { EmployeeNumber, Name, Email, Role } = values;
+      const { EmployeeNumber, Name, Role } = values;
       const { data, error} = await supabase
           .from('Employees')
-          .update({ EmployeeNumber, Name, Email, Role: parseInt(Role)})
+          .update({ EmployeeNumber, Name, Role: parseInt(Role)})
           .eq("id", employee.id)
           .select().single()
 
@@ -104,7 +103,7 @@ export function EmployeeSelectModalForm({ employee, roles, setShowDialog, update
           />
           <FormField
               control={form.control}
-              name="Email"
+              name="email"
               render={({ field }) => (
                   <FormItem>
                     <FormLabel>Email</FormLabel>

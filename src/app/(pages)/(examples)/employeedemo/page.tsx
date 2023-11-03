@@ -43,9 +43,7 @@ export default function TableDemo() {
                     <TableHead className="w-[100px]">Id</TableHead>
                     <TableHead>Name</TableHead>
                     <TableHead>EmployeeNumber</TableHead>
-                    <TableHead>Password</TableHead>
                     <TableHead>Role</TableHead>
-                    <TableHead className="text-right">Email</TableHead>
                 </TableRow>
             </TableHeader>
             <TableBody>
@@ -54,7 +52,6 @@ export default function TableDemo() {
                         <TableCell className="font-medium">{employee.id}</TableCell>
                         <TableCell>{employee.Name}</TableCell>
                         <TableCell>{employee.EmployeeNumber}</TableCell>
-                        <TableCell>{employee.Password}</TableCell>
                         <TableCell>{employee.Role}</TableCell>
                         <TableCell className="text-right">{employee.Email}</TableCell>
                     </TableRow>
