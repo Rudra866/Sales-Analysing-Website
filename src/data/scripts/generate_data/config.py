@@ -1,3 +1,4 @@
+import os
 
 # File targets
 OUTPUT_DIR = "output"
@@ -6,6 +7,7 @@ OUTFILE_SQL = "output.sql"
 OUTFILE_JSON = "output.json"
 MYSQL_SCHEMA_FILE = "mysql_schema.sql"
 POSTGRES_SCHEMA_FILE = "postgres_schema.sql"
+SUPABASE_ENV = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../../.env"))
 JSON_INDENT = 2
 CSV_DELIMITER = ","
 

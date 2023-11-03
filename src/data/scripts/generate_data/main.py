@@ -1,10 +1,11 @@
+#!/usr/bin/python3
 # CMPT 370 - Group 22
 # Written by Ryan Schaffer
 # Test data generator
-import os
 
 from load_datafile import *
 from sql_defs import *
+from database import create_sale_in_database, create_table_in_database, create_employees_in_database
 from tables import *
 
 
@@ -41,6 +42,9 @@ def main():
     # Create all employees
     Table.EMPLOYEE.value[1] = [Employee(roles[index].id) for index in range(employee_count)]
 
+    # if we are generating db, now is a good time to update employees with read UUIDs
+    if (GENERATE_DB):
+        create_employees_in_database(Table.EMPLOYEE.value[1])
     # Create all customers
     Table.CUSTOMER.value[1] = [Customer() for _ in range(int(float(sales_count) * (1.0 - RETURNING_CUSTOMER_RATE)))]
 
@@ -81,11 +85,17 @@ def main():
     for i, val in enumerate(Table.SALES.value[1]):
         val.id = DATABASE_START_ID + i
 
-    # Generate notifications
-    Table.NOTIFICATIONS.value[1] = generate_notifications(Table.EMPLOYEE.value[1], Table.SALES.value[1])
+    if not GENERATE_DB:
+        # Generate notifications
+        Table.NOTIFICATIONS.value[1] = generate_notifications(Table.EMPLOYEE.value[1], Table.SALES.value[1])
 
     # Create monthly sales goals, based off actual monthly sales. Some months pass the goal, some do not.
     Table.SALES_GOALS.value[1] = generate_sales_goals(Table.EMPLOYEE.value[1], Table.MONTHLY_SALES.value[1])
+
+    ## temp -- add cli option later
+    create_table_in_database(Table) # create all tables on database.
+
+    ## temp
 
     # Write to our output files
     try:
@@ -117,6 +127,7 @@ def main():
 
 
 if __name__ == "__main__":
+    GENERATE_DB = True  # TEMP
     GENERATE_SQL = None
     GENERATE_JSON = None
     GENERATE_CSV = None
