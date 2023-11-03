@@ -1,110 +1,126 @@
-"use client"
-
-import * as React from "react"
-
 import { cn } from "@/lib/utils"
 import { Icons } from "@/components/icons"
 import { Button } from "@/registry/new-york/ui/button"
 import { Input } from "@/registry/new-york/ui/input"
 import { Label } from "@/registry/new-york/ui/label"
-import {FormEvent, useState} from "react";
 import {useRouter} from "next/navigation";
 import useAuth from "@/hooks/use-auth";
-import {getSupabaseBrowserClient} from "@/lib/supabase";
-import {AuthError, AuthTokenResponse} from "@supabase/supabase-js";
+
+import React, { useState, ChangeEvent, FormEvent } from 'react';
+import { z } from 'zod';
 
 export type UserAuthFormProps = React.HTMLAttributes<HTMLDivElement>;
 
-
-
-/**
- * Lays out a basic user login form.
- * @param className
- * @param props
- * @group React Components
- */
 export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
-  const [isLoading, setIsLoading] = useState<boolean>(false)
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const router = useRouter()
-  const [signedIn, setSignedIn] = useState(false)
-  const [error, setError] = useState<AuthError | null>(null)
-
+  const [isLoading, setIsLoading] = useState(false);
+  const [signedIn, setSignedIn] = useState(false);
+  const [error, setError] = useState(null);
   const {signIn} = useAuth();
+  const router = useRouter();
+  const LoginSchema = z.object({
+    email: z.string().email('Invalid email format'),
+    // todo admin setting up password restraints or sane defaults?
+    password: z.string().min(1, 'Password must not be empty!'),
+  });
 
-  const handleSignIn = async (e: FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true);
+  const [formData, setFormData] =
+      useState({email: '', password: '',});
+  const [validationErrors, setValidationErrors] =
+      useState({ email: '', password: '' });
+
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    // Update the form data and clear validation errors for the specific field.
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
+    setValidationErrors({
+      ...validationErrors,
+      [name]: '',
+    });
+  };
+
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+
     try {
+      const validatedData = LoginSchema.parse(formData);
+
+      setIsLoading(true);
+      setError(null);
       const {error} = await signIn(
-          {
-            email,
-            password
-          })
-        if (error) {
-          setError(error);
-          throw error;
-        }
-        setError(null);
-        setSignedIn(true)
-      } catch (e) {
-        setSignedIn(false)
-      } finally {
-        setIsLoading(false)
-        router.refresh()
+          {email:validatedData.email, password:validatedData.password}
+      )
+
+      setSignedIn(true);
+      setIsLoading(false);
+      router.refresh()
+    } catch (error: any) {
+      if (error instanceof z.ZodError) {
+        error.issues.forEach((issue) => {
+          setValidationErrors((prevErrors) => ({
+            ...prevErrors,
+            [issue.path[0]]: issue.message,
+          }));
+        });
+      } else {
+        setError(error.message);
       }
-  }
+      setIsLoading(false);
+    }
+  };
 
   return (
-    <div className={cn("grid gap-6", className)} {...props}>
-      <form onSubmit={handleSignIn}>
-        <div className="grid gap-2">
-          <div className="grid gap-1">
-            <Label className="sr-only" htmlFor="email">
-              Email
-            </Label>
-            <Input
-              id="email"
-              placeholder="name@example.com"
-              type="email"
-              autoCapitalize="none"
-              autoComplete="email"
-              autoCorrect="off"
-              disabled={isLoading}
-              value={email}
-              onChange={(event) => setEmail(event.target.value)}
-            />
-            <Input
-              id="password"
-              placeholder="password"
-              type="password"
-              autoCapitalize="none"
-              autoComplete="password"
-              autoCorrect="off"
-              disabled={isLoading}
-              value={password}
-              onChange={(event) => setPassword(event.target.value)}
-            />
-
+      <div className={cn("grid gap-6", className)} {...props}>
+        <form onSubmit={handleSubmit}>
+          <div className="grid gap-2">
+            <div className="grid gap-1">
+              <Label className="sr-only" htmlFor="email">
+                Email
+              </Label>
+              <Input
+                  id="email"
+                  name="email"
+                  placeholder="name@example.com"
+                  type="email"
+                  autoCapitalize="none"
+                  autoComplete="email"
+                  autoCorrect="off"
+                  disabled={isLoading}
+                  value={formData.email}
+                  onChange={handleChange}
+              />
+              {validationErrors.email && <div className="text-red-600">{validationErrors.email}</div>}
+              <Label className="sr-only" htmlFor="password">
+                Password
+              </Label>
+              <Input
+                  id="password"
+                  name="password"
+                  placeholder="password"
+                  type="password"
+                  autoCapitalize="none"
+                  autoComplete="password"
+                  autoCorrect="off"
+                  disabled={isLoading}
+                  value={formData.password}
+                  onChange={handleChange}
+              />
+              {validationErrors.password && <div className="text-red-600">{validationErrors.password}</div>}
+            </div>
+            <Button disabled={isLoading}>
+              {isLoading && (
+                  <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+              )}
+              Sign In
+            </Button>
           </div>
-          <Button disabled={isLoading}>
-            {isLoading && (
-              <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
-            )}
-            Sign In
-          </Button>
-        </div>
-      </form>
-      <div className="relative">
-        <div className="absolute inset-0 flex items-center">
-          <span className="w-full border-t" />
+        </form>
+        <div className={"flex flex-col items-center"}>
+          {error && <div className={"text-red-600"}>{error}</div>}
+          {signedIn && <div className={""}>success!</div>}
         </div>
       </div>
-      <div className={"flex flex-col items-center"}>
-        {error && <div className={"text-red-600"}>{error.message}</div>}
-        {signedIn && <div className={""}>success!</div>}
-      </div>
-    </div>
-  )
+  );
 }
