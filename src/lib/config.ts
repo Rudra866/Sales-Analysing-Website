@@ -31,5 +31,10 @@ export const docsConfig: DocsConfig = {
             title: "Sales",
             href: "/sales",
         },
+        // temp for dev
+        {
+            title: "Test",
+            href: "/test/database",
+        },
     ],
 }
