@@ -21,7 +21,7 @@ import {
     DoubleArrowRightIcon
 } from "@radix-ui/react-icons";
 import {Checkbox} from "@/components/ui/checkbox";
-import {Employee, Tables, Sale} from "@/lib/database.types";
+import {Employee, Tables, Sale, getSupabaseBrowserClient} from "@/lib/database";
 import {ArrowUpDown, MoreHorizontal, Plus} from "lucide-react";
 import {
     DropdownMenu,
@@ -33,8 +33,6 @@ import {
 import FormModal from "@/components/FormModal";
 import {Badge} from "@/components/ui/badge";
 import {AddSalesRowDialog} from "@/app/(pages)/sales/components/AddSalesRowDialog";
-import {getSupabaseBrowserClient} from "@/lib/supabase";
-
 // todo align rows and columns
 
 /**

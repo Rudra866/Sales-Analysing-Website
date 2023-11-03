@@ -1,13 +1,9 @@
 'use client'
-
 import React, { createContext, useState, useEffect, ReactNode } from 'react';
 import {addDays, format} from "date-fns";
 import {DateRange} from "react-day-picker";
-import {Sale} from "@/lib/database.types";
+import {Sale, getSupabaseBrowserClient} from "@/lib/database";
 import {DbResult} from "@/lib/types";
-import {getSupabaseBrowserClient} from "@/lib/supabase";
-
-
 
 export type DataContextProps = {
     data?: Sale[];

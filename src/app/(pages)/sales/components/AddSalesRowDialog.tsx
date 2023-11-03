@@ -7,12 +7,10 @@ import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/
 import {DialogBody} from "next/dist/client/components/react-dev-overlay/internal/components/Dialog";
 import {Input} from "@/components/ui/input";
 import {Button} from "@/components/ui/button";
-import {Database, Employee, Role, Sale, Tables} from "@/lib/database.types";
+import {Database, Employee, Role, Sale, Tables, getSupabaseBrowserClient} from "@/lib/database";
 import {DialogClose} from "@radix-ui/react-dialog";
 import {Checkbox} from "@/components/ui/checkbox";
 import {ScrollArea, ScrollBar} from "@/components/ui/scroll-area";
-import {getSupabaseBrowserClient} from "@/lib/supabase";
-
 
 export interface EmployeeSelectModalFormProps {
   sale: Sale

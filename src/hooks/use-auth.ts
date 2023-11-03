@@ -8,7 +8,7 @@ import {
   SignUpWithPasswordCredentials,
   User
 } from "@supabase/supabase-js";
-import {Employee, Role} from "@/lib/database.types";
+import {Employee, Role} from "@/lib/database";
 
 export type AuthContextType = {
   signUp: (data: SignUpWithPasswordCredentials) =>  Promise<AuthResponse>;

@@ -8,9 +8,7 @@ import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/c
 import {Button} from "@/components/ui/button";
 import {DialogClose} from "@radix-ui/react-dialog";
 import React from "react";
-import {Row} from "@tanstack/react-table";
-import {Employee, Role} from "@/lib/database.types";
-import {getSupabaseBrowserClient} from "@/lib/supabase";
+import {Employee, Role, getSupabaseBrowserClient} from "@/lib/database";
 
 export type RoleSelectModalFormProps = {
   employee: Employee;

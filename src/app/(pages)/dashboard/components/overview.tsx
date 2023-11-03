@@ -1,13 +1,12 @@
 "use client"
-
 import {Bar, BarChart, ResponsiveContainer, Tooltip, XAxis, YAxis} from "recharts"
 import {useDashboard} from "@/app/(pages)/dashboard/components/dashboard-provider";
 import {useEffect, useState} from "react";
-import {Tables} from "@/lib/database.types";
+import {Sale} from "@/lib/database";
 import {format} from "date-fns";
 
 /** @ignore these for now */
-function groupByMonth(data: Tables<"Sales">[]): { [p: string]: number } {
+function groupByMonth(data: Sale[]): { [p: string]: number } {
     const groupedData: { [key: string]: number } = {};
 
     data.forEach(item => {

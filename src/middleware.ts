@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import {getEmployeeFromAuthUser, getRoleFromEmployee} from "@/lib/dbwrap";
+import {getEmployeeFromAuthUser, getRoleFromEmployee} from "@/lib/database";
 import {getSupabaseMiddlewareClient} from "@/lib/supabase";
 
 

@@ -7,14 +7,14 @@ import {
   SortingState,
   useReactTable
 } from "@tanstack/react-table";
-import React, {Dispatch, SetStateAction, useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import {Input} from "@/components/ui/input";
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 import {Button} from "@/components/ui/button";
 import {ChevronLeftIcon, ChevronRightIcon, DoubleArrowLeftIcon, DoubleArrowRightIcon} from "@radix-ui/react-icons";
 import {Checkbox} from "@/components/ui/checkbox";
-import {Database, Employee, Role} from "@/lib/database.types";
+import {Employee, Role, getSupabaseBrowserClient, Database, SupabaseClient} from "@/lib/database";
 import {ArrowUpDown, MoreHorizontal} from "lucide-react";
 import {
   DropdownMenu,
@@ -26,8 +26,6 @@ import {
 import FormModal from "@/components/FormModal";
 import {EmployeeSelectModalForm} from "@/app/(pages)/admin/employees/components/EmployeeSelectModalForm";
 import {RoleSelectModalForm} from "@/app/(pages)/admin/employees/components/RoleSelectModalForm";
-import {getSupabaseBrowserClient} from "@/lib/supabase";
-import {createBrowserClient} from "@supabase/ssr";
 
 /**
  * Component to create a table to render all employees in the database.
@@ -37,10 +35,7 @@ export default function EmployeeTable() {
   const [loading, setLoading] = useState(true);
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [roles, setRoles] = useState<Role[]>([]);
-  const supabase = createBrowserClient<Database>(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  );
+  const supabase: SupabaseClient<Database> = getSupabaseBrowserClient();
   useEffect(() => {
     function fetchData() {
       return Promise.all([

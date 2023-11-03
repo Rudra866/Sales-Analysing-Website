@@ -1,14 +1,9 @@
 'use client'
-import {SignInWithPasswordCredentials, SignUpWithPasswordCredentials} from "@supabase/supabase-js";
-import {Database, Employee, Role} from "@/lib/database.types";
 import {createContext, useEffect, useState} from "react";
-import {getEmployeeFromAuthUser, getRoleFromEmployee} from "@/lib/dbwrap";
+import {Database, Employee, Role,
+  getEmployeeFromAuthUser, getRoleFromEmployee, User,
+  getSupabaseBrowserClient, SupabaseClient} from "@/lib/database";
 import {AuthContextType} from "@/hooks/use-auth";
-import {getSupabaseBrowserClient} from "@/lib/supabase";
-import {User} from "@supabase/supabase-js"
-import {createBrowserClient} from "@supabase/ssr";
-
-
 
 export const AuthContext = createContext<AuthContextType | null>(null);
 
@@ -22,7 +17,7 @@ export const AuthProvider = ({children}: any) => {
   const [employee, setEmployee] = useState<Employee | null>(null);
   const [role, setRole] = useState<Role | null>(null);
   const [loading, setLoading] = useState(true);
-  const supabase = getSupabaseBrowserClient();
+  const supabase: SupabaseClient<Database> = getSupabaseBrowserClient();
 
   // todo add local storage caching?
   useEffect(() => {
@@ -31,23 +26,24 @@ export const AuthProvider = ({children}: any) => {
         // subscribe to auth changes.
         const { data: listener } = supabase.auth.onAuthStateChange(
             async (event, session) => {
+              setLoading(true);
               setUser(session?.user ?? null);
               if (session) {
                 const employee = await getEmployeeFromAuthUser(supabase, session.user)
+                if (!employee) throw Error("No employee found but user is signed in.")
                 const role = await getRoleFromEmployee(supabase, employee);
+                if (!role) throw Error("No role found but employee was found.")
+
                 setEmployee(employee);
                 setRole(role);
-                setLoading(false);
               }
+
               setLoading(false);
             }
         );
 
         // cleanup the useEffect hook
-        return () => {
-          listener?.subscription.unsubscribe();
-        };
-
+        return () => listener?.subscription.unsubscribe();
       }
 
       catch (error) {

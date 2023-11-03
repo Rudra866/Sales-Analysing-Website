@@ -1,22 +1,13 @@
 'use client'
 import { Button } from "@/components/ui/button"
 import {
-  getAllCustomers,
-  getCustomer, getEmployee, getFinancing, getMonthSale,
+  getCustomer, getEmployee, getFinancing,
   getNotification, getRole, getSale, getSalesGoal, getTask, getTradeIn,
-  postToCustomers,
-  postToEmployees,
-  postToSales,
-  postToSalesGoals
-} from "@/lib/dbwrap"
-import {Database} from "@/lib/database.types";
-import {getSupabaseBrowserClient} from "@/lib/supabase";
-declare const global: {
-  [key: string]: any;
-};
-
+  getSupabaseBrowserClient
+} from "@/lib/database"
+import {} from "@/lib/supabase";
 /**
- * Temporary page to be able to quickly test functions of `dbwrap.ts`
+ * Temporary page to be able to quickly test functions of `database.ts`
  * @group Next.js Pages
  */
 export default function DatabaseTestPage() {

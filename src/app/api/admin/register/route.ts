@@ -21,8 +21,8 @@ export async function POST(request: NextRequest) {
   }
 
   const cookieStore = cookies()
-  const supabase: SupabaseClient<Database> = getSupabaseRouteHandlerClient(cookieStore, process.env.SUPABASE_SERVICE_KEY!);
-  const requestUrl = new URL(request.url)
+  const supabase: SupabaseClient<Database> =
+    getSupabaseRouteHandlerClient(cookieStore, process.env.SUPABASE_SERVICE_KEY!);
   const data = await request.json() as ExpectedJSON;
 
   /* Otherwise if we are allowing users to self-enroll, we need some admin tasks and a default user role of no perms? */
@@ -31,17 +31,17 @@ export async function POST(request: NextRequest) {
     email: data.email,
     password: data.password,
     user_metadata: {
-        // Pass Employee attributes to database so trigger can create an employee.
-        Name: data.Name,
-        EmployeeNumber: data.EmployeeNumber,
-        Role: data.Role,
+      // Pass Employee attributes to database so trigger can create an employee.
+      Name: data.Name,
+      EmployeeNumber: data.EmployeeNumber,
+      Role: data.Role,
     },
 
     email_confirm: true, // todo this auto confirms emails. temp?
   });
 
   // make these return less debug-like info, and integrate into our UIs
-  // TODO add more error types
+  // TODO add more error types && handle on front end
   if (result.error) {
       if (result.error.message === "User already registered") return NextResponse
           .json({error: 'User with that email address is already registered.'}, {status: 500})
@@ -53,5 +53,5 @@ export async function POST(request: NextRequest) {
       }
   }
 
-  return NextResponse.json(result.data.user)
+  return NextResponse.json({data: result.data.user})
 }

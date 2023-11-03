@@ -1,37 +1,25 @@
 'use client'
-
 import {Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table"
 import {useEffect, useState} from "react";
-import {Employee} from "@/lib/database.types";
-import {DbResult} from "@/lib/types";
-import {getSupabaseBrowserClient} from "@/lib/supabase";
+import {Database, Employee, getAllEmployees, getSupabaseBrowserClient, SupabaseClient} from "@/lib/database";
 
 export default function TableDemo() {
     const [employee, setEmployee] = useState<Employee[]>();
     const [loading, setLoading] = useState(true);
-    const supabase = getSupabaseBrowserClient();
-
-
+    const supabase: SupabaseClient<Database> = getSupabaseBrowserClient();
 
     useEffect(() => {
         const fetchTable = async () => {
             try {
                 setLoading(true)
-
-                let { data: Employee, error } = await supabase
-                    .from('Employees')
-                    .select('*')
-
-                if (error) console.log(error)
-                if (Employee) setEmployee( Employee as DbResult<typeof Employee[]>)
-
+                const Employees = await getAllEmployees(supabase);
+                if (Employees) setEmployee(Employees)
             } catch (error) {
-                console.log(error)
+                console.error(error)
             } finally {
                 setLoading(false)
             }
         }
-
 
         fetchTable();
     }, [supabase]);

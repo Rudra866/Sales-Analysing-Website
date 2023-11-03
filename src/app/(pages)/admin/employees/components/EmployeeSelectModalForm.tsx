@@ -9,7 +9,7 @@ import {DialogBody} from "next/dist/client/components/react-dev-overlay/internal
 import {Input} from "@/components/ui/input";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 import {Button} from "@/components/ui/button";
-import {Employee, Role} from "@/lib/database.types";
+import {Employee, getEmployeeById, Role} from "@/lib/database";
 import {DialogClose} from "@radix-ui/react-dialog";
 import {existingEmployeeFormSchema} from "@/lib/types";
 
@@ -44,19 +44,15 @@ export function EmployeeSelectModalForm({ employee, roles, setShowDialog, update
   async function onSubmit(values: z.infer<typeof existingEmployeeFormSchema>) {
     try {
       const { EmployeeNumber, Name, Role } = values;
-      const { data, error} = await supabase
-          .from('Employees')
-          .update({ EmployeeNumber, Name, Role: parseInt(Role)})
-          .eq("id", employee.id)
-          .select().single()
+      const employeeResult = await getEmployeeById(supabase, employee.id);
 
-      if (error) {
-        console.log("Supabase error: ", error);
-        throw new Error("An error occurred while updating the employee record.");
+      if (!employeeResult) {
+        throw new Error("No employee was found by that id.");
       }
 
-      updateEmployee(data);
+      updateEmployee(employeeResult);
     } catch (error) {
+      console.log("An error occurred while updating the employee record.", error);
       console.log(error)
     } finally {
       setShowDialog(false);
