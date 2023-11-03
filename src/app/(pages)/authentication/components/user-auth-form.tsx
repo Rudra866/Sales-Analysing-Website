@@ -52,7 +52,7 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
       const {error} = await signIn(
           {email:validatedData.email, password:validatedData.password}
       )
-
+      if (error) throw error;
       setSignedIn(true);
       setIsLoading(false);
       router.refresh()
