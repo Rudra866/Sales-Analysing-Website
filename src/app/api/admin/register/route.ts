@@ -53,7 +53,5 @@ export async function POST(request: NextRequest) {
       }
   }
 
-  return NextResponse.redirect(requestUrl.origin, {
-      status: 301,
-  })
+  return NextResponse.json(result.data.user)
 }
