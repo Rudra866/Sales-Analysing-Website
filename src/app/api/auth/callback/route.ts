@@ -2,6 +2,7 @@ import { cookies } from 'next/headers'
 import { NextRequest, NextResponse } from 'next/server'
 import {getSupabaseRouteHandlerClient} from "@/lib/supabase";
 
+/* currently unused -- need to look into auth.admin email option? */
 /**
  * Handles new user email confirmation/login.
  * @param request

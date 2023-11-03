@@ -1,9 +1,10 @@
 create function public.handle_new_user()
 returns trigger as $$
 begin
-  INSERT into public."Employees" (id, "Name", "EmployeeNumber", "Role")
+  INSERT into public."Employees" (id, "Email", "Name", "EmployeeNumber", "Role")
   values (
     new.id,
+    new.email,
     new.raw_user_meta_data->>'Name',
     new.raw_user_meta_data->>'EmployeeNumber',
     (new.raw_user_meta_data->>'Role')::integer
