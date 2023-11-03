@@ -22,38 +22,22 @@ export const AuthProvider = ({children}: any) => {
   const [employee, setEmployee] = useState<Employee | null>(null);
   const [role, setRole] = useState<Role | null>(null);
   const [loading, setLoading] = useState(true);
-  const supabase = createBrowserClient<Database>(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  )
+  const supabase = getSupabaseBrowserClient();
 
   // todo add local storage caching?
   useEffect(() => {
     const initializeAuth = async () => {
       try {
-        const loadEmployeeAndRole = async (user: User) => {
-          // const res = await fetch("/api/user")
-          // const json = await res.json();
-          const employee = await getEmployeeFromAuthUser(supabase, user)
-          const role = await getRoleFromEmployee(supabase, employee);
-          setEmployee(employee);
-          setRole(role);
-          setLoading(false);
-        }
-
-        setLoading(true);
-        // get session data if there is an active session
-        const {data: {session}} = await supabase.auth.getSession();
-        setUser(session?.user ?? null);
-
-        if (session?.user) await loadEmployeeAndRole(session.user);
-
         // subscribe to auth changes.
         const { data: listener } = supabase.auth.onAuthStateChange(
             async (event, session) => {
               setUser(session?.user ?? null);
               if (session) {
-                await loadEmployeeAndRole(session.user);
+                const employee = await getEmployeeFromAuthUser(supabase, session.user)
+                const role = await getRoleFromEmployee(supabase, employee);
+                setEmployee(employee);
+                setRole(role);
+                setLoading(false);
               }
               setLoading(false);
             }
