@@ -1,5 +1,5 @@
 /*** TEMP -- MERGE WITH ALEX DB LIB ***/
-import {SupabaseClient, User} from "@supabase/auth-helpers-nextjs";
+import {SupabaseClient, User} from "@supabase/supabase-js";
 import {Database, Employee} from "@/lib/database.types";
 
 
