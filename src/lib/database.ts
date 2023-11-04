@@ -8,6 +8,7 @@ import {getSupabaseRouteHandlerClient,
 
 // export type for docs
 import {PostgrestError} from "@supabase/postgrest-js";
+import {format} from "date-fns";
 export type { PostgrestError };
 
 // export types from other files, so we can not have to import directly
@@ -548,6 +549,27 @@ export async function postToSalesGoals(supabase: SupabaseClient, newSaleGoal: Sa
   if (error) throw error;
 
   return saleGoal;
+}
+
+/**
+ * Get the SaleTime and Total of each Sale in the time range specified. Can also sort the output ascending/descending.
+ * @param supabase
+ * @param startDate
+ * @param endDate
+ * @param sort
+ * @throws {@link PostgrestError} on database error.
+ * @group Database Functions
+ */
+export async function getSalesInDateRange(supabase: SupabaseClient, startDate?: Date, endDate?: Date, sort?: "asc" | "dsc") {
+  const { data: SaleTime, error } = await supabase
+      .from('Sales')
+      .select('SaleTime, Total')
+      .order('SaleTime', { ascending: sort != "dsc" })
+      .filter('SaleTime', 'gte', format(startDate || new Date(), 'yyyy-MM-dd'))
+      .filter('SaleTime', 'lte', format(endDate || new Date(), 'yyyy-MM-dd'))
+
+  if (error) throw error;
+  return SaleTime;
 }
 
 // leaving this one for now, but we should make our forms use interactive components, and this will let us get the

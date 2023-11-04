@@ -96,8 +96,6 @@ table Employees {
   Role int [not null, ref: > Roles.id]
 }
 
-Ref: Employees.id > auth.users [delete: cascade]
-
 table Customers {
   id int [pk, not null, increment]
   Name varchar(255) [not null]
