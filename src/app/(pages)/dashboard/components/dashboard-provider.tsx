@@ -2,7 +2,7 @@
 import React, { createContext, useState, useEffect, ReactNode } from 'react';
 import {addDays, format} from "date-fns";
 import {DateRange} from "react-day-picker";
-import {Sale, getSupabaseBrowserClient} from "@/lib/database";
+import {Sale, getSupabaseBrowserClient, getSalesInDateRange} from "@/lib/database";
 import {DbResult} from "@/lib/types";
 
 export type DataContextProps = {
@@ -42,19 +42,14 @@ export const DashboardProvider: React.FC<DashboardProviderProps> = ({ children }
 
     useEffect(() => {
         const fetchData = async () => {
-            const { data, error } = await supabase
-                .from('Sales')
-                .select('SaleTime, Total')
-                .order('SaleTime', { ascending: true })
-                .filter('SaleTime', 'gte', format(date?.from || new Date(), 'yyyy-MM-dd'))
-                .filter('SaleTime', 'lte', format(date?.to || new Date(), 'yyyy-MM-dd'))
-
-            if (error) {
+            try {
+                const data = await
+                    getSalesInDateRange(supabase, date?.from, date?.to, "asc")
+                setData(data as DbResult<typeof data[]>);
+            } catch (error) {
                 console.error(error);
-                return;
             }
 
-            setData(data as DbResult<typeof data[]>);
         };
         fetchData()
 
