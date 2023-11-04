@@ -29,6 +29,7 @@ import {Badge} from "@/components/ui/badge";
 import {DropDownMenu} from "@/app/(pages)/sales/components/drop-down-menu";
 import {format} from "date-fns";
 import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger} from "@/components/ui/tooltip";
+import {DbResult} from "@/lib/types";
 
 // todo align rows and columns
 
@@ -239,25 +240,66 @@ export function DataTable<TData, TValue>({data, columns, loading}: DataTableProp
                     onChange={(event) => table.getColumn("Name")?.setFilterValue(event.target.value)}
                     className="max-w-sm"
                 />
-                <Button
-                    size="sm"
-                    className="ml-auto hidden h-8 lg:flex"
-                    onClick={() => {
-                        // todo add row
-                    }}
-                >
-                    <Plus className="mr-2 h-4 w-4" />
-                    Add Row
-                </Button>
-                <Button
-                    size="sm"
-                    className="ml-auto hidden h-8 lg:flex"
-                    onClick={() => {
-                        // todo add row
-                    }}
-                >
-                    save
-                </Button>
+                <div className="flex items-center space-x-2 w-full">
+                    <Button
+                        size="sm"
+                        variant="outline"
+                        className="ml-auto hidden h-8 lg:flex"
+                        onClick={() => {
+
+                            const newSale: Sale = {
+                                id: 1,
+                                SaleTime: new Date().toString(),
+                                EmployeeID: 1,
+                                VehicleMake: 'Honda',
+                                ActualCashValue: 100000,
+                                GrossProfit: 1000,
+                                FinAndInsurance: 100,
+                                Holdback: 100,
+                                Total: 100,
+                                CustomerID: 1,
+                                DaysInStock: 1,
+                                DealerCost: 1,
+                                FinancingID: 1,
+                                LotPack: 1,
+                                NewSale: true,
+                                ROI: 1,
+                                StockNumber: '1',
+                                TradeInID: 1,
+                            }
+
+                            // todo add row
+                            data.push(newSale as DbResult<Sale>)
+                            // table
+
+
+
+
+                            table.setSorting([
+                                {
+                                    id: "SaleTime",
+                                    desc: true,
+                                },
+                            ])
+                            // print table data
+                            // console.log(table.getFilteredRowModel().rows)
+
+                        }}
+                    >
+                        <Plus className="mr-2 h-4 w-4" />
+                        Add Row
+                    </Button>
+                    <Button
+                        size="sm"
+                        variant="outline"
+                        className="ml-auto hidden h-8 lg:flex"
+                        onClick={() => {
+                            // todo add row
+                        }}
+                    >
+                        save
+                    </Button>
+                </div>
             </div>
             <div className="rounded-md border">
                 <Table>

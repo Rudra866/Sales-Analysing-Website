@@ -102,7 +102,7 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
         )}{" "}
         Github
       </Button>
-      {signedIn && <div>signed in</div>}
+      {/*{signedIn && <div>signed in</div>}*/}
     </div>
   )
 }
