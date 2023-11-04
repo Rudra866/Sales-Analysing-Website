@@ -165,11 +165,6 @@ export default function EmployeeTable() {
       cell: ({row}) => roles.find((role) => role.id === row.original.Role)?.RoleName
     },
     {
-      header: ({column}) => SortButton("Last Accessed", column),
-      cell: ({row}) => new Date(row.original.LastAccessed).toDateString(),
-      accessorKey: "LastAccessed",
-    },
-    {
       id: "actions",
       cell: ({ row }) => <DropDownMenu row={row}  roles={roles}/>,
     },
