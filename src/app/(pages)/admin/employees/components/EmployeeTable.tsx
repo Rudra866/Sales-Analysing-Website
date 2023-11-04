@@ -7,14 +7,14 @@ import {
   SortingState,
   useReactTable
 } from "@tanstack/react-table";
-import React, {Dispatch, SetStateAction, useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import {Input} from "@/components/ui/input";
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 import {Button} from "@/components/ui/button";
 import {ChevronLeftIcon, ChevronRightIcon, DoubleArrowLeftIcon, DoubleArrowRightIcon} from "@radix-ui/react-icons";
 import {Checkbox} from "@/components/ui/checkbox";
-import {Employee, Role} from "@/lib/database.types";
+import {Employee, Role, getSupabaseBrowserClient, Database, SupabaseClient} from "@/lib/database";
 import {ArrowUpDown, MoreHorizontal} from "lucide-react";
 import {
   DropdownMenu,
@@ -26,19 +26,16 @@ import {
 import FormModal from "@/components/FormModal";
 import {EmployeeSelectModalForm} from "@/app/(pages)/admin/employees/components/EmployeeSelectModalForm";
 import {RoleSelectModalForm} from "@/app/(pages)/admin/employees/components/RoleSelectModalForm";
-import {createClientComponentClient} from "@supabase/auth-helpers-nextjs";
-import {Database} from "@/lib/database.types";
 
 /**
  * Component to create a table to render all employees in the database.
- * @constructor
+ * @group React Components
  */
 export default function EmployeeTable() {
   const [loading, setLoading] = useState(true);
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [roles, setRoles] = useState<Role[]>([]);
-  const supabase = createClientComponentClient<Database>();
-
+  const supabase: SupabaseClient<Database> = getSupabaseBrowserClient();
   useEffect(() => {
     function fetchData() {
       return Promise.all([
@@ -48,6 +45,7 @@ export default function EmployeeTable() {
     }
     async function loadData() {
       try {
+        console.log(await supabase.auth.getSession())
         setLoading(true);
         const [employeeData, roleData] = await fetchData();
         const { data: employees, count: employeeCount, error: employeeError} = employeeData;
@@ -183,11 +181,16 @@ export default function EmployeeTable() {
 }
 
 
-interface DataTableProps<TData, TValue> {
+export interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
 }
-export function DataTable<TData, TValue>({
+
+/**
+ * Component to create a table as model for {@link EmployeeTable}
+ * @group React Components
+ */
+function DataTable<TData, TValue>({
                                         data,
                                         columns
                                       }: DataTableProps<TData, TValue>) {

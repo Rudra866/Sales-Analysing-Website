@@ -99,6 +99,9 @@ CMPT 370 Fall - Group 22
 Ryan Schaffer
 
 ## Version History
+* 0.3A
+    * Added database module to communicate with supabase directly and add users/employees. Needs more revision to be complete and working.
+
 * 0.2.1
     * Fixed missing columns in script and schema, tested with current schema on supabase.
 

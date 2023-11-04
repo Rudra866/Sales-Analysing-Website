@@ -1,10 +1,26 @@
 {
-  "plugin": ["typedoc-plugin-zod", "typedoc-plugin-mark-react-functional-components"],
-  "entryPoints": ["src"],
-  "excludeCategories": ["SupabaseClient<Database>"],
-  "exclude": ["**/(examples)/**/*.{ts,tsx}"],
+  "$schema": "https://typedoc.org/schema.json",
+  "plugin": ["typedoc-plugin-zod", "typedoc-plugin-extras", "typedoc-plugin-merge-modules"],
+  "entryPoints": ["./src"],
+  "exclude": ["**/(examples)/**/*.{ts,tsx}", "src/components/**/*.{ts,tsx}",
+    ".next"],
   "entryPointStrategy": "expand",
   "theme": "default",
   "categorizeByGroup": true,
-  "hideGenerator": true
+  "hideGenerator": true,
+  "tsconfig": "tsconfig.json",
+  "searchGroupBoosts": {
+    "React Components": 2
+  },
+  "searchCategoryBoosts": {
+    "Database Row": 2.5,
+    "Database Insert": 2,
+    "Database Update": 2
+  },
+  "navigationLinks": {
+    "Database Documentation": "https://dbdocs.io/rys68639ef0785a9/370-Binary-Bandits",
+    "Live Deployment": "https://www.codeallergy.dev",
+    "GitLab": "https://git.cs.usask.ca/fzl936/370-binary-bandits"
+  },
+  "favicon": "src/app/favicon.ico"
 }

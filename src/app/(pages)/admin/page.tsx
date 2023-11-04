@@ -2,7 +2,12 @@
 
 import {useEffect} from "react";
 
-export default function DashboardPage() {
+/**
+ * This page will be used for the admin dashboard.
+ * @group Next.js Pages
+ * @route `/admin`
+ */
+export default function AdminPage() {
   useEffect(() => {
 
   }, []);

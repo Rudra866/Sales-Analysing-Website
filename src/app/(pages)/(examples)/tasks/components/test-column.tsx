@@ -7,27 +7,28 @@ import { labels, priorities, statuses } from "../data/data"
 import { Task } from "../data/schema"
 import { DataTableColumnHeader } from "./data-table-column-header"
 import { DataTableRowActions } from "./data-table-row-actions"
-import {Avatar} from "@/components/ui/avatar";
-import {ArrowRightIcon, ArrowUpIcon} from "@radix-ui/react-icons";
+// import {Avatar} from "@/components/ui/avatar";
+// import {ArrowRightIcon, ArrowUpIcon} from "@radix-ui/react-icons";
+import Image from "next/image";
 
 
-const members = [
-    {
-        label: "bill",
-        value: "bill",
-        // icon: <Avatar size="xs" name="Bill Mahoney" />,
-    },
-    {
-        label: "Medium",
-        value: "medium",
-        icon: ArrowRightIcon,
-    },
-    {
-        label: "High",
-        value: "high",
-        icon: ArrowUpIcon,
-    },
-]
+// const members = [
+//     {
+//         label: "bill",
+//         value: "bill",
+//         // icon: <Avatar size="xs" name="Bill Mahoney" />,
+//     },
+//     {
+//         label: "Medium",
+//         value: "medium",
+//         icon: ArrowRightIcon,
+//     },
+//     {
+//         label: "High",
+//         value: "high",
+//         icon: ArrowUpIcon,
+//     },
+// ]
 
 
 
@@ -145,7 +146,7 @@ export const test_columns: ColumnDef<Task>[] = [
             return (
                 <div className="flex items-center">
                     {member.avatar && (
-                        <img
+                        <Image
                             src={member.avatar}
                             alt={member.name}
                             className="mr-2 h-6 w-6 rounded-full"

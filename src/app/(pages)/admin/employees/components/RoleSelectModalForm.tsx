@@ -8,14 +8,12 @@ import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/c
 import {Button} from "@/components/ui/button";
 import {DialogClose} from "@radix-ui/react-dialog";
 import React from "react";
-import {Row} from "@tanstack/react-table";
-import {Database, Employee, Role} from "@/lib/database.types";
-import {createClientComponentClient} from "@supabase/auth-helpers-nextjs";
+import {Employee, Role, getSupabaseBrowserClient} from "@/lib/database";
 
-interface RoleSelectModalFormProps {
-  employee: Employee
-  roles: Role[]
-  updateEmployee: (employee: Employee) => void
+export type RoleSelectModalFormProps = {
+  employee: Employee;
+  roles: Role[];
+  updateEmployee: (employee: Employee) => void;
 }
 
 /**
@@ -23,10 +21,11 @@ interface RoleSelectModalFormProps {
  * @param employee the employee to change roles of
  * @param roles list of roles to choose from
  * @param updateEmployee callback function to reload an employee in an upper component.
+ * @group React Components
  */
 export function RoleSelectModalForm({ employee, roles, updateEmployee }: RoleSelectModalFormProps) {
   const supabase =
-      createClientComponentClient<Database>();
+      getSupabaseBrowserClient();
   const roleSelectFormSchema = z.object({
     Role:
         z.string().refine(

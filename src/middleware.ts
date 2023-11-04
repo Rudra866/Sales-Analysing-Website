@@ -1,20 +1,24 @@
-import { createMiddlewareClient } from '@supabase/auth-helpers-nextjs'
-import { NextResponse } from 'next/server'
-
-import type { NextRequest } from 'next/server'
-import type { Database } from '@/lib/database.types'
-import {getEmployeeFromAuthUser, getRoleFromEmployee} from "@/lib/dbwrap";
+import { NextRequest, NextResponse } from 'next/server'
+import {getEmployeeFromAuthUser, getRoleFromEmployee} from "@/lib/database";
+import {getSupabaseMiddlewareClient} from "@/lib/supabase";
 
 
 /**
- * Add routes here that should be restricted to employees with a Role.EmployeePermission (manages employees)
+ * Add routes here that should be restricted to employees with {@link Role | Role.EmployeePermission}.
+ * @group Next.js Middleware
  */
 export const admin_routes:string[] = [
     "/admin/employees",
 ]
 
 /**
- * Add routes here that should be restricted to employees with a Role.DatabasePermission (absolute permission)
+ * ALL routes under `/api/admin` are automatically protected.
+ */
+export const admin_api_route = /^\/api\/admin\/.*$/
+
+/**
+ * Add routes here that should be restricted to employees with {@link Role | Role.DatabasePermission}.
+ * @group Next.js Middleware
  */
 export const database_routes:string[] = [
 
@@ -27,11 +31,15 @@ export const database_routes:string[] = [
  * it should be used for any pages that (exclusively) grant higher level access. If you want to restrict only certain
  * parts of your page, use server side route handlers along with the Supabase serverside client.
  * @param req incoming NextRequest to route
+ * @group Next.js Middleware
  */
 export async function middleware(req: NextRequest) {
-    const res = NextResponse.next()
-    const supabase =
-        createMiddlewareClient<Database>({ req, res })
+    let res = NextResponse.next({
+        request: {
+            headers: req.headers,
+        },
+    })
+    const supabase = getSupabaseMiddlewareClient(req, res);
 
     // Send all unauthenticated users to the login page.
     const {data: { session}}  = await supabase.auth.getSession()
@@ -56,7 +64,8 @@ export async function middleware(req: NextRequest) {
             return NextResponse.redirect(new URL("/dashboard", req.url))
         }
 
-        if (admin_routes.includes(req.nextUrl.pathname) && !role.EmployeePermission) {
+        if ((admin_routes.includes(req.nextUrl.pathname) || admin_api_route.test(req.nextUrl.pathname))
+            && !role.EmployeePermission) {
             return NextResponse.rewrite(
                 `${req.nextUrl.protocol}//${req.nextUrl.host}/401`,
                 {
@@ -74,10 +83,16 @@ export async function middleware(req: NextRequest) {
             )
         }
     }
-
     return res
 }
 
+/**
+ * Specifies which urls to ignore matching. Currently, this includes the routes:
+ * - `/_next/static`
+ * - `/_next/image`
+ * - `/images`
+ * @group Next.js Middleware
+ */
 export const config = {
-    matcher: ['/((?!api|_next/static|_next/image|images|favicon.ico).*)'],
+    matcher: ['/((?!_next/static|_next/image|images|favicon.ico).*)'],
 }

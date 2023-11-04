@@ -7,21 +7,21 @@ import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/
 import {DialogBody} from "next/dist/client/components/react-dev-overlay/internal/components/Dialog";
 import {Input} from "@/components/ui/input";
 import {Button} from "@/components/ui/button";
-import {Database, Employee, Role, Sale, Tables} from "@/lib/database.types";
+import {Database, Employee, Role, Sale, Tables, getSupabaseBrowserClient} from "@/lib/database";
 import {DialogClose} from "@radix-ui/react-dialog";
 import {Checkbox} from "@/components/ui/checkbox";
 import {ScrollArea, ScrollBar} from "@/components/ui/scroll-area";
-import {createClientComponentClient} from "@supabase/auth-helpers-nextjs";
 
-
-interface EmployeeSelectModalFormProps {
+export interface EmployeeSelectModalFormProps {
   sale: Sale
   updateSale: (sale: Sale) => void
   setShowDialog: Dispatch<SetStateAction<boolean>>;
 }
+
+// todo duplicate and should be saleFormSchema?
 const employeeFormSchema = z.object({
   EmployeeID:
-      z.number().min(1, {
+      z.string().min(1, {
         message: "EmployeeID must not be empty."})
           .max(255, {
             message: "EmployeeID must be shorter than 255 characters."}),
@@ -94,14 +94,18 @@ const employeeFormSchema = z.object({
 
 })
 
-
-export function AddRowDialog({ sale, setShowDialog, updateSale }: EmployeeSelectModalFormProps) {
-  const supabase = createClientComponentClient<Database>();
+// todo database calls update
+/**
+ * Component used to render adding a new sale on the sales page.
+ * @group React Components
+ */
+export function AddSalesRowDialog({ sale, setShowDialog, updateSale }: EmployeeSelectModalFormProps) {
   const [editState, setEditState] = useState(false);
+  const supabase = getSupabaseBrowserClient();
   const form = useForm<z.infer<typeof employeeFormSchema>>({
     resolver: zodResolver(employeeFormSchema),
     defaultValues: {
-      EmployeeID: sale?.EmployeeID ?? 0,
+      EmployeeID: sale?.EmployeeID ?? "",
         VehicleMake: sale?.VehicleMake ?? 0,
         ActualCashValue: sale?.ActualCashValue ?? 0,
         GrossProfit: sale?.GrossProfit ?? 0,

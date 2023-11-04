@@ -1,10 +1,11 @@
 import Navigation from "@/components/menu/navigation";
 
-interface ExamplesLayoutProps {
-  children: React.ReactNode
-}
-
-export default async function Layout({ children }: ExamplesLayoutProps) {
+/**
+ * Layout that is rendered on all pages in the (pages) directory.
+ * @param children
+ * @group React Layouts
+ */
+export default function PagesLayout({ children }: { children: React.ReactNode}) {
   return (
       <>
           <Navigation />

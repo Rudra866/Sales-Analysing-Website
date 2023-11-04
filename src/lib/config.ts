@@ -11,10 +11,6 @@ export const docsConfig: DocsConfig = {
             href: "/dashboard",
         },
         {
-            title: "Authentication",
-            href: "/authentication",
-        },
-        {
             title: "Settings",
             href: "/cards",
         },
@@ -34,6 +30,11 @@ export const docsConfig: DocsConfig = {
         {
             title: "Sales",
             href: "/sales",
+        },
+        // temp for dev
+        {
+            title: "Test",
+            href: "/test/database",
         },
     ],
 }

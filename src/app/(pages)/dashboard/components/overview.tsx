@@ -3,7 +3,7 @@
 import {Bar, BarChart, ResponsiveContainer, Tooltip, XAxis, YAxis} from "recharts"
 import {useDashboard} from "@/app/(pages)/dashboard/components/dashboard-provider";
 import {useEffect, useState} from "react";
-import {Tables} from "@/lib/database.types";
+import {Tables, Sale} from "@/lib/database.types";
 import {format} from "date-fns";
 import {groupByMonth} from "@/lib/utils";
 
@@ -21,6 +21,7 @@ export function Overview() {
     }, [data, date]);
 
     const customToolTip = (props: any) => {
+        // console.log(props)
         try {
             if (props.active && props.payload && props.payload.length) {
                 return (

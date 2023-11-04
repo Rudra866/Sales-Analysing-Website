@@ -1,8 +1,8 @@
 /**
- * Page shown to a user who's been restricted from an area of the site.
- * @constructor
+ * Page shown to a user who's been sent a 401 HTTP response.
+ * @group Next.js Pages
  */
-export default function Unauthorized() {
+export default function UnauthorizedPage() {
   // add shadcn layout
   return (
       <div>

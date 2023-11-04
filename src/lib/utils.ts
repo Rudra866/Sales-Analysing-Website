@@ -3,11 +3,15 @@ import { twMerge } from "tailwind-merge"
 import {Tables} from "@/lib/database.types";
 import {format} from "date-fns";
 
+/** @ignore */
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
 
+/** remove?
+ *  @ignore
+ */
 export const mediaRatios = {
     video: 16 / 9,
     image: 4 / 3,

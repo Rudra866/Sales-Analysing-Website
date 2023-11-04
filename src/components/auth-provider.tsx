@@ -1,68 +1,61 @@
 'use client'
-import {SignInWithPasswordCredentials, SignUpWithPasswordCredentials} from "@supabase/supabase-js";
-import {createClientComponentClient, User} from "@supabase/auth-helpers-nextjs";
-import {Database, Employee, Role} from "@/lib/database.types";
 import {createContext, useEffect, useState} from "react";
-import {getEmployeeFromAuthUser, getRoleFromEmployee} from "@/lib/dbwrap";
-
-export type AuthContextType = {
-  signUp: (data: SignUpWithPasswordCredentials) => Promise<any>;
-  signIn: (data: SignInWithPasswordCredentials) => Promise<any>;
-  signOut: () => Promise<any>;
-  user: User | null;
-  employee: Employee | null;
-  role: Role | null;
-};
+import {Database, Employee, Role,
+  getEmployeeFromAuthUser, getRoleFromEmployee, User,
+  getSupabaseBrowserClient, SupabaseClient} from "@/lib/database";
+import {AuthContextType} from "@/hooks/use-auth";
+import {Session} from "@supabase/gotrue-js";
 
 export const AuthContext = createContext<AuthContextType | null>(null);
 
-
+/**
+ *
+ * @param children
+ * @group React Component
+ */
 export const AuthProvider = ({children}: any) => {
   const [user, setUser] = useState<User | null>(null);
   const [employee, setEmployee] = useState<Employee | null>(null);
   const [role, setRole] = useState<Role | null>(null);
   const [loading, setLoading] = useState(true);
-  const supabase = createClientComponentClient<Database>()
+  const supabase: SupabaseClient<Database> = getSupabaseBrowserClient();
 
-  // todo add local storage caching?
+  // todo add local storage caching so we don't need to read database each refresh.
+  // todo clean up this code
   useEffect(() => {
     const initializeAuth = async () => {
       try {
-        const loadEmployeeAndRole = async (user: User) => {
-          const employee = await getEmployeeFromAuthUser(supabase, user);
-          if (!employee) throw new Error("Failed to get employee from authenticated user."); // this happens with current misconfigured users, shouldn't be possible in the future
-
+        const loadEmployeeData = async (session: Session) => {
+          const employee = await getEmployeeFromAuthUser(supabase, session.user)
+          if (!employee) throw Error("No employee found but user is signed in.")
           const role = await getRoleFromEmployee(supabase, employee);
-          if (!role) throw new Error("Failed to get the role of the current employee.");
+          if (!role) throw Error("No role found but employee was found.")
 
           setEmployee(employee);
           setRole(role);
-          setLoading(false);
+
         }
-
-        setLoading(true);
-        // get session data if there is an active session
         const {data: {session}} = await supabase.auth.getSession();
-        setUser(session?.user ?? null);
-
-        if (session?.user) await loadEmployeeAndRole(session.user);
+        if (session) {
+          setLoading(true)
+          await loadEmployeeData(session)
+          setLoading(false)
+        }
 
         // subscribe to auth changes.
         const { data: listener } = supabase.auth.onAuthStateChange(
             async (event, session) => {
+              setLoading(true);
               setUser(session?.user ?? null);
               if (session) {
-                await loadEmployeeAndRole(session.user);
+                await loadEmployeeData(session);
               }
               setLoading(false);
             }
         );
 
         // cleanup the useEffect hook
-        return () => {
-          listener?.subscription.unsubscribe();
-        };
-
+        return () => listener?.subscription.unsubscribe();
       }
 
       catch (error) {

@@ -1,48 +1,37 @@
 'use client'
 
 import {Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table"
-// import supabase from "@/lib/supabase";
 import {useEffect, useState} from "react";
-import {Database, Tables} from "@/lib/database.types";
-import {DbResult} from "@/lib/types";
-// import {useSupabase} from "@/components/providers";
-import Login from "@/components/auth-components/login";
-import {createClientComponentClient} from "@supabase/auth-helpers-nextjs";
+import {Sale, getAllSales, getSupabaseBrowserClient, Database} from "@/lib/database";
+import {SupabaseClient} from "@supabase/supabase-js";
 
 export default function TableDemo() {
-    const supabase = createClientComponentClient<Database>()
-    const [sales, setSales] = useState<Tables<'Sales'>[]>();
+    const supabase: SupabaseClient<Database> = getSupabaseBrowserClient();
+    const [sales, setSales] = useState<Sale[]>();
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        fetchTable();
-    }, []);
-
-    const fetchTable = async () => {
-        try {
-            setLoading(true)
-
-            let { data: Sales, error } = await supabase
-                .from('Sales')
-                .select('*')
-                .order('id', { ascending: true })
-                .limit(10)
-
-            if (error) throw error
-            if (Sales) {
-                setSales( Sales as DbResult<typeof Sales[]>)
-                console.log(Sales)
+        const fetchTable = async () => {
+            try {
+                setLoading(true)
+                let Sales = await getAllSales(supabase)
+                if (Sales) {
+                    setSales(Sales)
+                    console.log(Sales)
+                }
+            } catch (error) {
+                console.log(error)
+            } finally {
+                setLoading(false)
             }
-
-        } catch (error) {
-            console.log(error)
-        } finally {
-            setLoading(false)
         }
-    }
+
+        fetchTable();
+    }, [supabase]);
+
+
     return (
         <div className="flex flex-col p-4">
-            <Login/>
             <Table>
                 <TableCaption>{loading ? 'Loading...': 'A list of Car Sales.'}</TableCaption>
                 <TableHeader>

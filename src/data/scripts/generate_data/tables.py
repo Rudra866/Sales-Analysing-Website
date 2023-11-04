@@ -39,6 +39,9 @@ class SharedMixin(ABC):
     def to_dict(self):
         return {k: v for k, v in vars(self).items() if not k == "id"}
 
+    def to_dict_with_id(self):
+        return {k: v for k, v in vars(self).items()}
+
     def values(self) -> list[str]:
         return list(self.to_dict().values())
 
@@ -90,11 +93,11 @@ class Employee(SharedMixin):
     table = Table.EMPLOYEE
 
     def __init__(self, role_id):
-        self.id: int = Employee.index
+        self.id: str = str(Employee.index)
         self.Name: str = f"{random.choice(first_names)} {random.choice(last_names)}"
-        self.EmployeeNumber: str = str(EMPLOYEE_ID_START + self.id)
+        self.EmployeeNumber: str = str(EMPLOYEE_ID_START + int(self.id))
         self.Email: str = f"{'.'.join(self.Name.lower().split(' '))}{random.choice(email_domains)}"
-        self.Password = generate_password_hash(self.id)
+        self.Password = generate_password_hash(int(self.id))
 
         self.Role = role_id
         self.CreatedOn = random_date().strftime("%Y-%m-%d %H:%M:%S")

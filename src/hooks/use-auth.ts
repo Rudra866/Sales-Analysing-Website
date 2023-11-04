@@ -1,6 +1,23 @@
 "use client"
 import {useContext} from 'react'
-import {AuthContext, AuthContextType} from "@/components/auth-provider";
+import {AuthContext} from "@/components/auth-provider";
+import {
+  AuthResponse,
+  AuthTokenResponse,
+  SignInWithPasswordCredentials,
+  SignUpWithPasswordCredentials,
+  User
+} from "@supabase/supabase-js";
+import {Employee, Role} from "@/lib/database";
+
+export type AuthContextType = {
+  signUp: (data: SignUpWithPasswordCredentials) =>  Promise<AuthResponse>;
+  signIn: (data: SignInWithPasswordCredentials) =>  Promise<AuthTokenResponse>;
+  signOut: () => Promise<any>;
+  user: User | null;
+  employee: Employee | null;
+  role: Role | null;
+};
 
 /**
  * Hook to access user/employee/role variables and authentication functions.
@@ -16,6 +33,7 @@ import {AuthContext, AuthContextType} from "@/components/auth-provider";
  *  - `signIn`: Function for signing in.
  *  - `signOut`: Function for signing out.
  *  - `signUp`: Function for signing up.
+ *  @group React Hook
  */
 export default function useAuth(): AuthContextType {
   const auth = useContext(AuthContext);

@@ -2,15 +2,15 @@ import React, {Dispatch, SetStateAction, useState} from "react";
 import {useForm} from "react-hook-form";
 import * as z from "zod";
 import {zodResolver} from "@hookform/resolvers/zod";
+import {getSupabaseBrowserClient} from "@/lib/supabase";
 import {DialogFooter} from "@/components/ui/dialog";
 import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
 import {DialogBody} from "next/dist/client/components/react-dev-overlay/internal/components/Dialog";
 import {Input} from "@/components/ui/input";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 import {Button} from "@/components/ui/button";
-import {Database, Employee, Role} from "@/lib/database.types";
+import {Employee, getEmployeeById, Role} from "@/lib/database";
 import {DialogClose} from "@radix-ui/react-dialog";
-import {createClientComponentClient} from "@supabase/auth-helpers-nextjs";
 import {existingEmployeeFormSchema} from "@/lib/types";
 
 /**
@@ -26,38 +26,33 @@ export type EmployeeSelectModalFormProps = {
 /**
  * Component to allow for viewing a user's details and modifying them. Has two states, view mode and edit mode.
  * Maybe add a toast notification here in the future so the user has more evidence it was successful?
- * @param {EmployeeSelectModalFormProps} props @link EmployeeSelectModalFormProps
- * @group React Component
+ * @param {EmployeeSelectModalFormProps} props
+ * @group React Components
  */
 export function EmployeeSelectModalForm({ employee, roles, setShowDialog, updateEmployee }: EmployeeSelectModalFormProps) {
-  const supabase =
-      createClientComponentClient<Database>();
   const [editState, setEditState] = useState(false);
+  const supabase = getSupabaseBrowserClient();
   const form = useForm<z.infer<typeof existingEmployeeFormSchema>>({
     resolver: zodResolver(existingEmployeeFormSchema),
     defaultValues: {
       EmployeeNumber: employee?.EmployeeNumber ?? "",
       Name: employee?.Name ?? "",
-      Email: employee?.Email ?? "",
       Role: employee?.Role.toString() ?? "",
     },
   })
 
   async function onSubmit(values: z.infer<typeof existingEmployeeFormSchema>) {
     try {
-      const { EmployeeNumber, Name, Email, Role } = values;
-      const { data, error} = await supabase
-          .from('Employees')
-          .update({ EmployeeNumber, Name, Email, Role: parseInt(Role)})
-          .eq("id", employee.id)
-          .select().single()
+      const { EmployeeNumber, Name, Role } = values;
+      const employeeResult = await getEmployeeById(supabase, employee.id);
 
-      if (error) {
-        console.log("Supabase error: ", error);
-        throw new Error("An error occurred while updating the employee record.");
+      if (!employeeResult) {
+        throw new Error("No employee was found by that id.");
       }
-      updateEmployee(data);
+
+      updateEmployee(employeeResult);
     } catch (error) {
+      console.log("An error occurred while updating the employee record.", error);
       console.log(error)
     } finally {
       setShowDialog(false);
@@ -104,7 +99,7 @@ export function EmployeeSelectModalForm({ employee, roles, setShowDialog, update
           />
           <FormField
               control={form.control}
-              name="Email"
+              name="email"
               render={({ field }) => (
                   <FormItem>
                     <FormLabel>Email</FormLabel>

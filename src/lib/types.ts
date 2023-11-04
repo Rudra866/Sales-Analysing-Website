@@ -38,7 +38,7 @@ export const existingEmployeeFormSchema = z.object({
             .max(255, {
                 message: "Employee Name must be less than 255 characters."}),
 
-    Email:
+    email:
         z.string()
             .min(1, {
                 message: "Employee Email must not be empty."})
@@ -46,6 +46,8 @@ export const existingEmployeeFormSchema = z.object({
                 message: "Employee Email must be less than 255 characters."})
             .email({
                 message: "Employee Email must be a valid email address."}),
+
+    password: z.string(),
 
     Role:
         z.string().refine(
@@ -59,6 +61,8 @@ export const existingEmployeeFormSchema = z.object({
 
 
 
+// unused
+/** @ignore */
 export const navigationMenu = [
     "Dashboard",
     "Sales Table",
