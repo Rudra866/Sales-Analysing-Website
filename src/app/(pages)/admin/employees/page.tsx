@@ -1,5 +1,5 @@
 "use client"
-import EmployeeTable from "@/app/(pages)/admin/employees/components/EmployeeTable";
+import EmployeeTable from "@/components/EmployeeTable";
 import React from "react";
 
 import useAuth from "@/hooks/use-auth";
