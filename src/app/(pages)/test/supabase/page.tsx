@@ -42,8 +42,7 @@ export default function SupabaseTestPage() {
         // setNotificationData(notifications);
 
       } catch (error) {
-        console.error(error)
-        setErrors([...errors, error])
+        setErrors(e =>[...e, error])
       }
 
     }
@@ -70,7 +69,7 @@ const CollapsableRawData = ({data, children}: {data: any, children: ReactElement
     <Collapsible>
       <CollapsibleTrigger>{children}</CollapsibleTrigger>
       {data.map((entry: any) =>
-          <CollapsibleContent key={entry.id}>{JSON.stringify(entry)}</CollapsibleContent>)}
+          <CollapsibleContent key={entry.id}>{JSON.stringify(entry, null, 2)}</CollapsibleContent>)}
     </Collapsible>
   );
 }

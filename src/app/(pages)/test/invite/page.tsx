@@ -181,8 +181,8 @@ export default function AuthInviteTestPage() {
           </Form>
         </div>
         <div>
-          <p>Results:</p>
-          {data.map((user) => <p key={user.id}>Success: {user.email}</p>)}
+          {/*<p>Results:</p>*/}
+          {/*{data.map((user) => <p key={user.id}>Success: {user.email}</p>)}*/}
         </div>
         <div>
           <p>Errors:</p>

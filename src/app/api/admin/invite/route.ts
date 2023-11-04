@@ -22,7 +22,6 @@ export async function POST(request: NextRequest) {
       getSupabaseRouteHandlerClient(cookieStore, process.env.SUPABASE_SERVICE_KEY!);
   const data = await request.json() as ExpectedJSON;
 
-  /* Otherwise if we are allowing users to self-enroll, we need some admin tasks and a default user role of no perms? */
   console.log(data.Name)
   const result = await supabase.auth.admin.inviteUserByEmail(data.email, {
     data: {
@@ -35,6 +34,7 @@ export async function POST(request: NextRequest) {
 
   // make these return less debug-like info, and integrate into our UIs
   // TODO add more error types && handle on front end
+  // TODO Add checking for reaching email quota.
   if (result.error) {
     if (result.error.message === "User already registered") return NextResponse
         .json({error: 'User with that email address is already registered.'}, {status: 500})

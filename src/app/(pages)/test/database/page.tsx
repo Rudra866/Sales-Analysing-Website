@@ -107,7 +107,8 @@ export default function DatabaseTestPage() {
   return (
       <>
       <div>
-        {<div>Check console log for test output</div>}
+        <div>Check console log for test output.</div>
+        <div>Function labels wont show on compiled builds, only dev.</div>
       </div>
       <div className="flex flex-col items-center justify-center space-y-4">
         <div className="flex flex-col items-center justify-center space-y-4">
