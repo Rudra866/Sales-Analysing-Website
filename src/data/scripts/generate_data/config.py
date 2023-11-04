@@ -117,7 +117,8 @@ TASK_DATE_RANGE = (7, 30)
 
 # Role types with weights associated
 role_types = \
-    {"Administrator": 1,
+    {"Default": 0,
+     "Administrator": 1,
      "Sales Manager": 1,
      "Financer": 2,
      "Human Resources": 2,
@@ -127,6 +128,7 @@ role_types = \
      }
 
 role_perms = {  # READ, WRITE, MODIFYSELF, MODIFYALL, EMPLOYEEMGMT, DATABASEMGMT
+    "Default": [False, False, False, False, False, False],
     "Administrator": [True, True, True, True, True, True],
     "Sales Manager": [True, True, True, True, True, False],
     "Financer": [True, False, False, False, False, False],
