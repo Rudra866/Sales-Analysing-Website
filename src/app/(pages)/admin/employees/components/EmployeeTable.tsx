@@ -26,14 +26,13 @@ import {
 import FormModal from "@/app/(pages)/admin/employees/components/FormModal";
 import {EmployeeSelectModalForm} from "@/app/(pages)/admin/employees/components/EmployeeSelectModalForm";
 import {RoleSelectModalForm} from "@/app/(pages)/admin/employees/components/RoleSelectModalForm";
-import {createClientComponentClient} from "@supabase/auth-helpers-nextjs";
-import {Database} from "@/lib/database.types";
+import {getSupabaseBrowserClient} from "@/lib/supabase";
 
 export default function EmployeeTable() {
   const [loading, setLoading] = useState(true);
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [roles, setRoles] = useState<Role[]>([]);
-  const supabase = createClientComponentClient<Database>();
+  const supabase = getSupabaseBrowserClient();
 
   useEffect(() => {
     function fetchData() {
