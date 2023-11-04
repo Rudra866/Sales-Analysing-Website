@@ -19,8 +19,6 @@ export default function UpdatePassword() {
     password: z.string().min(6)
   })
 
-
-
   // todo ts:any
   const handleSubmit = async (e: any) => {
     const { data, error } = await supabase.auth.updateUser(
@@ -41,7 +39,8 @@ export default function UpdatePassword() {
   });
 
   return (
-      <div className={"flex"}>
+      <div className={"flex flex-col items-center"}>
+        <h1>No interaction on this page yet, check console to verify it worked.</h1>
         <div className={"flex items-center justify-center mx-4 my-4"}>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-8">
