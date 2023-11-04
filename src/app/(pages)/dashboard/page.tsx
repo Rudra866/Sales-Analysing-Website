@@ -26,8 +26,7 @@ export default function DashboardPage() {
     const {data, date, setDate} = useDashboard()
     const [totalRevenue, setTotalRevenue] = useState<number>(0);
     const [totalGoal, setTotalGoal] = useState<number>(0);
-    const supabase =
-        createClientComponentClient<Database>();
+    const supabase = getSupabaseBrowserClient();
     const [totalRevenueForTheYear, setTotalRevenueForTheYear] = useState<number>(0);
     const [totalRevMonth, setTotalRevMonth] = useState<number>(0);
 

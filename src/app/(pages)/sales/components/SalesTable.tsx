@@ -5,7 +5,7 @@ import {
     ColumnDef,
     ColumnFiltersState, flexRender,
     getCoreRowModel, getFilteredRowModel,
-    getPaginationRowModel, getSortedRowModel, Row,
+    getPaginationRowModel, getSortedRowModel,
     SortingState,
     useReactTable
 } from "@tanstack/react-table";
@@ -17,15 +17,12 @@ import {Button} from "@/components/ui/button";
 import {
     ChevronLeftIcon,
     ChevronRightIcon,
-    Cross2Icon,
     DoubleArrowLeftIcon,
     DoubleArrowRightIcon
 } from "@radix-ui/react-icons";
 import {Checkbox} from "@/components/ui/checkbox";
-import {Employee, Tables, Sale} from "@/lib/database.types";
+import {Employee, Tables, Sale, getSupabaseBrowserClient} from "@/lib/database";
 import {ArrowUpDown, Plus} from "lucide-react";
-import {createClientComponentClient} from "@supabase/auth-helpers-nextjs";
-import {Database} from "@/lib/database.types";
 import {Badge} from "@/components/ui/badge";
 import {DropDownMenu} from "@/app/(pages)/sales/components/drop-down-menu";
 import {format} from "date-fns";
@@ -42,8 +39,8 @@ export default function SalesTable() {
     const [loading, setLoading] = useState(true);
     const [sales, setSales] = useState<Tables<'Sales'>[]>([]);
     const [employees, setEmployees] = useState<Employee[]>([]);
-    const supabase = createClientComponentClient<Database>();
-
+    const supabase = getSupabaseBrowserClient();
+    // const [salesModal, setSalesModal] = useState(false);
 
     useEffect(() => {
         function fetchData() {
@@ -278,29 +275,29 @@ export function DataTable<TData, TValue>({data, columns, loading}: DataTableProp
                         className="ml-auto hidden h-8 lg:flex"
                         onClick={() => {
 
-                            const newSale: Sale = {
-                                id: 1,
-                                SaleTime: new Date().toString(),
-                                EmployeeID: 1,
-                                VehicleMake: 'Honda',
-                                ActualCashValue: 100000,
-                                GrossProfit: 1000,
-                                FinAndInsurance: 100,
-                                Holdback: 100,
-                                Total: 100,
-                                CustomerID: 1,
-                                DaysInStock: 1,
-                                DealerCost: 1,
-                                FinancingID: 1,
-                                LotPack: 1,
-                                NewSale: true,
-                                ROI: 1,
-                                StockNumber: '1',
-                                TradeInID: 1,
-                            }
-
-                            // todo add row
-                            data.push(newSale as DbResult<Sale>)
+                            // const newSale: Sale = {
+                            //     id: 1,
+                            //     SaleTime: new Date().toString(),
+                            //     EmployeeID: 1,
+                            //     VehicleMake: 'Honda',
+                            //     ActualCashValue: 100000,
+                            //     GrossProfit: 1000,
+                            //     FinAndInsurance: 100,
+                            //     Holdback: 100,
+                            //     Total: 100,
+                            //     CustomerID: 1,
+                            //     DaysInStock: 1,
+                            //     DealerCost: 1,
+                            //     FinancingID: 1,
+                            //     LotPack: 1,
+                            //     NewSale: true,
+                            //     ROI: 1,
+                            //     StockNumber: '1',
+                            //     TradeInID: 1,
+                            // }
+                            //
+                            // // todo add row
+                            // data.push(newSale as DbResult<Sale>)
                             // table
 
 

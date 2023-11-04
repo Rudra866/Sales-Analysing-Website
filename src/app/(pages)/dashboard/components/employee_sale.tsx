@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
-import supabase from "@/lib/supabase";
-import {Employee, Sale, Tables} from "@/lib/database.types"; // Adjust the path based on your project structure
+import {Employee, getSupabaseBrowserClient, Sale, Tables} from "@/lib/database"; // Adjust the path based on your project structure
 
 
 
@@ -17,6 +16,7 @@ interface SalesByEmployeeProps {
 function SalesByEmployee({ employeeId }: SalesByEmployeeProps) {
     const [sales, setSales] = useState<Sale[]>([]);
     const [loading, setLoading] = useState(true);
+    const supabase = getSupabaseBrowserClient();
 
     useEffect(() => {
         const fetchSalesByEmployee = async () => {

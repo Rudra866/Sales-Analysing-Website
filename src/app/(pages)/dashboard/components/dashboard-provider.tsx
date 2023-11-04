@@ -1,21 +1,18 @@
 'use client'
-
-import React, {createContext, ReactNode, useEffect, useState} from 'react';
-import {subDays} from "date-fns";
+import React, { createContext, useState, useEffect, ReactNode } from 'react';
+import {addDays, format, subDays} from "date-fns";
 import {DateRange} from "react-day-picker";
-import {createClientComponentClient} from "@supabase/auth-helpers-nextjs";
-import {Database, Tables, Sale} from "@/lib/database.types";
-import {getAllEmployees, getAllSales} from "@/lib/dbwrap";
-
+import {Sale, getSupabaseBrowserClient, Employee, getAllSales, getAllEmployees} from "@/lib/database";
+import {DbResult} from "@/lib/types";
 
 export type DataContextProps = {
-    data?: Tables<'Sales'>[];
-    employees?: Tables<'Employees'>[];
+    data?: Sale[];
+    employees?: Employee[];
     date?: DateRange;
     setDate?: React.Dispatch<React.SetStateAction<DateRange | undefined>>;
 }
 
-const supabase = createClientComponentClient<Database>()
+const supabase = getSupabaseBrowserClient()
 export const DashboardContext = createContext<DataContextProps | undefined>(undefined);
 
 export function useDashboard(): DataContextProps {
@@ -34,14 +31,14 @@ export const DashboardProvider: React.FC<DashboardProviderProps> = ({children}) 
         to: new Date(),
     })
 
-    const [data, setData] = useState<Tables<'Sales'>[]>();
-    const [employees, setEmployees] = useState<Tables<'Employees'>[]>();
+    const [data, setData] = useState<Sale[]>();
+    const [employees, setEmployees] = useState<Employee[]>();
 
 
     useEffect(() => {
         getAllSales(supabase).then((res) => {
             const sales = res && res.length > 0 ? res : []
-            setData(filterSalesByDate(sales, date) as Tables<'Sales'>[])
+            setData(filterSalesByDate(sales, date) as Sale[])
             return res
         }).then((res) => {
             console.log('filtered sales: ', res)
@@ -50,7 +47,7 @@ export const DashboardProvider: React.FC<DashboardProviderProps> = ({children}) 
         })
 
         getAllEmployees(supabase).then((res) => {
-            setEmployees(res as Tables<'Employees'>[])
+            setEmployees(res as Employee[])
             return res
         }).then((res) => {
             console.log('employees: ', res)
@@ -60,7 +57,7 @@ export const DashboardProvider: React.FC<DashboardProviderProps> = ({children}) 
 
         function filterSalesByDate(sales: Sale[], date: DateRange | undefined) {
             return sales.filter((sale) => {
-                const saleDate = new Date(sale.SaleTime.toString())
+                const saleDate = new Date(sale?.SaleTime?.toString() || '')
                 if (date?.from === undefined || date?.to === undefined) return false
                 return saleDate >= date?.from && saleDate <= date?.to
             })

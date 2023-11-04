@@ -1,5 +1,5 @@
 import {Row} from "@tanstack/react-table";
-import {Database, Sale} from "@/lib/database.types";
+// import {Database, Sale} from "@/lib/database.types";
 import React, {useState} from "react";
 import {
     DropdownMenu,
@@ -10,9 +10,11 @@ import {
 } from "@/components/ui/dropdown-menu";
 import {Button} from "@/components/ui/button";
 import {MoreHorizontal} from "lucide-react";
-import {AddRowDialog} from "@/app/(pages)/sales/components/AddRowDialog";
+// import {AddRowDialog} from "@/app/(pages)/sales/components/AddRowDialog";
 import FormModal from "@/components/FormModal";
-import {createClientComponentClient} from "@supabase/auth-helpers-nextjs";
+import {getSupabaseBrowserClient, Sale} from "@/lib/database";
+import {AddSalesRowDialog} from "@/app/(pages)/sales/components/AddSalesRowDialog";
+// import {createClientComponentClient} from "@supabase/auth-helpers-nextjs";
 
 
 type Props = {
@@ -26,7 +28,7 @@ type Props = {
 export function DropDownMenu({row, sales, setSales}: Props) {
     const [item, setItem] = useState<Sale>();
     const [salesModal, setSalesModal] = useState(false);
-    const supabase = createClientComponentClient<Database>()
+    const supabase = getSupabaseBrowserClient();
 
     function updateSales(sale: Sale) {
         const originalSales = [...sales]
@@ -73,7 +75,7 @@ export function DropDownMenu({row, sales, setSales}: Props) {
             </DropdownMenu>
             {row.original &&
                 <FormModal title={"Sale"} showDialog={salesModal} setShowDialog={setSalesModal}>
-                    <AddRowDialog sale={row.original} updateSale={updateSales} setShowDialog={setSalesModal}/>
+                    <AddSalesRowDialog sale={row.original} updateSale={updateSales} setShowDialog={setSalesModal}/>
                 </FormModal>
             }
         </>

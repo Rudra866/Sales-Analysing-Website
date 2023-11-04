@@ -1,8 +1,9 @@
 'use client'
 
-import {UserAuthForm} from "./components/user-auth-form"
+// import {UserAuthForm} from "./components/user-auth-form"
 import Image from "next/image";
 import * as React from "react";
+import {UserAuthForm} from "@/app/authentication/components/user-auth-form";
 
 
 export default function AuthenticationPage() {

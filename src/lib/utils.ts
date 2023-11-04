@@ -1,7 +1,7 @@
 import { type ClassValue, clsx } from "clsx"
 import { twMerge } from "tailwind-merge"
-import {Tables} from "@/lib/database.types";
 import {format} from "date-fns";
+import {Tables} from "@/lib/database";
 
 /** @ignore */
 export function cn(...inputs: ClassValue[]) {
