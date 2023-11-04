@@ -1,13 +1,14 @@
 import { cn } from "@/lib/utils"
 import { Icons } from "@/components/icons"
-import { Button } from "@/registry/new-york/ui/button"
-import { Input } from "@/registry/new-york/ui/input"
-import { Label } from "@/registry/new-york/ui/label"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
 import {useRouter} from "next/navigation";
 import useAuth from "@/hooks/use-auth";
 
 import React, { useState, ChangeEvent, FormEvent } from 'react';
 import { z } from 'zod';
+import {getSupabaseBrowserClient} from "@/lib/database";
 
 export type UserAuthFormProps = React.HTMLAttributes<HTMLDivElement>;
 
@@ -16,6 +17,7 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
   const [signedIn, setSignedIn] = useState(false);
   const [error, setError] = useState(null);
   const {signIn} = useAuth();
+  const supabase = getSupabaseBrowserClient();
   const router = useRouter();
   const LoginSchema = z.object({
     email: z.string().email('Invalid email format'),
@@ -27,6 +29,10 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
       useState({email: '', password: '',});
   const [validationErrors, setValidationErrors] =
       useState({ email: '', password: '' });
+
+  const resetUserPassword = async (email: string) => {
+    await supabase.auth.resetPasswordForEmail(email);
+  }
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -108,6 +114,7 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
                   onChange={handleChange}
               />
               {validationErrors.password && <div className="text-red-600">{validationErrors.password}</div>}
+              <Button type={"button"} variant={"link"} onClick={()=> resetUserPassword(formData.email)}>Forgot password?</Button>
             </div>
             <Button disabled={isLoading}>
               {isLoading && (

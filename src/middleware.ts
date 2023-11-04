@@ -94,6 +94,5 @@ export async function middleware(req: NextRequest) {
  * @group Next.js Middleware
  */
 export const config = {
-    // TODO temp 'test' allowed
-    matcher: ['/((?!_next/static|_next/image|images|favicon.ico|api/auth|test).*)'],
+    matcher: ['/((?!_next/static|_next/image|images|favicon.ico|api/auth).*)'],
 }
