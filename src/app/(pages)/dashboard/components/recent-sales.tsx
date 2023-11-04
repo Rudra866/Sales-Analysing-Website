@@ -1,12 +1,16 @@
 import {Avatar, AvatarFallback, AvatarImage,} from "@/components/ui/avatar"
 import {useRouter} from "next/navigation";
 import {useDashboard} from "@/app/(pages)/dashboard/components/dashboard-provider";
+import EmployeeAvatar from "@/components/dashboard-components/EmployeeAvatar";
+import useAuth from "@/hooks/use-auth";
 /** @ignore these for now */
 export function RecentSales() {
     const {date, setDate} = useDashboard()
+    const {employee} = useAuth()
 
+    /* can we have this take an employee? */
     function SalesRow({name, email, amount, id}: { name: string; email: string; amount: number; id: string }) {
-        const random = (max: number) => Math.floor(Math.random() * max) + 1
+        // const random = (max: number) => Math.floor(Math.random() * max) + 1
         const router = useRouter()
 
         return (
@@ -15,10 +19,11 @@ export function RecentSales() {
                      router.push(`/profile/${id}`)
                  }}
             >
-                <Avatar className="h-9 w-9">
-                    <AvatarImage src={`/avatars/0${random(5)}.png`} alt="Avatar"/>
-                    <AvatarFallback>{name[0]}</AvatarFallback>
-                </Avatar>
+                {/*<Avatar className="h-9 w-9">*/}
+                {/*    <AvatarImage src={`/avatars/0${random(5)}.png`} alt="Avatar"/>*/}
+                {/*    <AvatarFallback>{name[0]}</AvatarFallback>*/}
+                {/*</Avatar>*/}
+                <EmployeeAvatar employee={employee!}/> {/* for now since no user info yet, just use signed in employee */}
                 <div className="ml-4 space-y-1">
                     <p className="text-sm font-medium leading-none">{name}</p>
                     <p className="text-sm text-muted-foreground">{email}</p>
