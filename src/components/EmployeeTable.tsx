@@ -4,17 +4,25 @@ import {
   ColumnFiltersState, flexRender,
   getCoreRowModel, getFilteredRowModel,
   getPaginationRowModel, getSortedRowModel, Row,
-  SortingState,
-  useReactTable
+  SortingState, TableOptions,
+  useReactTable,
 } from "@tanstack/react-table";
-import React, {useEffect, useState} from "react";
+import React, {HTMLAttributes, PropsWithChildren, useCallback, useEffect, useState} from "react";
 import {Input} from "@/components/ui/input";
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 import {Button} from "@/components/ui/button";
 import {ChevronLeftIcon, ChevronRightIcon, DoubleArrowLeftIcon, DoubleArrowRightIcon} from "@radix-ui/react-icons";
 import {Checkbox} from "@/components/ui/checkbox";
-import {Employee, Role, getSupabaseBrowserClient, Database, SupabaseClient} from "@/lib/database";
+import {
+  Employee,
+  Role,
+  getSupabaseBrowserClient,
+  Database,
+  SupabaseClient,
+  getAllEmployees,
+  getAllRoles
+} from "@/lib/database";
 import {ArrowUpDown, MoreHorizontal} from "lucide-react";
 import {
   DropdownMenu,
@@ -26,7 +34,9 @@ import {
 import FormModal from "@/components/FormModal";
 import {EmployeeSelectModalForm} from "@/app/(pages)/admin/employees/components/EmployeeSelectModalForm";
 import {RoleSelectModalForm} from "@/app/(pages)/admin/employees/components/RoleSelectModalForm";
-import TablePagination from "@/components/TablePagination";
+import TableSortButton from "@/components/TableSortButton";
+import {columns} from "@/app/(pages)/(examples)/tasks/components/columns";
+import DataTable, {TableFilter} from "@/components/DataTable";
 
 /**
  * Component to create a table to render all employees in the database.
@@ -37,41 +47,33 @@ export default function EmployeeTable() {
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [roles, setRoles] = useState<Role[]>([]);
   const supabase: SupabaseClient<Database> = getSupabaseBrowserClient();
+  const [sorting, setSorting] = useState<SortingState>([])
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
+
   useEffect(() => {
-    function fetchData() {
-      return Promise.all([
-        supabase.from('Employees').select(),
-        supabase.from('Roles').select(),
-      ]);
-    }
     async function loadData() {
       try {
-        console.log(await supabase.auth.getSession())
         setLoading(true);
-        const [employeeData, roleData] = await fetchData();
-        const { data: employees, count: employeeCount, error: employeeError} = employeeData;
-        const { data: roles, count: roleCount, error: roleError } = roleData;
-
-        if (employeeError || roleError) {
-          console.error("Supabase error: ", (employeeError ?? roleError));
-          throw new Error("Failed to load employee or roles data.");
-        }
-
-        setEmployees(employees);
-        setRoles(roles);
+        setEmployees(await getAllEmployees(supabase) ?? [])
+        setRoles(await getAllRoles(supabase) ?? [])
       } catch (error) {
-        console.error(error);
+        console.error("Supabase error: ", error)
+        console.error("Failed to load employee or roles data.")
+      } finally {
+        setLoading(false)
       }
     }
-    loadData().then(()=> setLoading(false));
+
+    loadData()
   }, [supabase]);
 
-  function updateEmployee(employee:Employee) {
+  const updateEmployee = useCallback((employee: Employee) => {
     const originalEmployees = [...employees]
     const updatedEmployees = originalEmployees
-        .map((oldEmployee) => oldEmployee.id === employee.id ? employee: oldEmployee)
+        .map((oldEmployee) =>
+            oldEmployee.id === employee.id ? employee: oldEmployee)
     setEmployees(updatedEmployees)
-  }
+  }, [employees]);
 
   type DropDownMenuProps = {
     row: Row<Employee>,
@@ -94,7 +96,7 @@ export default function EmployeeTable() {
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
               <DropdownMenuSeparator/>
               <DropdownMenuItem onClick={() => navigator.clipboard.writeText(employee.EmployeeNumber)}>
-                Copy employees id
+                Copy Employee Number
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => setShowEmployeeModal(true)}>
                 <span>Show Employee</span>
@@ -104,28 +106,14 @@ export default function EmployeeTable() {
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-
           <FormModal title={"Employee"} showDialog={showEmployeeModal} setShowDialog={setShowEmployeeModal}>
             <EmployeeSelectModalForm roles={roles} updateEmployee={updateEmployee} employee={row.original} setShowDialog={setShowEmployeeModal}/>
           </FormModal>
           <FormModal title={"Employee"} showDialog={showRoleModal} setShowDialog={setShowRoleModal}>
             <RoleSelectModalForm employee={row.original} roles={roles} updateEmployee={updateEmployee} />
           </FormModal>
-
         </>
     );
-  }
-
-  function SortButton(name:string, column:Column<Employee>) {
-    return (
-        <Button
-            variant={"ghost"}
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          {name}
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-    )
   }
 
   const columns: ColumnDef<Employee, any>[] = [
@@ -150,20 +138,21 @@ export default function EmployeeTable() {
     },
     {
       accessorKey: "EmployeeNumber",
-      header: ({column}) => SortButton("Employee Number", column),
+      header: ({column}) => <TableSortButton column={column}/>,
     },
     {
       accessorKey: "Name",
-      header: ({column}) => SortButton("Name", column)
+      header: ({column}) => <TableSortButton column={column}/>
     },
     {
       accessorKey: "Email",
-      header: ({column}) => SortButton("Email", column),
+      header: ({column}) => <TableSortButton column={column}/>
     },
     {
       accessorKey: "Role",
-      header: ({column}) => SortButton("Role", column),
+      header: ({column}) => <TableSortButton column={column}/>,
       cell: ({row}) => roles.find((role) => role.id === row.original.Role)?.RoleName
+
     },
     {
       id: "actions",
@@ -171,31 +160,8 @@ export default function EmployeeTable() {
     },
   ]
 
-  return (
-      <DataTable columns={columns} data={employees}/>
-  )
-}
-
-
-export interface DataTableProps<TData, TValue> {
-  columns: ColumnDef<TData, TValue>[]
-  data: TData[]
-}
-
-/**
- * Component to create a table as model for {@link EmployeeTable}
- * @group React Components
- */
-function DataTable<TData, TValue>({
-                                        data,
-                                        columns
-                                      }: DataTableProps<TData, TValue>) {
-  const [sorting, setSorting] = useState<SortingState>([])
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
-  const pageSizes = [10, 25, 50, 100]
-
-  const table = useReactTable({
-    data,
+  const table: import("@tanstack/table-core").Table<Employee> = useReactTable({
+    data: employees,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
@@ -208,58 +174,13 @@ function DataTable<TData, TValue>({
       columnFilters
     },
   })
+
   return (
-    <div className="space-y-4">
-      <div className="flex items-center">
-        <Input
-            placeholder="Filter employees..."
-            value={(table.getColumn("Name")?.getFilterValue() as string) ?? ""}
-            onChange={(event) => table.getColumn("Name")?.setFilterValue(event.target.value)}
-            className="max-w-sm"/>
-      </div>
-      <div className="rounded-md border">
-        <Table>
-          <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-                <TableRow key={headerGroup.id}>
-                  {headerGroup.headers.map((header) =>
-                      <TableHead key={header.id}>
-                        {header.isPlaceholder
-                            ? null
-                            : flexRender(
-                                header.column.columnDef.header,
-                                header.getContext()
-                            )}
-                      </TableHead>
-                  )}
-                </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {table.getRowModel().rows?.length ? (
-                table.getRowModel().rows.map((row) => (
-                    <TableRow
-                        key={row.id}
-                        data-state={row.getIsSelected() && "selected"}
-                    >
-                      {row.getVisibleCells().map((cell) => (
-                          <TableCell key={cell.id}>
-                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                          </TableCell>
-                      ))}
-                    </TableRow>
-                ))
-            ) : (
-                <TableRow>
-                  <TableCell colSpan={columns.length} className="h-24 text-center">
-                    No results.
-                  </TableCell>
-                </TableRow>
-            )}
-          </TableBody>
-        </Table>
-        <TablePagination table={table} pageSizes={pageSizes}/>
-      </div>
-    </div>
+      // maybe can use provider here to pass less components around?
+    <DataTable table={table} loading={loading}>
+      <TableFilter table={table} initial={"Name"} placeholder={"Filter employees..."}/>
+    </DataTable>
   )
 }
+
+
