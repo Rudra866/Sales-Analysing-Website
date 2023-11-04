@@ -8,35 +8,41 @@ import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/c
 import {Button} from "@/components/ui/button";
 import {DialogClose} from "@radix-ui/react-dialog";
 import React from "react";
-import {Row} from "@tanstack/react-table";
-import {Employee, Role} from "@/lib/database.types";
-import {getSupabaseBrowserClient} from "@/lib/supabase";
+import {Employee, Role, getSupabaseBrowserClient} from "@/lib/database";
 
-interface RoleSelectModalFormProps {
-  row: Row<Employee>
-  roles: Role[]
-  updateEmployee: (employee: Employee) => void
+export type RoleSelectModalFormProps = {
+  employee: Employee;
+  roles: Role[];
+  updateEmployee: (employee: Employee) => void;
 }
-export function RoleSelectModalForm({ row, roles, updateEmployee }: RoleSelectModalFormProps) {
-  const employee = row.original;
-  const supabase = getSupabaseBrowserClient();
-  const roleFormSchema = z.object({
+
+/**
+ * Component to allow selecting a role for an employee from a dropdown select list.
+ * @param employee the employee to change roles of
+ * @param roles list of roles to choose from
+ * @param updateEmployee callback function to reload an employee in an upper component.
+ * @group React Components
+ */
+export function RoleSelectModalForm({ employee, roles, updateEmployee }: RoleSelectModalFormProps) {
+  const supabase =
+      getSupabaseBrowserClient();
+  const roleSelectFormSchema = z.object({
     Role:
         z.string().refine(
             (value) => {
-              return !isNaN(Number(value)) && Number(value) >= 1
+              return !isNaN(Number(value)) && Number(value) >= 1;
             }, {
               message: "Invalid role selected."
             }
         )
   })
-  const form = useForm<z.infer<typeof roleFormSchema>>({
-    resolver: zodResolver(roleFormSchema),
+  const form = useForm<z.infer<typeof roleSelectFormSchema>>({
+    resolver: zodResolver(roleSelectFormSchema),
     defaultValues: {
       Role: employee?.Role.toString() ?? "",
     }});
 
-  async function onSubmit(values: z.infer<typeof roleFormSchema>) {
+  async function onSubmit(values: z.infer<typeof roleSelectFormSchema>) {
     try {
       const { data, error} = await supabase
           .from('Employees')

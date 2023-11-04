@@ -1,7 +1,7 @@
 import {Avatar, AvatarFallback, AvatarImage,} from "@/components/ui/avatar"
 import {useRouter} from "next/navigation";
 import {useDashboard} from "@/app/(pages)/dashboard/components/dashboard-provider";
-
+/** @ignore these for now */
 export function RecentSales() {
     const {date, setDate} = useDashboard()
 

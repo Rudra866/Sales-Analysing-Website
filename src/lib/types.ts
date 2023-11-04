@@ -24,6 +24,9 @@ export interface MainNavItem extends NavItem {}
 
 export interface SidebarNavItem extends NavItemWithChildren {}
 
+/**
+ * @group Zod Schemas
+ */
 export const  new_vehicle_sales_schema = z.object({
     stock_number: z.number(),
     sales_rep: z.string(),
@@ -43,8 +46,10 @@ export const  new_vehicle_sales_schema = z.object({
     total_MTD: z.number(),
 })
 
-
-export const  use_vehicle_sales_schema = z.object({
+/**
+ * @group Zod Schemas
+ */
+export const use_vehicle_sales_schema = z.object({
     stock_number: z.number(),
     sales_rep: z.string(),
     fin_mgr: z.string(),
@@ -67,8 +72,48 @@ export const  use_vehicle_sales_schema = z.object({
     roi: z.number(),
 })
 
+/**
+ * @group Zod Schemas
+ */
+export const existingEmployeeFormSchema = z.object({
+    EmployeeNumber:
+        z.string().min(1, {
+            message: "EmployeeNumber must not be empty."})
+            .max(255, {
+                message: "EmployeeNumber must be shorter than 255 characters."}),
+
+    Name:
+        z.string()
+            .min(1, {
+                message: "Employee Name must not be empty."})
+            .max(255, {
+                message: "Employee Name must be less than 255 characters."}),
+
+    email:
+        z.string()
+            .min(1, {
+                message: "Employee Email must not be empty."})
+            .max(320, {
+                message: "Employee Email must be less than 255 characters."})
+            .email({
+                message: "Employee Email must be a valid email address."}),
+
+    password: z.string(),
+
+    Role:
+        z.string().refine(
+            (value) => {
+                return !isNaN(Number(value)) && Number(value) >= 1
+            }, {
+                message: "Invalid."
+            }
+        )
+})
+
 export type new_vehicle_sales_type = z.infer<typeof new_vehicle_sales_schema>
 
+// unused
+/** @ignore */
 export const navigationMenu = [
     "Dashboard",
     "Sales Table",

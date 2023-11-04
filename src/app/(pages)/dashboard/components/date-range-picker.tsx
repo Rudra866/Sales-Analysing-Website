@@ -22,6 +22,7 @@ interface CalendarDateRangePickerProps extends React.HTMLAttributes<HTMLDivEleme
     setDate?: React.Dispatch<React.SetStateAction<DateRange | undefined>>
 }
 
+/** @ignore these for now */
 export function CalendarDateRangePicker({className, date, setDate}: CalendarDateRangePickerProps) {
     return (
         <div className={cn("grid gap-2", className)}>

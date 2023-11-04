@@ -1,11 +1,15 @@
 import { type ClassValue, clsx } from "clsx"
 import { twMerge } from "tailwind-merge"
 
+/** @ignore */
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
 
+/** remove?
+ *  @ignore
+ */
 export const mediaRatios = {
     video: 16 / 9,
     image: 4 / 3,

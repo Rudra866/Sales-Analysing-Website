@@ -43,3 +43,6 @@ venv/
 
 # data gen output
 */output/
+
+# ignore typedocs generation
+/docs

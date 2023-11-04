@@ -14,7 +14,7 @@ import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/c
 import {Button} from "@/components/ui/button";
 import {ChevronLeftIcon, ChevronRightIcon, DoubleArrowLeftIcon, DoubleArrowRightIcon} from "@radix-ui/react-icons";
 import {Checkbox} from "@/components/ui/checkbox";
-import {Employee, Role} from "@/lib/database.types";
+import {Employee, Role, getSupabaseBrowserClient, Database, SupabaseClient} from "@/lib/database";
 import {ArrowUpDown, MoreHorizontal} from "lucide-react";
 import {
   DropdownMenu,
@@ -23,17 +23,19 @@ import {
   DropdownMenuLabel, DropdownMenuSeparator,
   DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
-import FormModal from "@/app/(pages)/admin/employees/components/FormModal";
+import FormModal from "@/components/FormModal";
 import {EmployeeSelectModalForm} from "@/app/(pages)/admin/employees/components/EmployeeSelectModalForm";
 import {RoleSelectModalForm} from "@/app/(pages)/admin/employees/components/RoleSelectModalForm";
-import {getSupabaseBrowserClient} from "@/lib/supabase";
 
+/**
+ * Component to create a table to render all employees in the database.
+ * @group React Components
+ */
 export default function EmployeeTable() {
   const [loading, setLoading] = useState(true);
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [roles, setRoles] = useState<Role[]>([]);
-  const supabase = getSupabaseBrowserClient();
-
+  const supabase: SupabaseClient<Database> = getSupabaseBrowserClient();
   useEffect(() => {
     function fetchData() {
       return Promise.all([
@@ -43,6 +45,7 @@ export default function EmployeeTable() {
     }
     async function loadData() {
       try {
+        console.log(await supabase.auth.getSession())
         setLoading(true);
         const [employeeData, roleData] = await fetchData();
         const { data: employees, count: employeeCount, error: employeeError} = employeeData;
@@ -68,7 +71,12 @@ export default function EmployeeTable() {
         .map((oldEmployee) => oldEmployee.id === employee.id ? employee: oldEmployee)
     setEmployees(updatedEmployees)
   }
-  function DropDownMenu(row:Row<Employee>, roles: Role[]) {
+
+  type DropDownMenuProps = {
+    row: Row<Employee>,
+    roles: Role[],
+  }
+  function DropDownMenu({row, roles}: DropDownMenuProps) {
     const [showEmployeeModal, setShowEmployeeModal] = useState(false);
     const [showRoleModal, setShowRoleModal] = useState(false);
     const employee = row.original;
@@ -100,7 +108,7 @@ export default function EmployeeTable() {
             <EmployeeSelectModalForm roles={roles} updateEmployee={updateEmployee} employee={row.original} setShowDialog={setShowEmployeeModal}/>
           </FormModal>
           <FormModal title={"Employee"} showDialog={showRoleModal} setShowDialog={setShowRoleModal}>
-            <RoleSelectModalForm row={row} roles={roles} updateEmployee={updateEmployee} />
+            <RoleSelectModalForm employee={row.original} roles={roles} updateEmployee={updateEmployee} />
           </FormModal>
 
         </>
@@ -163,7 +171,7 @@ export default function EmployeeTable() {
     },
     {
       id: "actions",
-      cell: ({ row }) => DropDownMenu(row, roles),
+      cell: ({ row }) => <DropDownMenu row={row}  roles={roles}/>,
     },
   ]
 
@@ -173,11 +181,16 @@ export default function EmployeeTable() {
 }
 
 
-interface DataTableProps<TData, TValue> {
+export interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
 }
-export function DataTable<TData, TValue>({
+
+/**
+ * Component to create a table as model for {@link EmployeeTable}
+ * @group React Components
+ */
+function DataTable<TData, TValue>({
                                         data,
                                         columns
                                       }: DataTableProps<TData, TValue>) {

@@ -1,5 +1,6 @@
 import { Input } from "@/registry/new-york/ui/input"
 
+/** @ignore these for now */
 export function Search() {
   return (
     <div>

@@ -1,4 +1,3 @@
-"use client"
 import React, {Dispatch, SetStateAction, useState} from "react";
 import {useForm} from "react-hook-form";
 import * as z from "zod";
@@ -10,79 +9,50 @@ import {DialogBody} from "next/dist/client/components/react-dev-overlay/internal
 import {Input} from "@/components/ui/input";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 import {Button} from "@/components/ui/button";
-import {Employee, Role} from "@/lib/database.types";
+import {Employee, getEmployeeById, Role} from "@/lib/database";
 import {DialogClose} from "@radix-ui/react-dialog";
+import {existingEmployeeFormSchema} from "@/lib/types";
 
-
-interface EmployeeSelectModalFormProps {
+/**
+ * Type
+ */
+export type EmployeeSelectModalFormProps = {
   employee: Employee
   roles: Role[]
   updateEmployee: (employee: Employee) => void
   setShowDialog: Dispatch<SetStateAction<boolean>>;
 }
-const employeeFormSchema = z.object({
-  EmployeeNumber:
-      z.string().min(1, {
-        message: "EmployeeNumber must not be empty."})
-          .max(255, {
-            message: "EmployeeNumber must be shorter than 255 characters."}),
 
-  Name:
-      z.string()
-          .min(1, {
-            message: "Employee Name must not be empty."})
-          .max(255, {
-            message: "Employee Name must be less than 255 characters."}),
-
-  Email:
-      z.string()
-          .min(1, {
-            message: "Employee Email must not be empty."})
-          .max(320, {
-            message: "Employee Email must be less than 255 characters."})
-          .email({
-            message: "Employee Email must be a valid email address."}),
-
-  Role:
-      z.string().refine(
-          (value) => {
-            return !isNaN(Number(value)) && Number(value) >= 1
-          }, {
-            message: "Invalid."
-          }
-      )
-})
-
-
+/**
+ * Component to allow for viewing a user's details and modifying them. Has two states, view mode and edit mode.
+ * Maybe add a toast notification here in the future so the user has more evidence it was successful?
+ * @param {EmployeeSelectModalFormProps} props
+ * @group React Components
+ */
 export function EmployeeSelectModalForm({ employee, roles, setShowDialog, updateEmployee }: EmployeeSelectModalFormProps) {
   const [editState, setEditState] = useState(false);
   const supabase = getSupabaseBrowserClient();
-  const form = useForm<z.infer<typeof employeeFormSchema>>({
-    resolver: zodResolver(employeeFormSchema),
+  const form = useForm<z.infer<typeof existingEmployeeFormSchema>>({
+    resolver: zodResolver(existingEmployeeFormSchema),
     defaultValues: {
       EmployeeNumber: employee?.EmployeeNumber ?? "",
       Name: employee?.Name ?? "",
-      Email: employee?.Email ?? "",
       Role: employee?.Role.toString() ?? "",
     },
   })
 
-  async function onSubmit(values: z.infer<typeof employeeFormSchema>) {
+  async function onSubmit(values: z.infer<typeof existingEmployeeFormSchema>) {
     try {
-      const { EmployeeNumber, Name, Email, Role } = values;
-      const { data, error} = await supabase
-          .from('Employees')
-          .update({ EmployeeNumber, Name, Email, Role: parseInt(Role)})
-          .eq("id", employee.id)
-          .select().single()
+      const { EmployeeNumber, Name, Role } = values;
+      const employeeResult = await getEmployeeById(supabase, employee.id);
 
-      if (error) {
-        console.log("Supabase error: ", error);
-        throw new Error("An error occurred while updating the employee record.");
+      if (!employeeResult) {
+        throw new Error("No employee was found by that id.");
       }
 
-      updateEmployee(data);
+      updateEmployee(employeeResult);
     } catch (error) {
+      console.log("An error occurred while updating the employee record.", error);
       console.log(error)
     } finally {
       setShowDialog(false);
@@ -129,7 +99,7 @@ export function EmployeeSelectModalForm({ employee, roles, setShowDialog, update
           />
           <FormField
               control={form.control}
-              name="Email"
+              name="email"
               render={({ field }) => (
                   <FormItem>
                     <FormLabel>Email</FormLabel>

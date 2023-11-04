@@ -64,25 +64,20 @@ table Sales {
   TradeInID int [ref: > TradeIns.id]
 }
 
-/* Do we want seperate tables for NewSales / Used Sales?
- * I'd assume they're going to be queried seperately anyways?
- * If so, we assume Sales as NewSales and UsedSales has the following extra members: */
-
 table MonthlySales {
   id int [pk, not null, increment]
   TimePeriod timestamp [not null, note: "Timestamp in the form of YYYY-MM-01 00:00:00"]
   // or double timestamp one for month/one for year? Performance shouldn't matter much, just depends on how we want to construct our queries.
-  /* may need to increase these to be safe? (only 10.00M) Whatever is reasonable.*/
+  /* may need to increase these to be safe? (only 100.00M).*/
   GrossProfit     decimal(10,2) [not null]
   FinAndInsurance decimal(10,2) [not null]
   Holdback        decimal(10,2) [not null]
   Total           decimal(10,2) [not null]
 }
 
-/* if we have the NewSales / UsedSales split, we also have these split? */
 
 table Roles {
-  id int [pk, not null, increment]
+  id int                          [pk, not null, increment]
   RoleName varchar(255)
   // come up with some others for more control.
   ReadPermission boolean          [not null, default: false, note: "Allow user to read created sales"]
@@ -94,15 +89,15 @@ table Roles {
 }
 
 table Employees {
-  id int [pk, not null, increment]
+  id UUID [pk, not null]
   Name varchar(255) [not null]
   EmployeeNumber varchar(255) [not null]
-  Email TEXT  [not null, note: "max len(320)"]
-  Password TEXT [not null, note: "salted hash of a password"]
   Role int [not null, ref: > Roles.id]
   CreatedOn timestamp [not null, default: `now()`, note: "Extra optional metadata for `admin` type roles to access"]
   LastAccessed timestamp [not null, default: `now()`, note: "Extra optional metadata for `admin` type roles to access"]
 }
+
+Ref: Employees.id > auth.users [delete: cascade]
 
 table Customers {
   id int [pk, not null, increment]
@@ -129,7 +124,7 @@ table Tasks {
   StartDate timestamp   [not null, default: `now()`]
   EndDate timestamp   [not null, default: `now()`]
   Assignee int [ref: > Employees.id]
-  Creator int [ref: > Employees.id]
+  Creator int [not null, ref: > Employees.id]
 }
 
 table SalesGoals {
@@ -142,7 +137,6 @@ table SalesGoals {
   TotalGoal decimal(10,2) [not null]
 }
 
-
 /* Keep track of notifications, query by EmployeeID */
 /* We could probably do this easier with the LastAccessed time stamp,
  * but then notifications are only shown once. */
@@ -151,24 +145,6 @@ table Notifications {
   Employee int [not null, ref: > Employees.id]
   Sale int [not null, ref: > Sales.id]
 }
-
-/************* Other Tables: **********************/
-/* Could include sessions table to allow the server to keep track of authenticated users
- * between restarts and allow multiple sessions with fixed expiry dates
- * -- up to bill how he wants to setup auth setup.
- */
-  // example -- copied from nextauth default schema and converted to our schema style
- /*
- table Sessions {
-    SessionID     INT [pk, increment, not null]
-    EmployeeID    INTEGER [not null, ref: > Employees.EmployeeID]
-    expires       TIMESTAMP(6) [not null]
-    session_token VARCHAR(255) [not null]
-    access_token  VARCHAR(255) [not null]
-    created_at    TIMESTAMP(6) [not null, default: `now()`]
-    updated_at    TIMESTAMP(6) [not null, default: `now()`]
- }
- */
 /*
 **Relationships:**
 - One sale can be associated with one employee, one customer, one financing method, and one trade-in.

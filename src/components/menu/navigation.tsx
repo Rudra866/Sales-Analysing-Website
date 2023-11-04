@@ -7,7 +7,6 @@ import {UserNav} from "@/components/dashboard-components/user-nav";
 import Image from "next/image";
 import {MobileNav} from "@/components/mobile-nav";
 import useAuth from "@/hooks/use-auth";
-// import {ModeToggle} from "@/components/mode-toggle";
 
 function Navigation() {
   const {user} = useAuth();

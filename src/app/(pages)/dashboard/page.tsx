@@ -16,7 +16,12 @@ import {useDashboard} from "./components/dashboard-provider";
 import {getSupabaseBrowserClient} from "@/lib/supabase";
 import {DbResult} from "@/lib/types";
 
-
+// TODO maybe we can split this page to some public components? We can also add db method to handle this db request.
+/**
+ * Main dashboard page for the app.
+ * @group Next.js Pages
+ * @route `/dashboard`
+ */
 export default function DashboardPage() {
     const {data, date, setDate} = useDashboard()
     const [totalRevenue, setTotalRevenue] = useState<number>(0);

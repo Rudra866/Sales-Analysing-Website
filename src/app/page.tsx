@@ -1,9 +1,11 @@
 import {redirect} from "next/navigation";
 
-export default async function DashboardPage() {
-
-    // TODO https://youtu.be/KmJN-bEayeY?si=IvDmsmw_xtZHiz1Y
-
+/**
+ * The root page of the app. Redirects to `/dashboard`
+ * @group Next.js Pages
+ * @route `/`
+ */
+export default async function RootPage() {
     redirect('/dashboard')
     return (
         <>

@@ -1,6 +1,6 @@
 import { MainNavItem  } from "@/lib/types"
 
-interface DocsConfig {
+export type DocsConfig = {
     mainNav: MainNavItem[]
 }
 
@@ -9,10 +9,6 @@ export const docsConfig: DocsConfig = {
         {
             title: "Dashboard",
             href: "/dashboard",
-        },
-        {
-            title: "Authentication",
-            href: "/authentication",
         },
         {
             title: "Settings",
@@ -34,6 +30,11 @@ export const docsConfig: DocsConfig = {
         {
             title: "Sales",
             href: "/sales",
+        },
+        // temp for dev
+        {
+            title: "Test",
+            href: "/test/database",
         },
     ],
 }
