@@ -52,8 +52,6 @@ export const DashboardProvider: React.FC<DashboardProviderProps> = ({ children }
 
         };
         fetchData()
-
-
     }, [date?.from, date?.to, supabase]);
 
     return (

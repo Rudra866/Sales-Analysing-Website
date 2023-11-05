@@ -1,41 +1,22 @@
 import {RoleSelectModalForm} from "@/app/(pages)/admin/employees/components/RoleSelectModalForm";
 import FormModal, {FormModalProps} from "@/components/FormModal";
 import {Meta, StoryObj} from "@storybook/react";
-import {
-  EmployeeSelectModalForm,
-  EmployeeSelectModalFormProps
-} from "@/app/(pages)/admin/employees/components/EmployeeSelectModalForm";
 import {test_employee_set, test_roles_set} from "@/stories/data.test";
-import {JSX, ReactElement, useState} from "react";
-import "./global.css"
+import {useState} from "react";
 
 // TODO still unfinished.
 export default {
-  title: 'Your Component',
-  component: EmployeeSelectModalForm,
+  title: 'Form Dialog',
+  component: FormModal,
 } as Meta;
 
-export const EmployeeStory: StoryObj<EmployeeSelectModalFormProps> = (args: EmployeeSelectModalFormProps) => (
-    <EmployeeSelectModalForm {...args} />
-);
 
-EmployeeStory.args = {
-  employee: test_employee_set[0],
-  roles: test_roles_set,
-  variant: null,
-};
-
-EmployeeStory.argTypes = {
-  employee: {
-    options: test_employee_set,
-    defaultValue: test_employee_set[0],
-    control: { type: 'select' },
+export const Default: StoryObj<typeof FormModal> = {
+  render: (args) => <FormModal {...args} />,
+  args: {
+    showDialog: true,
   },
-  variant: {
-    options: [null, 'invite', 'register'],
-    control: { type: 'radio' },
-  },
-};
+}
 
 // export const EmployeeModal: StoryObj<FormModalProps> = (args: JSX.IntrinsicAttributes & FormModalProps) => {
 //   const [showDialog, setShowDialog] = useState(args.showDialog);

@@ -1,8 +1,16 @@
 import type { Preview } from "@storybook/react";
-import '../src/stories/global.css'
 import { Title, Subtitle, Description, Primary, Controls, Stories } from '@storybook/blocks';
+import {themes} from "@storybook/theming";
+import {ThemeProvider} from "../src/components/providers";
 
 const preview: Preview = {
+  decorators: [
+    (Story) => (
+        <ThemeProvider defaultTheme={"dark"}>
+          <Story/>
+        </ThemeProvider>
+    )
+  ],
   parameters: {
     actions: { argTypesRegex: "^on[A-Z].*" },
     controls: {
@@ -12,6 +20,7 @@ const preview: Preview = {
       },
     },
     docs: {
+      theme: themes.dark,
       page: () => (
        <>
           <Title/>

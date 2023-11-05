@@ -10,7 +10,7 @@ type Story = StoryObj<typeof BuiltComponent>
 
 const BuiltComponent = (props: JSX.IntrinsicAttributes & RoleSelectModalFormProps) => {
       return (
-          <FormModal setShowDialog={doNothing} title={"Form Modal"} showDialog={true}>
+          <FormModal title={"Form Modal"} onSubmit={doNothing} setShowDialog={doNothing}  showDialog={true}>
                 <RoleSelectModalForm {...props}/>
           </FormModal>
       )
