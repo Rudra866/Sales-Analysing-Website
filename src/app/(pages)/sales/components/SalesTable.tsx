@@ -80,6 +80,23 @@ export default function SalesTable() {
     //       .map((oldSale) => oldSale.id === sale.id ? sale: oldSale)
     //   setSales(updatedSales)
     // }
+    function tooltip(cell:string){
+        return (
+            <TooltipProvider>
+                <Tooltip>
+                    <TooltipTrigger asChild>
+                        <p className={'max-w-[200px] text-sm truncate'}>
+                            {cell}
+                        </p>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                        <p>{cell}</p>
+                    </TooltipContent>
+                </Tooltip>
+            </TooltipProvider>
+
+        )
+    }
 
     function SortButton(name: string, column: Column<Tables<'Sales'>>) {
         // todo does not work for employee names
@@ -145,7 +162,7 @@ export default function SalesTable() {
                     <div className="flex space-x-2 ml-1">
                         <Badge variant="outline">
                             <span className="max-w-[200px] truncate font-medium">
-                                {employees.find((employee) => employee.id === row.original.EmployeeID)?.Name}
+                                {tooltip(employees.find((employee) => employee.id === row.original.EmployeeID)?.Name || 'Employee Name')}
                             </span>
                         </Badge>
                     </div>
@@ -156,21 +173,7 @@ export default function SalesTable() {
             accessorKey: "VehicleMake",
             header: ({column}) => SortButton("VehicleMake", column),
             cell: ({row}) => {
-                return (
-                    <TooltipProvider>
-                        <Tooltip>
-                            <TooltipTrigger asChild>
-                                <p className={'max-w-[200px] text-sm truncate'}>
-                                    {row.original.VehicleMake}
-                                </p>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                                <p>{row.original.VehicleMake}</p>
-                            </TooltipContent>
-                        </Tooltip>
-                    </TooltipProvider>
-
-                )
+                return (tooltip(row.original.VehicleMake))
             }
         },
         {
@@ -205,21 +208,23 @@ export default function SalesTable() {
     ]
 
     return (
-        <DataTable data={sales} columns={columns} loading={loading}/>
+        <DataTable defaultData={sales} columns={columns} loading={loading}/>
     )
 }
 
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[]
-    data: TData[]
+    defaultData: TData[]
     loading?: boolean
 }
 
-export function DataTable<TData, TValue>({data, columns, loading}: DataTableProps<TData, TValue>) {
+export function DataTable<TData, TValue>({defaultData, columns, loading}: DataTableProps<TData, TValue>) {
     const [sorting, setSorting] = useState<SortingState>([])
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
     const pageSizes = [10, 25, 50, 100]
+    const ref = React.useRef<HTMLTableSectionElement>(null)
+    const [data, setData] = useState( defaultData);
 
     const table = useReactTable({
         data,
@@ -237,27 +242,26 @@ export function DataTable<TData, TValue>({data, columns, loading}: DataTableProp
         enableSorting: true,
         enableColumnFilters: true,
     })
-
-    // const newRow: Sale = {
-    //     id: 0,
-    //     EmployeeID: 1,
-    //     SaleTime: new Date().toDateString(),
-    //     VehicleMake: '',
-    //     ActualCashValue: 0,
-    //     GrossProfit: 0,
-    //     FinAndInsurance: 0,
-    //     Holdback: 0,
-    //     Total: 0,
-    //     StockNumber: '',
-    //     CustomerID: 0,
-    //     FinancingID: 0,
-    //     TradeInID: 0,
-    //     NewSale: false,
-    //     LotPack: 0,
-    //     DaysInStock: 0,
-    //     DealerCost: 0,
-    //     ROI: 0,
-    // };
+    const newRow: Sale = {
+        id: table.getRowModel().rows.length + 1,
+        EmployeeID: '1',
+        SaleTime: new Date().toDateString(),
+        VehicleMake: 'VehicleMake',
+        ActualCashValue: 0,
+        GrossProfit: 0,
+        FinAndInsurance: 0,
+        Holdback: 0,
+        Total: 0,
+        StockNumber: '12345',
+        CustomerID: 0,
+        FinancingID: 0,
+        TradeInID: 0,
+        NewSale: false,
+        LotPack: 0,
+        DaysInStock: 0,
+        DealerCost: 0,
+        ROI: 0,
+    };
 
     return (
         <div className="space-y-4">
@@ -274,44 +278,9 @@ export function DataTable<TData, TValue>({data, columns, loading}: DataTableProp
                         variant="outline"
                         className="ml-auto hidden h-8 lg:flex"
                         onClick={() => {
-
-                            // const newSale: Sale = {
-                            //     id: 1,
-                            //     SaleTime: new Date().toString(),
-                            //     EmployeeID: 1,
-                            //     VehicleMake: 'Honda',
-                            //     ActualCashValue: 100000,
-                            //     GrossProfit: 1000,
-                            //     FinAndInsurance: 100,
-                            //     Holdback: 100,
-                            //     Total: 100,
-                            //     CustomerID: 1,
-                            //     DaysInStock: 1,
-                            //     DealerCost: 1,
-                            //     FinancingID: 1,
-                            //     LotPack: 1,
-                            //     NewSale: true,
-                            //     ROI: 1,
-                            //     StockNumber: '1',
-                            //     TradeInID: 1,
-                            // }
-                            //
-                            // // todo add row
-                            // data.push(newSale as DbResult<Sale>)
-                            // table
-
-
-
-
-                            table.setSorting([
-                                {
-                                    id: "SaleTime",
-                                    desc: true,
-                                },
-                            ])
-                            // print table data
-                            // console.log(table.getFilteredRowModel().rows)
-
+                            const setFunc = (old: Sale[]) => [...old, newRow];
+                            setData(setFunc as DbResult<Sale[]>);
+                            table.setSorting([{id: "SaleTime", desc: false,}])
                         }}
                     >
                         <Plus className="mr-2 h-4 w-4" />
@@ -322,7 +291,7 @@ export function DataTable<TData, TValue>({data, columns, loading}: DataTableProp
                         variant="outline"
                         className="ml-auto hidden h-8 lg:flex"
                         onClick={() => {
-                            // todo add row
+                            // save
                         }}
                     >
                         save
@@ -347,7 +316,7 @@ export function DataTable<TData, TValue>({data, columns, loading}: DataTableProp
                             </TableRow>
                         ))}
                     </TableHeader>
-                    <TableBody>
+                    <TableBody ref={ref}>
                         {table.getRowModel().rows?.length ? (
                             table.getRowModel().rows.map((row) => (
                                 <TableRow
@@ -454,3 +423,6 @@ export function DataTable<TData, TValue>({data, columns, loading}: DataTableProp
         </div>
     )
 }
+
+
+

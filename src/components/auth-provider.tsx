@@ -45,10 +45,16 @@ export const AuthProvider = ({children}: any) => {
         // subscribe to auth changes.
         const { data: listener } = supabase.auth.onAuthStateChange(
             async (event, session) => {
+              if (event === "SIGNED_IN") return; // todo temp fix. without filtering for this it breaks the page on tab switch/focus loss
               setLoading(true);
               setUser(session?.user ?? null);
               if (session) {
-                await loadEmployeeData(session);
+                const employee = await getEmployeeFromAuthUser(supabase, session.user)
+                if (!employee) throw Error("No employee found but user is signed in.")
+                const role = await getRoleFromEmployee(supabase, employee);
+                if (!role) throw Error("No role found but employee was found.")
+                setEmployee(employee);
+                setRole(role);
               }
               setLoading(false);
             }

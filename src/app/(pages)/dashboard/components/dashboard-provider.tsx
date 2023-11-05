@@ -36,6 +36,8 @@ export const DashboardProvider: React.FC<DashboardProviderProps> = ({children}) 
 
 
     useEffect(() => {
+
+
         getAllSales(supabase).then((res) => {
             const sales = res && res.length > 0 ? res : []
             setData(filterSalesByDate(sales, date) as Sale[])
@@ -63,40 +65,6 @@ export const DashboardProvider: React.FC<DashboardProviderProps> = ({children}) 
             })
         }
 
-        async function getEmployeeSales() {
-            const { data, error } = await supabase
-                .from('Sales')
-                .select(`
-                    EmployeeID,
-                    Employees (
-                        Name,
-                        Email,
-                        EmployeeNumber,
-                        Role
-                    ),
-                      ActualCashValue,
-                      CustomerID,
-                      DaysInStock,
-                      DealerCost,
-                      EmployeeID,
-                      FinancingID,
-                      FinAndInsurance,
-                      GrossProfit,
-                      LotPack,
-                      NewSale,
-                      ROI,
-                      SaleTime,
-                      StockNumber,
-                      Total,
-                      TradeInID,
-                      VehicleMake
-                `)
-                .order('EmployeeID').then((res) => {
-                    console.log('res: ', res)
-                    return res
-                })
-        }
-        getEmployeeSales()
 
     }, [date]); // todo on every date change, it should not pull data form the db, only filter the data that is already in state.
 
