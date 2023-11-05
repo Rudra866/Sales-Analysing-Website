@@ -38,7 +38,7 @@ deploy_dev_preview:
     - code=$?
     - if [ $code -eq 0 ]; then
     - deploymentUrl=`cat deploy.env`
-    - vercel alias $deploymentUrl dev.codeallergy.dev
+    - vercel alias $deploymentUrl dev.codeallergy.dev --token=$VERCEL_TOKEN
     - else
     - errorMessage=`cat error.txt`
     - echo "Error occurred with deployment $errorMessage"
