@@ -4,11 +4,19 @@ stages:
   - build_dbdocs
   - teardown
 
-deploy_preview:
+deploy_generic_preview:
   stage: deploy
   except:
     - main
     - dev
+    - alex
+    - amir
+    - bill
+    - rudra
+    - ryan
+    - suchetan
+    - tolu
+
   script:
     - vercel pull --yes --environment=preview --token=$VERCEL_TOKEN
     - vercel build --token=$VERCEL_TOKEN
@@ -27,10 +35,18 @@ deploy_preview:
       - node_modules/
       - .next/cache/
 
-deploy_dev_preview:
+deploy_user_preview:
   stage: deploy
   only:
     - dev
+    - alex
+    - amir
+    - bill
+    - rudra
+    - ryan
+    - suchetan
+    - tolu
+
   script:
     - vercel pull --yes --environment=production --token=$VERCEL_TOKEN
     - vercel build --token=$VERCEL_TOKEN
@@ -38,7 +54,7 @@ deploy_dev_preview:
     - code=$?
     - if [ $code -eq 0 ]; then
     - deploymentUrl=`cat deploy.env`
-    - vercel alias $deploymentUrl dev.codeallergy.dev --token=$VERCEL_TOKEN
+    - vercel alias $deploymentUrl ${CI_COMMIT_REF_SLUG}.codeallergy.dev --token=$VERCEL_TOKEN
     - else
     - errorMessage=`cat error.txt`
     - echo "Error occurred with deployment $errorMessage"
