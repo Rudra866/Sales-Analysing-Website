@@ -21,14 +21,16 @@ import * as React from "react";
 import {useTheme} from "next-themes";
 import { useRouter } from 'next/navigation'
 import useAuth from "@/hooks/use-auth";
+import {getSupabaseBrowserClient} from "@/lib/database";
 
 export function UserNav() {
   const { setTheme, theme } = useTheme()
   const router = useRouter()
-  const {user, employee, signOut} = useAuth();
+  const supabase = getSupabaseBrowserClient();
+  const {user, employee} = useAuth();
 
   const handleSignOut = async () => {
-    await signOut();
+    await supabase.auth.signOut();
     router.refresh()
   }
   return (
@@ -46,7 +48,7 @@ export function UserNav() {
           <div className="flex flex-col space-y-1">
             <p className="text-sm font-medium leading-none">{employee?.Name ?? "Guest"}</p>
             <p className="text-xs leading-none text-muted-foreground">
-              {user?.email ?? "nobody@nobody.com"}
+              {employee?.Email ?? "nobody@nobody.com"}
             </p>
           </div>
         </DropdownMenuLabel>

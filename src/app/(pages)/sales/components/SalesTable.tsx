@@ -146,10 +146,10 @@ export default function SalesTable() {
                 )
             },
         },
-        {
-            accessorKey: "EmployeeID",
-            header: ({column}) => <TableSortButton column={column}/>,
-        },
+        // {
+        //     accessorKey: "EmployeeID",
+        //     header: ({column}) => <TableSortButton column={column}/>,
+        // },
         {
             accessorKey: "Name",
             header: ({column}) => <TableSortButton column={column}/>,

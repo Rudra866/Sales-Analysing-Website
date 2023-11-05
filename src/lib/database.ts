@@ -203,7 +203,7 @@ export async function getRole(supabase: SupabaseClient, roleName: string): Promi
  * @throws {@link PostgrestError} on database error
  * @group Database Functions
  */
-export async function getNotification(supabase: SupabaseClient, employeeId: number): Promise<Notification | null>
+export async function getNotification(supabase: SupabaseClient, employeeId: string): Promise<Notification | null>
 {
   const {data: notification, error} = await supabase
       .from('Notifications')
@@ -737,6 +737,26 @@ export async function postToEmployees(supabase: SupabaseClient, newEmployee: Emp
       .select()
       .limit(1)
       .single();
+
+  if (error) throw error;
+  return employee;
+}
+
+/**
+ * Updates an employee in the employee table.
+ * @param {SupabaseClient} supabase Any type of Supabase client (client, server, middleware, route).
+ * @param {EmployeeInsert} updatedEmployee
+ * @throws {@link PostgrestError} if id is null, or on database insert error.
+ * @group Database Functions
+ */
+export async function updateToEmployees(supabase: SupabaseClient, updatedEmployee: EmployeeUpdate): Promise<Employee>
+{
+  const {data: employee, error} = await supabase
+      .from("Employees")
+      .update(updatedEmployee)
+      .eq("id", updatedEmployee.id)
+      .select()
+      .single()
 
   if (error) throw error;
   return employee;
