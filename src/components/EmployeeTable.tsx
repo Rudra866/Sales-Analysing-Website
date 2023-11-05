@@ -106,11 +106,12 @@ export default function EmployeeTable() {
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-          <FormModal title={"Employee"} showDialog={showEmployeeModal} setShowDialog={setShowEmployeeModal}>
-            <EmployeeSelectModalForm roles={roles} updateEmployee={updateEmployee} employee={row.original} setShowDialog={setShowEmployeeModal}/>
+          {/* add onUpdate functionality */}
+          <FormModal title={"Employee"} onSubmit={(data:any) => {return}} showDialog={showEmployeeModal} setShowDialog={setShowEmployeeModal}>
+            <EmployeeSelectModalForm employee={row.original} roles={roles}/>
           </FormModal>
-          <FormModal title={"Employee"} showDialog={showRoleModal} setShowDialog={setShowRoleModal}>
-            <RoleSelectModalForm employee={row.original} roles={roles} updateEmployee={updateEmployee} />
+          <FormModal title={"Employee"} onSubmit={(data:any) => {return}} showDialog={showRoleModal} setShowDialog={setShowRoleModal}>
+            <RoleSelectModalForm employee={row.original} roles={roles}/>
           </FormModal>
         </>
     );

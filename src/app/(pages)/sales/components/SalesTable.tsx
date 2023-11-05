@@ -104,8 +104,8 @@ export default function SalesTable() {
                     </DropdownMenuContent>
                 </DropdownMenu>
                 {sale.original &&
-                    <FormModal title={"Sale"} showDialog={salesModal} setShowDialog={setSalesModal}>
-                         <AddSalesRowDialog sale={sale.original} updateSale={updateSales} setShowDialog={setSalesModal}/>
+                    <FormModal title={"Sale"} onSubmit={updateSales} showDialog={salesModal} setShowDialog={setSalesModal}>
+                         <AddSalesRowDialog sale={sale.original}/>
                     </FormModal>
                 }
             </>

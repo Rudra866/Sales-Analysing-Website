@@ -12,6 +12,7 @@ import {Button} from "@/components/ui/button";
 import {Employee, getEmployeeById, Role, updateToEmployees} from "@/lib/database";
 import {DialogClose} from "@radix-ui/react-dialog";
 import {existingEmployeeFormSchema} from "@/lib/types";
+import {useFormModalContext} from "@/components/FormModal";
 
 /**
  * Type
@@ -19,8 +20,6 @@ import {existingEmployeeFormSchema} from "@/lib/types";
 export type EmployeeSelectModalFormProps = {
   employee: Employee
   roles: Role[]
-  updateEmployee: (employee: Employee) => void
-  setShowDialog: Dispatch<SetStateAction<boolean>>;
   variant?: "invite" | "register" | null
 }
 
@@ -30,7 +29,8 @@ export type EmployeeSelectModalFormProps = {
  * @param {EmployeeSelectModalFormProps} props
  * @group React Components
  */
-export function EmployeeSelectModalForm({ employee, roles, setShowDialog, updateEmployee, variant }: EmployeeSelectModalFormProps) {
+export function EmployeeSelectModalForm({ employee, roles, variant }: EmployeeSelectModalFormProps) {
+  const formContext = useFormModalContext()
   const [editState, setEditState] = useState(false);
   const supabase = getSupabaseBrowserClient();
   const form = useForm<z.infer<typeof existingEmployeeFormSchema>>({
@@ -44,24 +44,26 @@ export function EmployeeSelectModalForm({ employee, roles, setShowDialog, update
     },
   })
 
+  // todo - have this call the backend, probably from a higher component
   async function onSubmit(values: z.infer<typeof existingEmployeeFormSchema>) {
-    try {
-      const { EmployeeNumber, Name, Role, email } = values;
-      const employeeResult = await updateToEmployees(supabase, {
-        id:employee.id, EmployeeNumber, Name, Role: parseInt(Role), Email:email});
-
-      if (!employeeResult) {
-        throw new Error("No employee was updated.");
-      }
-
-      updateEmployee(employeeResult);
-    } catch (error) {
-      console.log("An error occurred while updating the employee record.", error);
-      console.log(error)
-    } finally {
-      setShowDialog(false);
-    }
+    formContext?.setShowDialog(false);
   }
+    // try {
+    //   const { EmployeeNumber, Name, Role, email } = values;
+    //   const employeeResult = await updateToEmployees(supabase, {
+    //     id:employee.id, EmployeeNumber, Name, Role: parseInt(Role), Email:email});
+    //
+    //   if (!employeeResult) {
+    //     throw new Error("No employee was updated.");
+    //   }
+    //
+    //   formContext?.onUpdate();
+    // } catch (error) {
+    //   console.log("An error occurred while updating the employee record.", error);
+    //   console.log(error)
+    // } finally {
+    //   res?.setShowDialog(false);
+    // }
 
   return (
     <Form {...form}>

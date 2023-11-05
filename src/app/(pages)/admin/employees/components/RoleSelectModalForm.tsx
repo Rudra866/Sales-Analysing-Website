@@ -9,11 +9,11 @@ import {Button} from "@/components/ui/button";
 import {DialogClose} from "@radix-ui/react-dialog";
 import React from "react";
 import {Employee, Role, getSupabaseBrowserClient} from "@/lib/database";
+import {useFormModalContext} from "@/components/FormModal";
 
 export type RoleSelectModalFormProps = {
   employee: Employee;
   roles: Role[];
-  updateEmployee: (employee: Employee) => void;
 }
 
 /**
@@ -23,7 +23,8 @@ export type RoleSelectModalFormProps = {
  * @param updateEmployee callback function to reload an employee in an upper component.
  * @group React Components
  */
-export function RoleSelectModalForm({ employee, roles, updateEmployee }: RoleSelectModalFormProps) {
+export function RoleSelectModalForm({ employee, roles }: RoleSelectModalFormProps) {
+  const formContext = useFormModalContext();
   const supabase =
       getSupabaseBrowserClient();
   const roleSelectFormSchema = z.object({
@@ -42,22 +43,25 @@ export function RoleSelectModalForm({ employee, roles, updateEmployee }: RoleSel
       Role: employee?.Role.toString() ?? "",
     }});
 
+  // todo add functionality by calling the backend, probably from higher up the tree.
   async function onSubmit(values: z.infer<typeof roleSelectFormSchema>) {
-    try {
-      const { data, error} = await supabase
-          .from('Employees')
-          .update({Role: parseInt(values.Role, 10)})
-          .eq('id', employee.id)
-          .select()
-
-      if (error) {
-        console.log("Supabase error: ", error);
-        throw new Error("An error occurred while updating the employee's role.");
-      }
-      updateEmployee(data[0]);
-    } catch (error) {
-      console.log(error)
-    }
+    formContext?.setShowDialog(false);
+    formContext?.onSubmit(null) // submit formData
+    // try {
+    //   const { data, error} = await supabase
+    //       .from('Employees')
+    //       .update({Role: parseInt(values.Role, 10)})
+    //       .eq('id', employee.id)
+    //       .select()
+    //
+    //   if (error) {
+    //     console.log("Supabase error: ", error);
+    //     throw new Error("An error occurred while updating the employee's role.");
+    //   }
+    //   formContext.onSubmit(data[0]);
+    // } catch (error) {
+    //   console.log(error)
+    // }
   }
   return (
     <Form {...form}>
