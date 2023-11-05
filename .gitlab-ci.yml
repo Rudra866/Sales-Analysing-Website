@@ -59,6 +59,18 @@ deploy_user_preview:
     - errorMessage=`cat error.txt`
     - echo "Error occurred with deployment $errorMessage"
     - fi
+  artifacts:
+    reports:
+      dotenv: deploy.env
+  environment:
+    name: "$CI_COMMIT_REF_SLUG"
+    url: $DEPLOY_URL
+    on_stop: end_deployment
+  cache:
+    key: ${CI_COMMIT_REF_SLUG}
+    paths:
+      - node_modules/
+      - .next/cache/
 
 deploy_production:
   stage: deploy
