@@ -50,11 +50,12 @@ deploy_user_preview:
   script:
     - vercel pull --yes --environment=production --token=$VERCEL_TOKEN
     - vercel build --token=$VERCEL_TOKEN
-    - vercel deploy --prebuilt  --token=$VERCEL_TOKEN > deploy.env 2>error.txt
+    - vercel deploy --prebuilt  --token=$VERCEL_TOKEN > deploy.url 2> error.txt
     - code=$?
     - if [ $code -eq 0 ]; then
-    - deploymentUrl=`cat deploy.env`
-    - vercel alias $deploymentUrl ${CI_COMMIT_REF_SLUG}.codeallergy.dev --token=$VERCEL_TOKEN
+    - DEPLOY_URL=`cat deploy.url`
+    - echo "DEPLOY_URL=$DEPLOY_URL" >> deploy.env
+    - vercel alias $DEPLOY_URL ${CI_COMMIT_REF_SLUG}.codeallergy.dev --token=$VERCEL_TOKEN
     - else
     - errorMessage=`cat error.txt`
     - echo "Error occurred with deployment $errorMessage"
