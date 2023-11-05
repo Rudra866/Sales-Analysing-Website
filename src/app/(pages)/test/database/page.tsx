@@ -12,17 +12,14 @@ import {} from "@/lib/supabase";
  */
 export default function DatabaseTestPage() {
   const supabase = getSupabaseBrowserClient()
-
-
-
   /** update these on DB change. */
   const db_constants = {
-    customer: "Eleonor Naudet",
+    customer: "Rolland Woog",
     employee: "44346",
     financer: "Dealer",
-    role: 'Administrator',
-    notification: 1,
-    sale: '13365',
+    role: 'Default',
+    notification: "61450cb2-6466-4637-8222-9bc32d573df3",
+    sale: '13157',
     saleGoal: 'goal 1',
     task: 'task 1',
     tradeIn: 'GMC Canyon 4WD'
@@ -38,7 +35,7 @@ export default function DatabaseTestPage() {
   // TODO
   function test_getEmployee() {
     getEmployee(supabase, db_constants.employee).then(r => {
-      if (r?.id) console.log("Employee get successful.", r)
+      if (r?.EmployeeNumber === db_constants.employee) console.log("Employee get successful.", r)
       else            console.log("Employee get unsuccessful.", r)
     }).catch(error => {console.log("Error occurred in employee get.")})
   }
@@ -66,7 +63,7 @@ export default function DatabaseTestPage() {
 
   function test_getSale() {
     getSale(supabase, db_constants.sale).then(r => {
-      if (r?.id == 1) console.log("Sale get successful.", r)
+      if (r?.id == 50) console.log("Sale get successful.", r)
       else            console.log("Sale get unsuccessful.", r)
     }).catch(error => {console.log("Error occurred in sale get.")})
   }
