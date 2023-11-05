@@ -1,7 +1,7 @@
 import {Dialog, DialogContent, DialogHeader, DialogTitle} from "@/components/ui/dialog";
 import React, {Dispatch, ReactNode, SetStateAction} from "react";
 
-interface FormModalProps {
+export interface FormModalProps {
   title: string
   showDialog: boolean;
   setShowDialog: Dispatch<SetStateAction<boolean>>;

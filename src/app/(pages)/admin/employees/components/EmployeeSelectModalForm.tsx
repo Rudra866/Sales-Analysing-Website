@@ -21,7 +21,7 @@ export type EmployeeSelectModalFormProps = {
   roles: Role[]
   updateEmployee: (employee: Employee) => void
   setShowDialog: Dispatch<SetStateAction<boolean>>;
-  createUser?: "invite" | "register" | null
+  variant?: "invite" | "register" | null
 }
 
 /**
@@ -30,7 +30,7 @@ export type EmployeeSelectModalFormProps = {
  * @param {EmployeeSelectModalFormProps} props
  * @group React Components
  */
-export function EmployeeSelectModalForm({ employee, roles, setShowDialog, updateEmployee, createUser }: EmployeeSelectModalFormProps) {
+export function EmployeeSelectModalForm({ employee, roles, setShowDialog, updateEmployee, variant }: EmployeeSelectModalFormProps) {
   const [editState, setEditState] = useState(false);
   const supabase = getSupabaseBrowserClient();
   const form = useForm<z.infer<typeof existingEmployeeFormSchema>>({
@@ -40,7 +40,7 @@ export function EmployeeSelectModalForm({ employee, roles, setShowDialog, update
       Name: employee?.Name ?? "",
       Role: employee?.Role.toString() ?? "",
       email: employee?.Email ?? "",
-      ...(!createUser || createUser === "register" ? {password: ""} : {})
+      ...(!variant || variant === "register" ? {password: ""} : {})
     },
   })
 
