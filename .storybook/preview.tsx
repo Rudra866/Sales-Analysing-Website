@@ -3,12 +3,15 @@ import { Title, Subtitle, Description, Primary, Controls, Stories } from '@story
 import "../src/stories/global.css"
 import {ThemeProvider} from "../src/components/providers";
 import shadcn from "./shadcn";
+import {FakeAuthProvider} from "../src/stories/Dashboard/FakeAuthProvider";
 
 const preview: Preview = {
   decorators: [
     (Story) => (
         <ThemeProvider defaultTheme={"dark"}>
-          <Story/>
+          <FakeAuthProvider>
+            <Story/>
+          </FakeAuthProvider>
         </ThemeProvider>
     )
   ],
