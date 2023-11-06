@@ -36,7 +36,7 @@ export function EmployeeSelectModalForm({ employee, roles, variant }: EmployeeSe
     defaultValues: {
       EmployeeNumber: "",
       Name: "",
-      Role: employee?.Role.toString() ?? roles[0].id,
+      Role: employee?.Role.toString() ?? `${roles[0].id}`,
       email: "",
       // ...(!variant || variant === "register" ? {password: ""} : {})
     },
@@ -57,29 +57,15 @@ export function EmployeeSelectModalForm({ employee, roles, variant }: EmployeeSe
 
   // todo - have this call the backend, probably from a higher component
   async function onClick(values: z.infer<typeof existingEmployeeFormSchema>) {
-    formContext?.setShowDialog(false);
-    const employee = {
+    console.log("OK")
+    const output = {
       ...values,
       Role: parseInt(values.Role),
+      ...(employee ? { Employee: employee } : {})
     }
-    formContext?.onSubmit(employee);
+    formContext?.onSubmit(output);
+    formContext?.setShowDialog(false);
   }
-    // try {
-    //   const { EmployeeNumber, Name, Role, email } = values;
-    //   const employeeResult = await updateToEmployees(supabase, {
-    //     id:employee.id, EmployeeNumber, Name, Role: parseInt(Role), Email:email});
-    //
-    //   if (!employeeResult) {
-    //     throw new Error("No employee was updated.");
-    //   }
-    //
-    //   formContext?.onUpdate();
-    // } catch (error) {
-    //   console.log("An error occurred while updating the employee record.", error);
-    //   console.log(error)
-    // } finally {
-    //   res?.setShowDialog(false);
-    // }
 
   return (
     <Form {...form}>

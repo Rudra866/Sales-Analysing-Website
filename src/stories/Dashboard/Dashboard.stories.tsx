@@ -5,7 +5,7 @@ import {subMonths} from "date-fns";
 import {FakeDashboardProvider} from "@/stories/Dashboard/FakeDashboardProvider";
 
 export default {
-  title: 'Dashboard/Overview',
+  title: 'Dashboard/Tables',
   component: Overview,
   tags: ['autodocs'],
   decorators: [

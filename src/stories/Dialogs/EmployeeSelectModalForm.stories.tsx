@@ -7,11 +7,12 @@ import {Meta, StoryObj} from "@storybook/react";
 import FormModal, {FormModalProps} from "@/components/FormModal";
 import {useArgs} from "@storybook/preview-api";
 import {Dispatch, SetStateAction} from "react";
-import {within} from "@storybook/testing-library";
+import {fireEvent, userEvent, within} from "@storybook/testing-library";
 import {Button} from "@/components/ui/button";
-
+import { screen } from '@storybook/testing-library';
 // eslint-disable-next-line storybook/story-exports
 
+const delay = 100
 type EmployeeSelectModalCustomArgs = EmployeeSelectModalFormProps & FormModalProps
 type Story = StoryObj<EmployeeSelectModalCustomArgs>
 const meta: Meta<EmployeeSelectModalCustomArgs> = {
@@ -96,6 +97,38 @@ export const RegisterEmployee: Story = {
   }
 }
 
+export const SimulateEdit: Story = {
+  ...Template,
+  args: {
+    variant: null,
+    employee: test_employee_set[1],
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement); // todo
+    let trigger;
+    // open dialog if not open already
+    if ((trigger = canvas.getByText("Trigger")) && !screen.queryByText("Edit")) {
+      await  userEvent.click(trigger, {delay})
+    }
+
+    const editButton = screen.getByText("Edit")
+    await userEvent.click(editButton, {delay});
+    // input text in all fields
+    await userEvent.clear(screen.getByPlaceholderText("EmployeeNumber"))
+    await userEvent.type(screen.getByPlaceholderText("EmployeeNumber"), test_employee_set[0].EmployeeNumber, {delay})
+    await userEvent.clear(screen.getByPlaceholderText("Employee Name"))
+    await userEvent.type(screen.getByPlaceholderText("Employee Name"), test_employee_set[0].Name, {delay})
+    await userEvent.clear(screen.getByPlaceholderText("Employee Email"))
+    await userEvent.type(screen.getByPlaceholderText("Employee Email"), test_employee_set[0].Email, {delay})
+    await userEvent.click(screen.getByRole("combobox"), {delay});
+    const menu = screen.getAllByText(test_roles_set[3].RoleName);
+    await userEvent.click(menu[1], {delay})
+
+    // submit form
+    const submitButton = screen.getByText("Submit")
+    fireEvent.click(submitButton)
+  }
+}
 
 export const SimulateInvite: Story = {
   ...Template,
@@ -104,9 +137,48 @@ export const SimulateInvite: Story = {
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement); // todo
-    // const employeeNumberInput = canvas.getByPlaceholderText("Employee Email");
-    // await userEvent.type(emailInput, 'example-email@email.com', {
-    //   delay: 100,
-    // });
+    let trigger;
+    // open dialog if not open already
+    if ((trigger = canvas.getByText("Trigger")) && !screen.queryByText("Submit")) {
+      await  userEvent.click(trigger, {delay})
+    }
+    // input text in all fields
+    await userEvent.type(screen.getByPlaceholderText("EmployeeNumber"), test_employee_set[0].EmployeeNumber, {delay})
+    await userEvent.type(screen.getByPlaceholderText("Employee Name"), test_employee_set[0].Name, {delay})
+    await userEvent.type(screen.getByPlaceholderText("Employee Email"), test_employee_set[0].Email, {delay})
+    await userEvent.click(screen.getByRole("combobox"), {delay});
+    const menu = screen.getAllByText(test_roles_set[2].RoleName);
+    await userEvent.click(menu[1], {delay})
+
+    // submit form
+    const submitButton = screen.getByText("Submit")
+    fireEvent.click(submitButton)
+  }
+}
+
+export const SimulateRegistration: Story = {
+  ...Template,
+  args: {
+    variant: "invite"
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement); // todo
+    let trigger;
+    // open dialog if not open already
+    if ((trigger = canvas.getByText("Trigger")) && !screen.queryByText("Submit")) {
+      await  userEvent.click(trigger, {delay})
+    }
+    // input text in all fields
+    await userEvent.type(screen.getByPlaceholderText("EmployeeNumber"), test_employee_set[0].EmployeeNumber, {delay})
+    await userEvent.type(screen.getByPlaceholderText("Employee Name"), test_employee_set[0].Name, {delay})
+    await userEvent.type(screen.getByPlaceholderText("Employee Email"), test_employee_set[0].Email, {delay})
+    // input password to password field
+    await userEvent.click(screen.getByRole("combobox"), {delay});
+    const menu = screen.getAllByText(test_roles_set[2].RoleName);
+    await userEvent.click(menu[1], {delay})
+
+    // submit form
+    const submitButton = screen.getByText("Submit")
+    fireEvent.click(submitButton)
   }
 }
