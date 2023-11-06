@@ -1,15 +1,14 @@
-import React, {Dispatch, SetStateAction, useState} from "react";
+import React, {useState, useEffect} from "react";
 import {useForm} from "react-hook-form";
 import * as z from "zod";
 import {zodResolver} from "@hookform/resolvers/zod";
-import {getSupabaseBrowserClient} from "@/lib/supabase";
 import {DialogFooter} from "@/components/ui/dialog";
 import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
 import {DialogBody} from "next/dist/client/components/react-dev-overlay/internal/components/Dialog";
 import {Input} from "@/components/ui/input";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 import {Button} from "@/components/ui/button";
-import {Employee, getEmployeeById, Role, updateToEmployees} from "@/lib/database";
+import {Employee, Role} from "@/lib/database";
 import {DialogClose} from "@radix-ui/react-dialog";
 import {existingEmployeeFormSchema} from "@/lib/types";
 import {useFormModalContext} from "@/components/FormModal";
@@ -31,22 +30,39 @@ export type EmployeeSelectModalFormProps = {
  */
 export function EmployeeSelectModalForm({ employee, roles, variant }: EmployeeSelectModalFormProps) {
   const formContext = useFormModalContext()
-  const [editState, setEditState] = useState(false);
-  const supabase = getSupabaseBrowserClient();
+  const [editState, setEditState] = useState(!!variant);
   const form = useForm<z.infer<typeof existingEmployeeFormSchema>>({
     resolver: zodResolver(existingEmployeeFormSchema),
     defaultValues: {
-      EmployeeNumber: employee?.EmployeeNumber ?? "",
-      Name: employee?.Name ?? "",
-      Role: employee?.Role.toString() ?? "",
-      email: employee?.Email ?? "",
-      ...(!variant || variant === "register" ? {password: ""} : {})
+      EmployeeNumber: "",
+      Name: "",
+      Role: employee?.Role.toString() ?? roles[0].id,
+      email: "",
+      // ...(!variant || variant === "register" ? {password: ""} : {})
     },
   })
 
+  useEffect(() => {
+    // Update form data when the employee object changes
+    if (employee) {
+      form.setValue('EmployeeNumber', employee.EmployeeNumber);
+      form.setValue('Name', employee.Name);
+      form.setValue('Role', employee.Role.toString());
+      form.setValue('email', employee.Email);
+      // if (!variant || variant === 'register') {
+      //   form.setValue('password', ''); // Set password as needed
+      // }
+    }
+  }, [employee, form, variant]);
+
   // todo - have this call the backend, probably from a higher component
-  async function onSubmit(values: z.infer<typeof existingEmployeeFormSchema>) {
+  async function onClick(values: z.infer<typeof existingEmployeeFormSchema>) {
     formContext?.setShowDialog(false);
+    const employee = {
+      ...values,
+      Role: parseInt(values.Role),
+    }
+    formContext?.onSubmit(employee);
   }
     // try {
     //   const { EmployeeNumber, Name, Role, email } = values;
@@ -67,7 +83,7 @@ export function EmployeeSelectModalForm({ employee, roles, variant }: EmployeeSe
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+      <form onSubmit={form.handleSubmit(onClick)} className="space-y-8">
         <DialogBody>
           <FormField
               control={form.control}

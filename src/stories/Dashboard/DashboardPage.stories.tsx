@@ -1,4 +1,4 @@
-import {FakeDashboardProvider} from "@/stories/FakeDashboardProvider";
+import {FakeDashboardProvider} from "@/stories/Dashboard/FakeDashboardProvider";
 import {Meta, StoryObj} from "@storybook/react";
 import {subMonths} from "date-fns";
 import React from "react";

@@ -17,14 +17,12 @@ import {
   Notification,
   getAllMonthlySales,
   MonthlySale,
-  getSalesGoal,
   TradeIn,
   Financier,
   Customer,
   getAllTradeIns,
   getAllCustomers, getAllFinancingOptions
 } from "@/lib/database";
-import {Input} from "@/components/ui/input";
 import {Button} from "@/components/ui/button";
 import {CaretSortIcon} from "@radix-ui/react-icons";
 
@@ -93,8 +91,7 @@ const CollapsableRawData = ({data, children}: {data: any, children: ReactElement
           <span className="sr-only">Toggle</span>
         </Button>
       </CollapsibleTrigger>
-      {data?.map((entry: any) =>
-          <CollapsibleContent key={entry.id}>{JSON.stringify(entry, null, 2)}</CollapsibleContent>)}
+          <CollapsibleContent >{JSON.stringify(data, null, 2)}</CollapsibleContent>
     </Collapsible>
   );
 }

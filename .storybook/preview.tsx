@@ -1,7 +1,8 @@
 import type { Preview } from "@storybook/react";
 import { Title, Subtitle, Description, Primary, Controls, Stories } from '@storybook/blocks';
-import {themes} from "@storybook/theming";
+import "../src/stories/global.css"
 import {ThemeProvider} from "../src/components/providers";
+import shadcn from "./shadcn";
 
 const preview: Preview = {
   decorators: [
@@ -20,7 +21,7 @@ const preview: Preview = {
       },
     },
     docs: {
-      theme: themes.dark,
+      theme: shadcn,
       page: () => (
        <>
           <Title/>

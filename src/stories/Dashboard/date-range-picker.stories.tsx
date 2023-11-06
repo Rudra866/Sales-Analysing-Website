@@ -1,5 +1,4 @@
 import {Meta, StoryObj} from "@storybook/react";
-import {Search} from "@/components/dashboard-components/search";
 import {
   CalendarDateRangePicker,
   CalendarDateRangePickerProps

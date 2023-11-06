@@ -1,9 +1,8 @@
 'use client'
 
 import {
-    Column,
     ColumnDef,
-    ColumnFiltersState, flexRender,
+    ColumnFiltersState,
     getCoreRowModel, getFilteredRowModel,
     getPaginationRowModel, getSortedRowModel, Row,
     SortingState,
@@ -13,8 +12,8 @@ import React, {useCallback, useEffect, useState} from "react";
 import {Input} from "@/components/ui/input";
 import {Button} from "@/components/ui/button";
 import {Checkbox} from "@/components/ui/checkbox";
-import {Employee, Tables, Sale, getSupabaseBrowserClient, getAllSales, getAllEmployees} from "@/lib/database";
-import {ArrowUpDown, MoreHorizontal, Plus} from "lucide-react";
+import {Employee, Sale, getSupabaseBrowserClient, getAllSales, getAllEmployees} from "@/lib/database";
+import {MoreHorizontal, Plus} from "lucide-react";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -228,7 +227,7 @@ export default function SalesTable() {
             <Button
                 size="sm"
                 className="ml-auto hidden h-8 lg:flex"
-                // onClick={() => console.log("Add row")}
+                onClick={() => console.log("Add row")}
             >
                 <Plus className="mr-2 h-4 w-4" />
                 Add Row

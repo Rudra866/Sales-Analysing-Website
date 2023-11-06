@@ -98,7 +98,7 @@ export const existingEmployeeFormSchema = z.object({
             .email({
                 message: "Employee Email must be a valid email address."}),
 
-    password: z.string(),
+    // password: z.string(),
 
     Role:
         z.string().refine(

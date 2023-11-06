@@ -4,7 +4,7 @@ import {test_employee_set} from "@/stories/data.test";
 import EmployeeAvatar from "@/components/dashboard-components/EmployeeAvatar";
 
 export default {
-  title: 'Dashboard/Employee Avatar',
+  title: 'Employee Avatar',
   component: EmployeeAvatar,
   parameters: {
     layout: "centered",

@@ -7,7 +7,7 @@ import {DialogBody} from "next/dist/client/components/react-dev-overlay/internal
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 import {Button} from "@/components/ui/button";
 import {DialogClose} from "@radix-ui/react-dialog";
-import React from "react";
+import React, {useEffect} from "react";
 import {Employee, Role, getSupabaseBrowserClient} from "@/lib/database";
 import {useFormModalContext} from "@/components/FormModal";
 
@@ -25,8 +25,6 @@ export type RoleSelectModalFormProps = {
  */
 export function RoleSelectModalForm({ employee, roles }: RoleSelectModalFormProps) {
   const formContext = useFormModalContext();
-  const supabase =
-      getSupabaseBrowserClient();
   const roleSelectFormSchema = z.object({
     Role:
         z.string().refine(
@@ -43,25 +41,17 @@ export function RoleSelectModalForm({ employee, roles }: RoleSelectModalFormProp
       Role: employee?.Role.toString() ?? "",
     }});
 
+  useEffect(() => {
+    // Update form data when the employee object changes
+    if (employee) {
+      form.setValue('Role', employee.Role.toString());
+    }
+  }, [employee, form])
+
   // todo add functionality by calling the backend, probably from higher up the tree.
   async function onSubmit(values: z.infer<typeof roleSelectFormSchema>) {
     formContext?.setShowDialog(false);
-    formContext?.onSubmit(null) // submit formData
-    // try {
-    //   const { data, error} = await supabase
-    //       .from('Employees')
-    //       .update({Role: parseInt(values.Role, 10)})
-    //       .eq('id', employee.id)
-    //       .select()
-    //
-    //   if (error) {
-    //     console.log("Supabase error: ", error);
-    //     throw new Error("An error occurred while updating the employee's role.");
-    //   }
-    //   formContext.onSubmit(data[0]);
-    // } catch (error) {
-    //   console.log(error)
-    // }
+    formContext?.onSubmit(values) // submit formData
   }
   return (
     <Form {...form}>

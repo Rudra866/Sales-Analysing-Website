@@ -1,20 +1,13 @@
 import {Meta, StoryObj} from "@storybook/react";
-import {Search} from "@/components/dashboard-components/search";
 import {Overview} from "@/app/(pages)/dashboard/components/overview";
-import {
-  DashboardContext,
-} from "@/app/(pages)/dashboard/components/dashboard-provider";
-import React, {PropsWithChildren, useEffect, useState} from "react";
-import {DateRange} from "react-day-picker";
-
-import {Sale} from "@/lib/database";
-import {test_roles_set, test_sales_set} from "@/stories/data.test";
-import {addDays, subDays, subMonths, subYears} from "date-fns";
-import {FakeDashboardProvider} from "@/stories/FakeDashboardProvider";
+import React from "react";
+import {subMonths} from "date-fns";
+import {FakeDashboardProvider} from "@/stories/Dashboard/FakeDashboardProvider";
 
 export default {
   title: 'Dashboard/Overview',
   component: Overview,
+  tags: ['autodocs'],
   decorators: [
     (Story, context) => (
       <FakeDashboardProvider startDate={context.args.startDate} endDate={context.args.endDate}>

@@ -1,18 +1,13 @@
 import {
-  Column,
   ColumnDef,
-  ColumnFiltersState, flexRender,
+  ColumnFiltersState,
   getCoreRowModel, getFilteredRowModel,
   getPaginationRowModel, getSortedRowModel, Row,
-  SortingState, TableOptions,
+  SortingState,
   useReactTable,
 } from "@tanstack/react-table";
-import React, {HTMLAttributes, PropsWithChildren, useCallback, useEffect, useState} from "react";
-import {Input} from "@/components/ui/input";
-import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table";
-import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
+import React, {useCallback, useEffect, useState} from "react";
 import {Button} from "@/components/ui/button";
-import {ChevronLeftIcon, ChevronRightIcon, DoubleArrowLeftIcon, DoubleArrowRightIcon} from "@radix-ui/react-icons";
 import {Checkbox} from "@/components/ui/checkbox";
 import {
   Employee,
@@ -23,7 +18,7 @@ import {
   getAllEmployees,
   getAllRoles
 } from "@/lib/database";
-import {ArrowUpDown, MoreHorizontal} from "lucide-react";
+import {MoreHorizontal} from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -35,7 +30,6 @@ import FormModal from "@/components/FormModal";
 import {EmployeeSelectModalForm} from "@/app/(pages)/admin/employees/components/EmployeeSelectModalForm";
 import {RoleSelectModalForm} from "@/app/(pages)/admin/employees/components/RoleSelectModalForm";
 import TableSortButton from "@/components/TableSortButton";
-import {columns} from "@/app/(pages)/(examples)/tasks/components/columns";
 import DataTable, {TableFilter} from "@/components/DataTable";
 
 /**

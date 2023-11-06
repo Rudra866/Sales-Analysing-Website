@@ -1,5 +1,4 @@
 import { Button } from '@/components/ui/button';
-import "./global.css"
 import {Meta, StoryObj} from "@storybook/react";
 import {MainNav} from "@/components/main-nav";
 import {MainNavItem} from "@/lib/types";
