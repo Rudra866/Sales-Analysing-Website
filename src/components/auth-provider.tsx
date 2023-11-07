@@ -1,92 +1,153 @@
 'use client'
-import {createContext, useEffect, useState} from "react";
+import {createContext, PropsWithChildren, ReactNode, useEffect, useMemo, useState} from "react";
 import {Database, Employee, Role,
   getEmployeeFromAuthUser, getRoleFromEmployee, User,
   getSupabaseBrowserClient, SupabaseClient} from "@/lib/database";
 import {AuthContextType} from "@/hooks/use-auth";
 import {Session} from "@supabase/gotrue-js";
+import {AuthError} from "@supabase/supabase-js";
 
-export const AuthContext = createContext<AuthContextType | null>(null);
+export const AuthContext = createContext<AuthContextType>({
+  user: null,
+  session: null,
+  employee: null,
+  role: null,
+  isLoading: true,
+  error: null,
+});
+
+
 
 /**
  *
+ * @param initialSession
  * @param children
  * @group React Component
  */
-export const AuthProvider = ({children}: any) => {
+export const AuthContextProvider = ({initialSession = null, children}:
+  PropsWithChildren<{
+    initialSession?: Session | null }
+  >) => {
   const [user, setUser] = useState<User | null>(null);
   const [employee, setEmployee] = useState<Employee | null>(null);
   const [role, setRole] = useState<Role | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
+  const [session, setSession] = useState<Session | null>(initialSession);
+  const [error, setError] = useState<AuthError | null>();
   const supabase: SupabaseClient<Database> = getSupabaseBrowserClient();
 
   // todo add local storage caching so we don't need to read database each refresh.
   // todo clean up this code
+  /* set the session when we get an initial session */
   useEffect(() => {
-    const initializeAuth = async () => {
-      try {
-        const loadEmployeeData = async (session: Session) => {
-          const employee = await getEmployeeFromAuthUser(supabase, session.user)
-          if (!employee) throw Error("No employee found but user is signed in.")
-          const role = await getRoleFromEmployee(supabase, employee);
-          if (!role) throw Error("No role found but employee was found.")
+    if (!session && initialSession) {
+      setSession(initialSession)
+    }
+  }, [session, initialSession])
 
-          setEmployee(employee);
-          setRole(role);
+  useEffect(() => {
+    let mounted = true;
 
+    async function getSession() {
+      const { data: {session}, error} = await supabase.auth.getSession()
+      if (mounted) {
+        if (error) {
+          setError(error);
+          setIsLoading(false);
+          return;
         }
-        const {data: {session}} = await supabase.auth.getSession();
-        if (session) {
-          setLoading(true)
-          await loadEmployeeData(session)
-          setLoading(false)
-        }
-
-        // subscribe to auth changes.
-        const { data: listener } = supabase.auth.onAuthStateChange(
-            async (event, session) => {
-              if (event === "SIGNED_IN") return; // todo temp fix. without filtering for this it breaks the page on tab switch/focus loss
-              setLoading(true);
-              setUser(session?.user ?? null);
-              if (session) {
-                const employee = await getEmployeeFromAuthUser(supabase, session.user)
-                if (!employee) throw Error("No employee found but user is signed in.")
-                const role = await getRoleFromEmployee(supabase, employee);
-                if (!role) throw Error("No role found but employee was found.")
-                setEmployee(employee);
-                setRole(role);
-              }
-              setLoading(false);
-            }
-        );
-
-        // cleanup the useEffect hook
-        return () => listener?.subscription.unsubscribe();
+        setSession(session);
+        updateEmployee(supabase, session!)
+        setIsLoading(false);
       }
+    }
 
-      catch (error) {
-        console.error("Error initializing authentication:", error);
-      }
-    };
-
-    initializeAuth();
+    getSession();
+    return () => {
+      mounted = false;
+    }
   }, [supabase, supabase.auth]);
 
+  useEffect(() => {
+    const {
+      data: { subscription }
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      if (
+          session &&
+          (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'USER_UPDATED')
+      ) {
+        setSession(session);
+        updateEmployee(supabase, session)
+      }
+
+      if (event === 'SIGNED_OUT') {
+        setSession(null);
+        updateEmployee(supabase, null)
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [supabase.auth]);
+
+
+  async function updateEmployee(supabase: SupabaseClient, session?: Session | null) {
+    if (!session) {
+      setEmployee(null);
+      setRole(null);
+      return;
+    }
+    const employee = await getEmployeeFromAuthUser(supabase, session.user)
+    if (!employee) throw Error("No employee found but user is signed in.") // todo
+    const role = await getRoleFromEmployee(supabase, employee);
+    if (!role) throw Error("No role found but employee was found.") // todo error page in prod
+    setEmployee(employee);
+    setRole(role);
+  }
+
+
   // create signUp, signIn, signOut functions
-  const value: AuthContextType = {
-    signUp: async (data) => await supabase.auth.signUp(data), /* todo custom signup */
-    /* add details about the employee registered as additional data on the user entry to pass to db,
-    then use a postgresql function to create the employee entry. */
-    signIn: async (data) => await supabase.auth.signInWithPassword(data),
-    signOut: async () => await supabase.auth.signOut(),
-    user: user ?? null,
-    employee: employee ?? null,
-    role: role ?? null
-  };
+  const value: AuthContextType = useMemo(() =>{
+    if (isLoading) {
+      return {
+        isLoading: true,
+        employee: null,
+        user: null,
+        role: null,
+        session: null,
+        error: null,
+      };
+    }
+
+    if (error) {
+      return {
+        isLoading: false,
+        employee: null,
+        user: null,
+        role: null,
+        session: null,
+        error,
+      };
+    }
+
+    return {
+      isLoading: false,
+      employee,
+      user,
+      role,
+      session,
+      error: null,
+    } as AuthContextType;
+    // signUp: async (data) => await supabase.auth.signUp(data), /* todo custom signup */
+    // /* add details about the employee registered as additional data on the user entry to pass to db,
+    // then use a postgresql function to create the employee entry. */
+    // signOut: async () => await supabase.auth.signOut(),
+    // user: user ?? null,
+    // employee: employee ?? null,
+    // role: role ?? null
+  }, [isLoading, error, employee, user, role, session]);
 
   // use a provider to pass down the value
-  return (
-      <AuthContext.Provider value={value}>
-        {!loading && children}
-      </AuthContext.Provider>);
+  return <AuthContext.Provider value={value}> {children}</AuthContext.Provider>;
 };

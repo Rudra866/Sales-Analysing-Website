@@ -15,6 +15,8 @@ import {cn} from "@/lib/utils";
 import {useDashboard} from "./components/dashboard-provider";
 import {getSupabaseBrowserClient} from "@/lib/supabase";
 import {DbResult} from "@/lib/types";
+import useAuth from "@/hooks/use-auth";
+import {getAllNotifications} from "@/lib/database";
 
 // TODO maybe we can split this page to some public components? We can also add db method to handle this db request.
 /**
@@ -47,6 +49,7 @@ export default function DashboardPage() {
                 setTotalGoal(SalesGoals as DbResult<SalesGoalFragment[]>);
             }
             const getNotifications = async ()=> {
+                // @ts-ignore
                 setNotifications(await getAllNotifications(supabase));
             }
 
@@ -207,7 +210,8 @@ export default function DashboardPage() {
                                         </h2>
                                         <p className="text-muted-foreground">
                                             Here&apos;s a list of your sales for this month!
-                                            <SalesTable/> {/* temporary - need some caching or something,
+                                            {/*<SalesTable/> */}
+                                            {/* temporary - need some caching or something,
                                             queries every time tab is swapped.*/}
                                         </p>
                                     </div>
@@ -222,9 +226,10 @@ export default function DashboardPage() {
                         <TabsContent value="reports">Reports</TabsContent>
                         <TabsContent value="notifications"> {/* temp */}
                             {notifications && notifications.map((notification) =>
-                            <div key={notification.id}>
-                                <p>New Sale: {notification.Sale}</p>
-                            </div>
+                                <></>
+                            // <div key={notification.id}>
+                            //     <p>New Sale: {notification.Sale}</p>
+                            // </div>
                             )}
                         </TabsContent>
                     </Tabs>

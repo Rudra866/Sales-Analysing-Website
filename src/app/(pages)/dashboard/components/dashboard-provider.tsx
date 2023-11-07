@@ -2,11 +2,12 @@
 import React, {createContext, ReactNode, useEffect, useState} from 'react';
 import {subDays} from "date-fns";
 import {DateRange} from "react-day-picker";
-import {Employee, getSupabaseBrowserClient} from "@/lib/database";
+import {Employee, getAllEmployees, getAllSales, getSupabaseBrowserClient, Sale} from "@/lib/database";
 import {DbResult, SaleWithEmployeeAndFinancingType} from "@/lib/types";
 
 export type DataContextProps = {
-    data?: SaleWithEmployeeAndFinancingType[];
+    // data?: SaleWithEmployeeAndFinancingType[];
+    data?: Sale[];
     employees?: Employee[];
     date?: DateRange;
     setDate?: React.Dispatch<React.SetStateAction<DateRange | undefined>>;
@@ -31,48 +32,48 @@ export const DashboardProvider: React.FC<DashboardProviderProps> = ({children}) 
         to: new Date(),
     })
 
-    const [data, setData] = useState<SaleWithEmployeeAndFinancingType[]>();
+    const [data, setData] = useState<Sale[]>();
     const [employees, setEmployees] = useState<Employee[]>();
-    const [saleWithEmployeeAndFinancing, setSaleWithEmployeeAndFinancing] = useState<SaleWithEmployeeAndFinancingType[]>();
+    const [saleWithEmployeeAndFinancing, setSaleWithEmployeeAndFinancing] = useState<Sale[]>();
 
 
-    function filterDataByDate(sales: SaleWithEmployeeAndFinancingType[] | undefined, date: DateRange | undefined) {  //todo why the fuck is this not working?
-        // console.log('filtering data by date: ', filteredData, date)
-        return sales?.filter((sale) => {
-            const saleDate = new Date(sale?.SaleTime?.toString() || '')
-            if (date?.from === undefined || date?.to === undefined) return false
-            console.log('from: ', date?.from, 'to: ', date?.to, 'saleDate: ', sale)
-            return saleDate >= date?.from && saleDate <= date?.to
-        })
-    }
+    // function filterDataByDate(sales: SaleWithEmployeeAndFinancingType[] | undefined, date: DateRange | undefined) {  //todo why the fuck is this not working?
+    //     // console.log('filtering data by date: ', filteredData, date)
+    //     return sales?.filter((sale) => {
+    //         const saleDate = new Date(sale?.SaleTime?.toString() || '')
+    //         if (date?.from === undefined || date?.to === undefined) return false
+    //         console.log('from: ', date?.from, 'to: ', date?.to, 'saleDate: ', sale)
+    //         return saleDate >= date?.from && saleDate <= date?.to
+    //     })
+    // }
 
-    useEffect(() => { // for date range
-        const f =    filterDataByDate(saleWithEmployeeAndFinancing, date) as SaleWithEmployeeAndFinancingType[]
-        console.log('filtered data: ', f)  // todo now this is fked too
-        setData(f)
-
-    }, [date])
+    // useEffect(() => { // for date range
+    //     const f =    filterDataByDate(saleWithEmployeeAndFinancing, date) as SaleWithEmployeeAndFinancingType[]
+    //     console.log('filtered data: ', f)  // todo now this is fked too
+    //     setData(f)
+    //
+    // }, [date])
 
 
     useEffect(() => {
-        // getAllSales(supabase).then((res) => {
-        //     const sales = res && res.length > 0 ? res : []
-        //     setData(filterSalesByDate(sales, date) as Sale[])
-        //     return res
-        // }).then((res) => {
-        //     console.log('filtered sales: ', res)
-        // }).catch((err) => {
-        //     console.error(err)
-        // })
-        //
-        // getAllEmployees(supabase).then((res) => {
-        //     setEmployees(res as Employee[])
-        //     return res
-        // }).then((res) => {
-        //     console.log('employees: ', res)
-        // }).catch((err) => {
-        //     console.error(err)
-        // })
+        getAllSales(supabase).then((res) => {
+            const sales = res && res.length > 0 ? res : []
+            setData(filterSalesByDate(sales, date) as Sale[])
+            return res
+        }).then((res) => {
+            console.log('filtered sales: ', res)
+        }).catch((err) => {
+            console.error(err)
+        })
+
+        getAllEmployees(supabase).then((res) => {
+            setEmployees(res as Employee[])
+            return res
+        }).then((res) => {
+            console.log('employees: ', res)
+        }).catch((err) => {
+            console.error(err)
+        })
 
         async function getEmployeeSales() {
             const { data: sales, error } = await supabase
@@ -111,20 +112,22 @@ export const DashboardProvider: React.FC<DashboardProviderProps> = ({children}) 
             if (error) throw error;
             return sales;
         }
-        getEmployeeSales().then((res) => {
-                const esales = res && res.length > 0 ? res : []
-                setData(esales as SaleWithEmployeeAndFinancingType[])
-                setSaleWithEmployeeAndFinancing(esales as DbResult<SaleWithEmployeeAndFinancingType>)
-                return res
-        })
+        getEmployeeSales()
+        //     .then((res) => {
+        //         const esales = res && res.length > 0 ? res : []
+        //         // setData(esales as SaleWithEmployeeAndFinancingType[])
+        //         setData(esales as SaleWithEmployeeAndFinancingType[])
+        //         setSaleWithEmployeeAndFinancing(esales as DbResult<SaleWithEmployeeAndFinancingType>)
+        //         return res
+        // })
 
-        // function filterSalesByDate(sales: Sale[], date: DateRange | undefined) {
-        //     return sales.filter((sale) => {
-        //         const saleDate = new Date(sale?.SaleTime?.toString() || '')
-        //         if (date?.from === undefined || date?.to === undefined) return false
-        //         return saleDate >= date?.from && saleDate <= date?.to
-        //     })
-        // }
+        function filterSalesByDate(sales: Sale[], date: DateRange | undefined) {
+            return sales.filter((sale) => {
+                const saleDate = new Date(sale?.SaleTime?.toString() || '')
+                if (date?.from === undefined || date?.to === undefined) return false
+                return saleDate >= date?.from && saleDate <= date?.to
+            })
+        }
 
 
 
