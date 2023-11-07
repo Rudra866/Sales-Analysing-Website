@@ -1,7 +1,8 @@
-import {RecentSales} from "@/components/dashboard-components/RecentSales";
+// import {RecentSales} from "@/components/dashboard-components/RecentSales";
 import {Meta, StoryObj} from "@storybook/react";
 import {FakeDashboardProvider} from "@/stories/Dashboard/FakeDashboardProvider";
 import {useDashboard} from "@/app/(pages)/dashboard/components/dashboard-provider";
+import {RecentSales} from "@/app/(pages)/dashboard/components/recent-sales";
 // todo
 
 // replace this with actual sales in recent order.

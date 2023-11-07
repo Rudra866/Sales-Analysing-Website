@@ -16,7 +16,7 @@ import {
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 
 
-interface CalendarDateRangePickerProps extends React.HTMLAttributes<HTMLDivElement> {
+export interface CalendarDateRangePickerProps extends React.HTMLAttributes<HTMLDivElement> {
     className?: string
     date?: DateRange | undefined
     setDate?: React.Dispatch<React.SetStateAction<DateRange | undefined>>

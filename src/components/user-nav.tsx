@@ -22,7 +22,8 @@ import {useTheme} from "next-themes";
 import { useRouter } from 'next/navigation'
 import useAuth from "@/hooks/use-auth";
 import {getSupabaseBrowserClient} from "@/lib/database";
-import EmployeeAvatar from "@/components/dashboard-components/EmployeeAvatar";
+import EmployeeAvatar from "@/components/EmployeeAvatar";
+// import EmployeeAvatar from "@/components/dashboard-components/EmployeeAvatar";
 
 // temp -- replace if needed
 const userDirectory = {

@@ -73,11 +73,11 @@ export function DropDownMenu({row, sales, setSales}: Props) {
                     </DropdownMenuItem>
                 </DropdownMenuContent>
             </DropdownMenu>
-            {row.original &&
-                <FormModal title={"Sale"} showDialog={salesModal} setShowDialog={setSalesModal}>
-                    <AddSalesRowDialog sale={row.original} updateSale={updateSales} setShowDialog={setSalesModal}/>
-                </FormModal>
-            }
+            {/*{row.original &&*/}
+            {/*    <FormModal title={"Sale"} showDialog={salesModal} setShowDialog={setSalesModal}>*/}
+            {/*        <AddSalesRowDialog sale={row.original} updateSale={updateSales} setShowDialog={setSalesModal}/>*/}
+            {/*    </FormModal>*/}
+            {/*}*/}
         </>
     );
 }
