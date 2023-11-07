@@ -71,3 +71,31 @@ export const navigationMenu = [
     "Profile",
     "Log Out",
 ]
+
+export type SaleWithEmployeeAndFinancingType = {
+    EmployeeID: string;
+    Employees: {
+        Name: string | null;
+        Email: string | null;
+        EmployeeNumber: string;
+        Role: number; // This should reference to the 'Roles' table
+    };
+    ActualCashValue: number;
+    CustomerID: number;
+    DaysInStock: number | null;
+    DealerCost: number | null;
+    FinancingID: number | null;
+    Financing: {
+        Method: string;
+    };
+    FinAndInsurance: number;
+    GrossProfit: number;
+    LotPack: number | null;
+    NewSale: boolean | null;
+    ROI: number | null;
+    SaleTime: string | null;
+    StockNumber: string;
+    Total: number;
+    TradeInID: number | null;
+    VehicleMake: string;
+};

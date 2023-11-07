@@ -8,7 +8,7 @@ import {DbResult} from "@/lib/types";
 
 
 interface DataContextProps {
-    data?: Sale[];
+    sale?: Sale[];
     employees?: Employee[];
     date?: DateRange;
     setDate?: React.Dispatch<React.SetStateAction<DateRange | undefined>>;
@@ -33,7 +33,7 @@ export const DataProvider: React.FC<DataProviderProps> = ({ children }) => {
         from: new Date(2022, 0, 20),
         to: addDays(new Date(2023, 0, 20), 20),
     })
-    const [data, setData] = useState<Sale[]>();
+    // const [data, setData] = useState<Sale[]>();
     const [sale, setSale] = useState<Sale[]>();
     const [employees, setEmployees] = useState<Employee[]>();
 
@@ -71,7 +71,7 @@ export const DataProvider: React.FC<DataProviderProps> = ({ children }) => {
                       TradeInID,
                       VehicleMake
                 `)
-                .order('EmployeeID')
+                .order('SaleTime', { ascending: false })
                 .range(0, 10)
 
             if (error) throw error;
@@ -80,11 +80,15 @@ export const DataProvider: React.FC<DataProviderProps> = ({ children }) => {
         getEmployeeSales()
             .then((res) => {
             const sales = res && res.length > 0 ? res : []
-            setData(filterSalesByDate(sale as DbResult<typeof sales[]>, date))
+                console.log('1: ',sales)
+            setSale(filterSalesByDate(sale as DbResult<Sale[]>, date))
             return res
         })
 
+
+
         function filterSalesByDate(sales: Sale[], date: DateRange | undefined) {
+            console.log('2: ',sales)
             return sales.filter((sale) => {
                 const saleDate = new Date(sale?.SaleTime?.toString() || '')
                 if (date?.from === undefined || date?.to === undefined) return false
@@ -96,7 +100,7 @@ export const DataProvider: React.FC<DataProviderProps> = ({ children }) => {
     }, [date]);
 
     return (
-        <DataContext.Provider value={{ data: sale, employees, date, setDate }}>
+        <DataContext.Provider value={{ sale, employees, date, setDate }}>
             {children}
         </DataContext.Provider>
     );

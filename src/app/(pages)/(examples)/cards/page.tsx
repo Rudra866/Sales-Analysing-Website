@@ -12,6 +12,7 @@ import { DemoPaymentMethod } from "./components/payment-method"
 import { DemoReportAnIssue } from "./components/report-an-issue"
 import { DemoShareDocument } from "./components/share-document"
 import { DemoTeamMembers } from "./components/team-members"
+import ContainerLayout from "@/components/container-layout";
 
 
 
@@ -32,10 +33,7 @@ function DemoContainer({
 
 export default function CardsPage() {
   return (
-    <>
-      <div className="md:hidden">
-
-      </div>
+    <ContainerLayout>
       <div className="hidden items-start justify-center gap-6 rounded-lg p-8 md:grid lg:grid-cols-2 xl:grid-cols-3">
         <div className="col-span-2 grid items-start gap-6 lg:col-span-1">
           <DemoContainer>
@@ -71,6 +69,6 @@ export default function CardsPage() {
           </DemoContainer>
         </div>
       </div>
-    </>
+    </ContainerLayout>
   )
 }

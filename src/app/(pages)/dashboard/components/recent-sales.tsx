@@ -9,7 +9,8 @@ import * as React from "react";
  * returns a Card component with a list of recent sales.
  */
 export function RecentSales() {
-    const {data, employees, date, setDate} = useDashboard()
+    const { date, setDate} = useDashboard()
+
 
     function SalesRow({name, email, amount, id}: { name: string; email: string; amount: number; id: string }) {
         const random = (max: number) => Math.floor(Math.random() * max) + 1

@@ -32,42 +32,34 @@ export default function DashboardPage() {
 
     useEffect(() => {
 
-      const fetchTable = async () => {
-
-          let { data: SalesGoals, error } = await supabase
-              .from('SalesGoals')
-              .select('TotalGoal, EndDate')
-          setTotalGoal(SalesGoals as DbResult<typeof SalesGoals[]>);
-        }
-
-        fetchTable()
-
         setTotalRevenue(data
             ?.map((sale) => sale?.Total)
             .reduce((a, b) => a + b, 0) ?? 0)
+
     }, [data, date, supabase]);
 
     useEffect(() => {
         const fetchTable = async () => {
             let { data: MonthlySales, error } = await supabase
                 .from('MonthlySales')
-                .select('Total, GrossProfit, TimePeriod')
+                .select('Total, GrossProfit, TimePeriod');
 
-            //  get total for this month
             const month = format(new Date(), 'yyyy-MMM');
             const monthlySales = MonthlySales?.filter((sale) => format(
                 new Date(sale?.TimePeriod || new Date())
                 , 'yyyy-MMM') === month)?.map((sale) => sale?.Total)?.reduce((a, b) => a + b, 0) || 0
-            console.log(monthlySales)
+
             setTotalRevMonth(monthlySales as DbResult<typeof monthlySales[]>);
-        }
-        fetchTable()
+        };
+
+        fetchTable();
+
     }, [])
 
 
     return (
         <>
-            <div className="hidden flex-col md:flex">
+            <div className="flex-col md:flex">
                 <div className="flex-1 space-y-4 p-8 pt-6">
                     <div className="flex items-center justify-between space-y-2">
                         <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>

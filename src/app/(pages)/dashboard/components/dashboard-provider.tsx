@@ -3,7 +3,7 @@ import React, { createContext, useState, useEffect, ReactNode } from 'react';
 import {addDays, format, subDays} from "date-fns";
 import {DateRange} from "react-day-picker";
 import {Sale, getSupabaseBrowserClient, Employee, getAllSales, getAllEmployees} from "@/lib/database";
-import {DbResult} from "@/lib/types";
+import {DbResult, SaleWithEmployeeAndFinancingType} from "@/lib/types";
 
 export type DataContextProps = {
     data?: Sale[];
@@ -33,6 +33,7 @@ export const DashboardProvider: React.FC<DashboardProviderProps> = ({children}) 
 
     const [data, setData] = useState<Sale[]>();
     const [employees, setEmployees] = useState<Employee[]>();
+    const [saleWithEmployeeAndFinancing, setSaleWithEmployeeAndFinancing] = useState<SaleWithEmployeeAndFinancingType>();
 
 
     useEffect(() => {
@@ -55,6 +56,51 @@ export const DashboardProvider: React.FC<DashboardProviderProps> = ({children}) 
             console.log('employees: ', res)
         }).catch((err) => {
             console.error(err)
+        })
+
+        async function getEmployeeSales() {
+            const { data: sales, error } = await supabase
+                .from('Sales')
+                .select(`
+                    EmployeeID,
+                    Employees (
+                        Name,
+                        Email,
+                        EmployeeNumber,
+                        Role
+                    ),
+                      ActualCashValue,
+                      CustomerID,
+                      DaysInStock,
+                      DealerCost,
+                      EmployeeID,
+                      FinancingID,
+                      Financing (
+                        Method
+                       ),
+                      FinAndInsurance,
+                      GrossProfit,
+                      LotPack,
+                      NewSale,
+                      ROI,
+                      SaleTime,
+                      StockNumber,
+                      Total,
+                      TradeInID,
+                      VehicleMake
+                `)
+                .order('SaleTime', { ascending: false })
+                .range(0, 10)
+
+            if (error) throw error;
+            return sales;
+        }
+        getEmployeeSales().then((res) => {
+                const sales = res && res.length > 0 ? res : []
+                setSaleWithEmployeeAndFinancing(sales as DbResult<SaleWithEmployeeAndFinancingType>)
+                return res
+        }).then((res) => {
+            console.log('sales with employees: ', res)
         })
 
         function filterSalesByDate(sales: Sale[], date: DateRange | undefined) {
