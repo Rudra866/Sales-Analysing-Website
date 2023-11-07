@@ -29,42 +29,39 @@ export interface Database {
       }
       Employees: {
         Row: {
-          CreatedOn: string
+          Avatar: string
           Email: string | null
           EmployeeNumber: string
           id: string
-          LastAccessed: string
-          Name: string | null
+          Name: string
           Role: number
         }
         Insert: {
-          CreatedOn?: string
+          Avatar?: string
           Email?: string | null
           EmployeeNumber: string
           id: string
-          LastAccessed?: string
-          Name?: string | null
+          Name: string
           Role: number
         }
         Update: {
-          CreatedOn?: string
+          Avatar?: string
           Email?: string | null
           EmployeeNumber?: string
           id?: string
-          LastAccessed?: string
           Name?: string | null
           Role?: number
         }
         Relationships: [
           {
-            foreignKeyName: "Employees_id_fkey"
+            foreignKeyName: "employees_id_fkey"
             columns: ["id"]
             isOneToOne: true
             referencedRelation: "users"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "Employees_Role_fkey"
+            foreignKeyName: "employees_role_fkey"
             columns: ["Role"]
             isOneToOne: false
             referencedRelation: "Roles"
@@ -132,14 +129,14 @@ export interface Database {
         }
         Relationships: [
           {
-            foreignKeyName: "Notifications_Employee_fkey"
+            foreignKeyName: "notifications_employee_fkey"
             columns: ["Employee"]
             isOneToOne: false
             referencedRelation: "Employees"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "Notifications_Sale_fkey"
+            foreignKeyName: "notifications_sale_fkey"
             columns: ["Sale"]
             isOneToOne: false
             referencedRelation: "Sales"
@@ -243,28 +240,28 @@ export interface Database {
         }
         Relationships: [
           {
-            foreignKeyName: "Sales_CustomerID_fkey"
+            foreignKeyName: "sales_customerid_fkey"
             columns: ["CustomerID"]
             isOneToOne: false
             referencedRelation: "Customers"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "Sales_EmployeeID_fkey"
+            foreignKeyName: "sales_employeeid_fkey"
             columns: ["EmployeeID"]
             isOneToOne: false
             referencedRelation: "Employees"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "Sales_FinancingID_fkey"
+            foreignKeyName: "sales_financingid_fkey"
             columns: ["FinancingID"]
             isOneToOne: false
             referencedRelation: "Financing"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "Sales_TradeInID_fkey"
+            foreignKeyName: "sales_tradeinid_fkey"
             columns: ["TradeInID"]
             isOneToOne: false
             referencedRelation: "TradeIns"
@@ -302,7 +299,7 @@ export interface Database {
         }
         Relationships: [
           {
-            foreignKeyName: "SalesGoals_Creator_fkey"
+            foreignKeyName: "salesgoals_creator_fkey"
             columns: ["Creator"]
             isOneToOne: false
             referencedRelation: "Employees"
@@ -343,14 +340,14 @@ export interface Database {
         }
         Relationships: [
           {
-            foreignKeyName: "Tasks_Assignee_fkey"
+            foreignKeyName: "tasks_assignee_fkey"
             columns: ["Assignee"]
             isOneToOne: false
             referencedRelation: "Employees"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "Tasks_Creator_fkey"
+            foreignKeyName: "tasks_creator_fkey"
             columns: ["Creator"]
             isOneToOne: false
             referencedRelation: "Employees"

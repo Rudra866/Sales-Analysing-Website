@@ -147,9 +147,11 @@ export const test_columns: ColumnDef<Task>[] = [
                 <div className="flex items-center">
                     {member.avatar && (
                         <Image
-                            src={member.avatar}
+                            src={`/${member.avatar}`}
                             alt={member.name}
-                            className="mr-2 h-6 w-6 rounded-full"
+                            height={24}
+                            width={24}
+                            className="mr-2 rounded-full"
                         />
                     )}
                     <span>{member.name}</span>

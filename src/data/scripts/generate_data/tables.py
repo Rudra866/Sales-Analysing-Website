@@ -97,14 +97,9 @@ class Employee(SharedMixin):
         self.Name: str = f"{random.choice(first_names)} {random.choice(last_names)}"
         self.EmployeeNumber: str = str(EMPLOYEE_ID_START + int(self.id))
         self.Email: str = f"{'.'.join(self.Name.lower().split(' '))}{random.choice(email_domains)}"
-        self.Password = generate_password_hash(int(self.id))
+        self.Password = "password1"
 
         self.Role = role_id
-        self.CreatedOn = random_date().strftime("%Y-%m-%d %H:%M:%S")
-        one_week_ago = datetime.now() - timedelta(days=7)
-
-        # Generate a random date between one week ago and the current date
-        self.LastAccessed = (one_week_ago + timedelta(days=random.randint(0, 6))).strftime("%Y-%m-%d %H:%M:%S")
 
         Employee.index += 1
 

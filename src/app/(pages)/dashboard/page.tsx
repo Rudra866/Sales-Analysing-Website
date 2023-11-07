@@ -11,7 +11,7 @@ import * as React from "react";
 import {format} from "date-fns";
 import {CreditCard, DollarSign} from "lucide-react";
 import {Icons} from "@/components/icons";
-import {cn, groupByMonth} from "@/lib/utils";
+import {cn} from "@/lib/utils";
 import {useDashboard} from "./components/dashboard-provider";
 import {getSupabaseBrowserClient} from "@/lib/supabase";
 import {DbResult} from "@/lib/types";
@@ -25,17 +25,44 @@ import {DbResult} from "@/lib/types";
 export default function DashboardPage() {
     const {data, date, setDate} = useDashboard()
     const [totalRevenue, setTotalRevenue] = useState<number>(0);
-    const [totalGoal, setTotalGoal] = useState<number>(0);
-    const supabase = getSupabaseBrowserClient();
+    const [totalGoal, setTotalGoal] = useState<number[]>([]);
     const [totalRevenueForTheYear, setTotalRevenueForTheYear] = useState<number>(0);
     const [totalRevMonth, setTotalRevMonth] = useState<number>(0);
+    const supabase = getSupabaseBrowserClient();
+    const {user, employee} = useAuth();
+
+    // temp -- ryan
+    const [notifications, setNotifications] = useState<Notification[] | null>(null)
+    type SalesGoalFragment = {
+        TotalGoal: number;
+        EndDate: string;
+    }
 
     useEffect(() => {
+        try {
+            const fetchTable = async () => {
+                const { data: SalesGoals, error } = await supabase
+                    .from('SalesGoals')
+                    .select('TotalGoal, EndDate')
+                setTotalGoal(SalesGoals as DbResult<SalesGoalFragment[]>);
+            }
+            const getNotifications = async ()=> {
+                setNotifications(await getAllNotifications(supabase));
+            }
 
+            fetchTable();
+            getNotifications();
+
+        } catch (error) {
+            console.error(error) // todo handle better later
+        }
+    }, [supabase]);
+
+
+    useEffect(() => {
         setTotalRevenue(data
             ?.map((sale) => sale?.Total)
             .reduce((a, b) => a + b, 0) ?? 0)
-
     }, [data, date, supabase]);
 
     useEffect(() => {
@@ -59,7 +86,7 @@ export default function DashboardPage() {
 
     return (
         <>
-            <div className="flex-col md:flex">
+            <div className="hidden flex-col md:flex">
                 <div className="flex-1 space-y-4 p-8 pt-6">
                     <div className="flex items-center justify-between space-y-2">
                         <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
@@ -175,9 +202,13 @@ export default function DashboardPage() {
                             <div className="hidden h-full flex-1 flex-col space-y-8 p-8 md:flex">
                                 <div className="flex items-center justify-between space-y-2">
                                     <div>
-                                        <h2 className="text-2xl font-bold tracking-tight">Welcome back!</h2>
+                                        <h2 className="text-2xl font-bold tracking-tight">
+                                            Welcome back {employee?.Name}!
+                                        </h2>
                                         <p className="text-muted-foreground">
-                                            Here&apos;s a list of your tasks for this month!
+                                            Here&apos;s a list of your sales for this month!
+                                            <SalesTable/> {/* temporary - need some caching or something,
+                                            queries every time tab is swapped.*/}
                                         </p>
                                     </div>
                                     <div className="flex items-center space-x-2">
@@ -189,7 +220,13 @@ export default function DashboardPage() {
 
                         </TabsContent>
                         <TabsContent value="reports">Reports</TabsContent>
-                        <TabsContent value="notifications">Notifications</TabsContent>
+                        <TabsContent value="notifications"> {/* temp */}
+                            {notifications && notifications.map((notification) =>
+                            <div key={notification.id}>
+                                <p>New Sale: {notification.Sale}</p>
+                            </div>
+                            )}
+                        </TabsContent>
                     </Tabs>
                 </div>
             </div>
