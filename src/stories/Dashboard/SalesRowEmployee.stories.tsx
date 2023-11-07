@@ -1,7 +1,7 @@
 import {SalesRowEmployee} from "@/components/dashboard-components/RecentSales";
 
 import {Meta, StoryObj} from "@storybook/react";
-import {test_employee_set} from "@/stories/data.test";
+import {test_employee_set} from "@/stories/test_data";
 
 
 export default {

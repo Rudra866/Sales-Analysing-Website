@@ -1,7 +1,7 @@
 import {Meta, StoryObj} from "@storybook/react";
 import {AddSalesRowDialog, SaleSelectModalFormProps} from "@/app/(pages)/sales/components/AddSalesRowDialog";
 import FormModal, {FormModalProps} from "@/components/FormModal";
-import {test_sales_set} from "@/stories/data.test";
+import {test_sales_set} from "@/stories/test_data";
 import {useArgs} from "@storybook/preview-api";
 import {Dispatch, SetStateAction} from "react";
 import {Button} from "@/components/ui/button";

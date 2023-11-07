@@ -1,5 +1,5 @@
 import React, {PropsWithChildren} from "react";
-import {test_sales_set} from "@/stories/data.test";
+import {test_sales_set} from "@/stories/test_data";
 import {DashboardContext} from "@/app/(pages)/dashboard/components/dashboard-provider";
 
 type FakeDashboardProps = {

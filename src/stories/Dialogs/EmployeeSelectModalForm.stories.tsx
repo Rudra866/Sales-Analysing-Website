@@ -2,7 +2,7 @@ import {
   EmployeeSelectModalForm,
   EmployeeSelectModalFormProps
 } from "@/app/(pages)/admin/employees/components/EmployeeSelectModalForm";
-import {test_employee_set, test_roles_set} from "@/stories/data.test";
+import {test_employee_set, test_roles_set} from "@/stories/test_data";
 import {Meta, StoryObj} from "@storybook/react";
 import FormModal, {FormModalProps} from "@/components/FormModal";
 import {useArgs} from "@storybook/preview-api";
