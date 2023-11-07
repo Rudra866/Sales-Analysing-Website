@@ -1,12 +1,12 @@
 'use client'
-import React, { createContext, useState, useEffect, ReactNode } from 'react';
-import {addDays, format, subDays} from "date-fns";
+import React, {createContext, ReactNode, useEffect, useState} from 'react';
+import {subDays} from "date-fns";
 import {DateRange} from "react-day-picker";
-import {Sale, getSupabaseBrowserClient, Employee, getAllSales, getAllEmployees} from "@/lib/database";
+import {Employee, getSupabaseBrowserClient} from "@/lib/database";
 import {DbResult, SaleWithEmployeeAndFinancingType} from "@/lib/types";
 
 export type DataContextProps = {
-    data?: Sale[];
+    data?: SaleWithEmployeeAndFinancingType[];
     employees?: Employee[];
     date?: DateRange;
     setDate?: React.Dispatch<React.SetStateAction<DateRange | undefined>>;
@@ -31,32 +31,48 @@ export const DashboardProvider: React.FC<DashboardProviderProps> = ({children}) 
         to: new Date(),
     })
 
-    const [data, setData] = useState<Sale[]>();
+    const [data, setData] = useState<SaleWithEmployeeAndFinancingType[]>();
     const [employees, setEmployees] = useState<Employee[]>();
-    const [saleWithEmployeeAndFinancing, setSaleWithEmployeeAndFinancing] = useState<SaleWithEmployeeAndFinancingType>();
+    const [saleWithEmployeeAndFinancing, setSaleWithEmployeeAndFinancing] = useState<SaleWithEmployeeAndFinancingType[]>();
+
+
+    function filterDataByDate(sales: SaleWithEmployeeAndFinancingType[] | undefined, date: DateRange | undefined) {  //todo why the fuck is this not working?
+        // console.log('filtering data by date: ', filteredData, date)
+        return sales?.filter((sale) => {
+            const saleDate = new Date(sale?.SaleTime?.toString() || '')
+            if (date?.from === undefined || date?.to === undefined) return false
+            console.log('from: ', date?.from, 'to: ', date?.to, 'saleDate: ', sale)
+            return saleDate >= date?.from && saleDate <= date?.to
+        })
+    }
+
+    useEffect(() => { // for date range
+        const f =    filterDataByDate(saleWithEmployeeAndFinancing, date) as SaleWithEmployeeAndFinancingType[]
+        console.log('filtered data: ', f)  // todo now this is fked too
+        setData(f)
+
+    }, [date])
 
 
     useEffect(() => {
-
-
-        getAllSales(supabase).then((res) => {
-            const sales = res && res.length > 0 ? res : []
-            setData(filterSalesByDate(sales, date) as Sale[])
-            return res
-        }).then((res) => {
-            console.log('filtered sales: ', res)
-        }).catch((err) => {
-            console.error(err)
-        })
-
-        getAllEmployees(supabase).then((res) => {
-            setEmployees(res as Employee[])
-            return res
-        }).then((res) => {
-            console.log('employees: ', res)
-        }).catch((err) => {
-            console.error(err)
-        })
+        // getAllSales(supabase).then((res) => {
+        //     const sales = res && res.length > 0 ? res : []
+        //     setData(filterSalesByDate(sales, date) as Sale[])
+        //     return res
+        // }).then((res) => {
+        //     console.log('filtered sales: ', res)
+        // }).catch((err) => {
+        //     console.error(err)
+        // })
+        //
+        // getAllEmployees(supabase).then((res) => {
+        //     setEmployees(res as Employee[])
+        //     return res
+        // }).then((res) => {
+        //     console.log('employees: ', res)
+        // }).catch((err) => {
+        //     console.error(err)
+        // })
 
         async function getEmployeeSales() {
             const { data: sales, error } = await supabase
@@ -90,26 +106,26 @@ export const DashboardProvider: React.FC<DashboardProviderProps> = ({children}) 
                       VehicleMake
                 `)
                 .order('SaleTime', { ascending: false })
-                .range(0, 10)
+                .range(0, 100)
 
             if (error) throw error;
             return sales;
         }
         getEmployeeSales().then((res) => {
-                const sales = res && res.length > 0 ? res : []
-                setSaleWithEmployeeAndFinancing(sales as DbResult<SaleWithEmployeeAndFinancingType>)
+                const esales = res && res.length > 0 ? res : []
+                setData(esales as SaleWithEmployeeAndFinancingType[])
+                setSaleWithEmployeeAndFinancing(esales as DbResult<SaleWithEmployeeAndFinancingType>)
                 return res
-        }).then((res) => {
-            console.log('sales with employees: ', res)
         })
 
-        function filterSalesByDate(sales: Sale[], date: DateRange | undefined) {
-            return sales.filter((sale) => {
-                const saleDate = new Date(sale?.SaleTime?.toString() || '')
-                if (date?.from === undefined || date?.to === undefined) return false
-                return saleDate >= date?.from && saleDate <= date?.to
-            })
-        }
+        // function filterSalesByDate(sales: Sale[], date: DateRange | undefined) {
+        //     return sales.filter((sale) => {
+        //         const saleDate = new Date(sale?.SaleTime?.toString() || '')
+        //         if (date?.from === undefined || date?.to === undefined) return false
+        //         return saleDate >= date?.from && saleDate <= date?.to
+        //     })
+        // }
+
 
 
     }, [date]); // todo on every date change, it should not pull data form the db, only filter the data that is already in state.
