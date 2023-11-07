@@ -16,7 +16,6 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [signedIn, setSignedIn] = useState(false);
   const [error, setError] = useState(null);
-  const {signIn} = useAuth();
   const supabase = getSupabaseBrowserClient();
   const router = useRouter();
   const LoginSchema = z.object({
@@ -55,9 +54,11 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
 
       setIsLoading(true);
       setError(null);
-      const {error} = await signIn(
-          {email:validatedData.email, password:validatedData.password}
-      )
+      const {error} = await supabase.auth.signInWithPassword({
+        email:validatedData.email,
+        password:validatedData.password
+      });
+
       if (error) throw error;
       setSignedIn(true);
       setIsLoading(false);

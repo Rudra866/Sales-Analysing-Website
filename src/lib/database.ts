@@ -8,6 +8,7 @@ import {getSupabaseRouteHandlerClient,
 
 // export type for docs
 import {PostgrestError} from "@supabase/postgrest-js";
+import {format} from "date-fns";
 export type { PostgrestError };
 
 // export types from other files, so we can not have to import directly
@@ -202,7 +203,7 @@ export async function getRole(supabase: SupabaseClient, roleName: string): Promi
  * @throws {@link PostgrestError} on database error
  * @group Database Functions
  */
-export async function getNotification(supabase: SupabaseClient, employeeId: number): Promise<Notification | null>
+export async function getNotification(supabase: SupabaseClient, employeeId: string): Promise<Notification | null>
 {
   const {data: notification, error} = await supabase
       .from('Notifications')
@@ -385,6 +386,7 @@ export async function getAllCustomers(supabase: SupabaseClient): Promise<Custome
  * @group Database Functions
  */
 export async function getAllEmployees(supabase: SupabaseClient): Promise<Employee[] | null>
+// todo this function might be a bad idea because it's returning all employee passwords?
 {
   const {data: employees, error} = await supabase
       .from('Employees')
@@ -548,6 +550,27 @@ export async function postToSalesGoals(supabase: SupabaseClient, newSaleGoal: Sa
   if (error) throw error;
 
   return saleGoal;
+}
+
+/**
+ * Get the SaleTime and Total of each Sale in the time range specified. Can also sort the output ascending/descending.
+ * @param supabase
+ * @param startDate
+ * @param endDate
+ * @param sort
+ * @throws {@link PostgrestError} on database error.
+ * @group Database Functions
+ */
+export async function getSalesInDateRange(supabase: SupabaseClient, startDate?: Date, endDate?: Date, sort?: "asc" | "dsc") {
+  const { data: SaleTime, error } = await supabase
+      .from('Sales')
+      .select('SaleTime, Total')
+      .order('SaleTime', { ascending: sort != "dsc" })
+      .filter('SaleTime', 'gte', format(startDate || new Date(), 'yyyy-MM-dd'))
+      .filter('SaleTime', 'lte', format(endDate || new Date(), 'yyyy-MM-dd'))
+
+  if (error) throw error;
+  return SaleTime;
 }
 
 // leaving this one for now, but we should make our forms use interactive components, and this will let us get the
@@ -715,6 +738,26 @@ export async function postToEmployees(supabase: SupabaseClient, newEmployee: Emp
       .select()
       .limit(1)
       .single();
+
+  if (error) throw error;
+  return employee;
+}
+
+/**
+ * Updates an employee in the employee table.
+ * @param {SupabaseClient} supabase Any type of Supabase client (client, server, middleware, route).
+ * @param {EmployeeInsert} updatedEmployee
+ * @throws {@link PostgrestError} if id is null, or on database insert error.
+ * @group Database Functions
+ */
+export async function updateToEmployees(supabase: SupabaseClient, updatedEmployee: EmployeeUpdate): Promise<Employee>
+{
+  const {data: employee, error} = await supabase
+      .from("Employees")
+      .update(updatedEmployee)
+      .eq("id", updatedEmployee.id)
+      .select()
+      .single()
 
   if (error) throw error;
   return employee;

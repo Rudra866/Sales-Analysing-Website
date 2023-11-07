@@ -1,33 +1,10 @@
 "use client"
+
 import {Bar, BarChart, ResponsiveContainer, Tooltip, XAxis, YAxis} from "recharts"
 import {useDashboard} from "@/app/(pages)/dashboard/components/dashboard-provider";
 import {useEffect, useState} from "react";
-import {Sale} from "@/lib/database";
-import {format} from "date-fns";
+import {groupByMonth} from "@/lib/utils";
 
-/** @ignore these for now */
-function groupByMonth(data: Sale[]): { [p: string]: number } {
-    const groupedData: { [key: string]: number } = {};
-
-    data.forEach(item => {
-        const date = new Date(
-            item.SaleTime?.toString() || ''
-        );
-
-        const monthYearKey = format(date, 'MMM');
-
-        if (!groupedData[monthYearKey]) {
-            groupedData[monthYearKey] = 0;
-        }
-
-        groupedData[monthYearKey] += item.Total;
-    });
-
-    return groupedData;
-}
-
-
-/** @ignore these for now */
 export function Overview() {
 
     const {data, date, setDate} = useDashboard()

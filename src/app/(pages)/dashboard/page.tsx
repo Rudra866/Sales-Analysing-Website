@@ -15,6 +15,8 @@ import {cn} from "@/lib/utils";
 import {useDashboard} from "./components/dashboard-provider";
 import {getSupabaseBrowserClient} from "@/lib/supabase";
 import {DbResult} from "@/lib/types";
+import useAuth from "@/hooks/use-auth";
+import {getAllNotifications} from "@/lib/database";
 
 // TODO maybe we can split this page to some public components? We can also add db method to handle this db request.
 /**
@@ -25,26 +27,65 @@ import {DbResult} from "@/lib/types";
 export default function DashboardPage() {
     const {data, date, setDate} = useDashboard()
     const [totalRevenue, setTotalRevenue] = useState<number>(0);
-    const [totalGoal, setTotalGoal] = useState<number>(0);
+    const [totalGoal, setTotalGoal] = useState<number[]>([]);
+    const [totalRevenueForTheYear, setTotalRevenueForTheYear] = useState<number>(0);
+    const [totalRevMonth, setTotalRevMonth] = useState<number>(0);
     const supabase = getSupabaseBrowserClient();
+    const {user, employee} = useAuth();
+
+    // temp -- ryan
+    const [notifications, setNotifications] = useState<Notification[] | null>(null)
+    type SalesGoalFragment = {
+        TotalGoal: number;
+        EndDate: string;
+    }
+
     useEffect(() => {
+        try {
+            const fetchTable = async () => {
+                const { data: SalesGoals, error } = await supabase
+                    .from('SalesGoals')
+                    .select('TotalGoal, EndDate')
+                setTotalGoal(SalesGoals as DbResult<SalesGoalFragment[]>);
+            }
+            const getNotifications = async ()=> {
+                // @ts-ignore
+                setNotifications(await getAllNotifications(supabase));
+            }
 
-      const fetchTable = async () => {
+            fetchTable();
+            getNotifications();
 
-          let { data: SalesGoals, error } = await supabase
-              .from('SalesGoals')
-              .select('TotalGoal, EndDate')
-
-          console.log('totalGoal', data)
-          setTotalGoal(data as DbResult<typeof data[]>);
+        } catch (error) {
+            console.error(error) // todo handle better later
         }
+    }, [supabase]);
 
-        fetchTable()
 
+    useEffect(() => {
         setTotalRevenue(data
             ?.map((sale) => sale?.Total)
             .reduce((a, b) => a + b, 0) ?? 0)
     }, [data, date, supabase]);
+
+    useEffect(() => {
+        const fetchTable = async () => {
+            let { data: MonthlySales, error } = await supabase
+                .from('MonthlySales')
+                .select('Total, GrossProfit, TimePeriod');
+
+            const month = format(new Date(), 'yyyy-MMM');
+            const monthlySales = MonthlySales?.filter((sale) => format(
+                new Date(sale?.TimePeriod || new Date())
+                , 'yyyy-MMM') === month)?.map((sale) => sale?.Total)?.reduce((a, b) => a + b, 0) || 0
+
+            setTotalRevMonth(monthlySales as DbResult<typeof monthlySales[]>);
+        };
+
+        fetchTable();
+
+    }, [])
+
 
     return (
         <>
@@ -164,9 +205,14 @@ export default function DashboardPage() {
                             <div className="hidden h-full flex-1 flex-col space-y-8 p-8 md:flex">
                                 <div className="flex items-center justify-between space-y-2">
                                     <div>
-                                        <h2 className="text-2xl font-bold tracking-tight">Welcome back!</h2>
+                                        <h2 className="text-2xl font-bold tracking-tight">
+                                            Welcome back {employee?.Name}!
+                                        </h2>
                                         <p className="text-muted-foreground">
-                                            Here&apos;s a list of your tasks for this month!
+                                            Here&apos;s a list of your sales for this month!
+                                            {/*<SalesTable/> */}
+                                            {/* temporary - need some caching or something,
+                                            queries every time tab is swapped.*/}
                                         </p>
                                     </div>
                                     <div className="flex items-center space-x-2">
@@ -178,7 +224,14 @@ export default function DashboardPage() {
 
                         </TabsContent>
                         <TabsContent value="reports">Reports</TabsContent>
-                        <TabsContent value="notifications">Notifications</TabsContent>
+                        <TabsContent value="notifications"> {/* temp */}
+                            {notifications && notifications.map((notification) =>
+                                <></>
+                            // <div key={notification.id}>
+                            //     <p>New Sale: {notification.Sale}</p>
+                            // </div>
+                            )}
+                        </TabsContent>
                     </Tabs>
                 </div>
             </div>

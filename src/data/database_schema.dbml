@@ -91,7 +91,7 @@ table Roles {
 table Employees {
   id UUID [pk, not null]
   Name varchar(255) [not null]
-  Email varchar(255) [not null]
+  Email varchar(255)
   EmployeeNumber varchar(255) [not null]
   Role int [not null, ref: > Roles.id]
 }
@@ -116,7 +116,7 @@ table TradeIns {
 table Tasks {
   id int [pk, not null, increment]
   Name varchar(255) [not null]
-  Description TEXT [default: ""]
+  Description TEXT [not null]
   PercentageComplete decimal(3,2)
   StartDate timestamp   [not null, default: `now()`]
   EndDate timestamp   [not null, default: `now()`]
@@ -127,7 +127,7 @@ table Tasks {
 table SalesGoals {
   id int [pk, not null, increment]
   Name varchar(255) [not null]
-  Description TEXT [default: ""]
+  Description TEXT
   Creator int [not null, ref: > Employees.id]
   StartDate timestamp   [not null, default: `now()`]
   EndDate timestamp   [not null, default: `now()`]

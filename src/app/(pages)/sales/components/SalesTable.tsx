@@ -5,7 +5,7 @@ import {
     ColumnDef,
     ColumnFiltersState, flexRender,
     getCoreRowModel, getFilteredRowModel,
-    getPaginationRowModel, getSortedRowModel, Row,
+    getPaginationRowModel, getSortedRowModel,
     SortingState,
     useReactTable
 } from "@tanstack/react-table";
@@ -22,17 +22,13 @@ import {
 } from "@radix-ui/react-icons";
 import {Checkbox} from "@/components/ui/checkbox";
 import {Employee, Tables, Sale, getSupabaseBrowserClient} from "@/lib/database";
-import {ArrowUpDown, MoreHorizontal, Plus} from "lucide-react";
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuShortcut,
-    DropdownMenuTrigger
-} from "@/components/ui/dropdown-menu";
-import FormModal from "@/components/FormModal";
+import {ArrowUpDown, Plus} from "lucide-react";
 import {Badge} from "@/components/ui/badge";
-import {AddSalesRowDialog} from "@/app/(pages)/sales/components/AddSalesRowDialog";
+import {DropDownMenu} from "@/app/(pages)/sales/components/drop-down-menu";
+import {format} from "date-fns";
+import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger} from "@/components/ui/tooltip";
+import {DbResult} from "@/lib/types";
+
 // todo align rows and columns
 
 /**
@@ -44,7 +40,7 @@ export default function SalesTable() {
     const [sales, setSales] = useState<Tables<'Sales'>[]>([]);
     const [employees, setEmployees] = useState<Employee[]>([]);
     const supabase = getSupabaseBrowserClient();
-    const [salesModal, setSalesModal] = useState(false);
+    // const [salesModal, setSalesModal] = useState(false);
 
     useEffect(() => {
         function fetchData() {
@@ -78,59 +74,28 @@ export default function SalesTable() {
         loadData().then(() => setLoading(false));
     }, [supabase]);
 
-    function updateSales(sale: Sale) {
-      const originalSales = [...sales]
-      const updatedSales = originalSales
-          .map((oldSale) => oldSale.id === sale.id ? sale: oldSale)
-      setSales(updatedSales)
-    }
-
-    function DropDownMenu(sale: Row<Sale>) {
-        const [item, setItem] = useState<Sale>();
-
+    // function updateSales(sale: Sale) {
+    //   const originalSales = [...sales]
+    //   const updatedSales = originalSales
+    //       .map((oldSale) => oldSale.id === sale.id ? sale: oldSale)
+    //   setSales(updatedSales)
+    // }
+    function tooltip(cell:string){
         return (
-            <>
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="h-8 w-8 p-0">
-                            <span className="sr-only">Open menu</span>
-                            <MoreHorizontal className="h-4 w-4"/>
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                        <DropdownMenuSeparator/>
-                        <DropdownMenuItem onClick={() => navigator.clipboard.writeText(sale.original.EmployeeID.toString())}>
-                            Copy
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={
-                            () => {
-                                setItem(sale.original)
-                                setSalesModal(true)
-                            }
-                        }>
-                            <span>Edit</span>
-                        </DropdownMenuItem>
-                        <DropdownMenuSeparator/>
-                        <DropdownMenuItem onClick={() => {
-                            sale.original.id && supabase.from('Sales').delete().eq('id', sale.original.id).then(() => {
-                                const originalSales = [...sales]
-                                const updatedSales = originalSales.filter((oldSale) => oldSale.id !== sale.original.id)
-                                setSales(updatedSales)
-                            })
-                        }}>
-                            Delete
-                            <DropdownMenuShortcut>⌘⌫</DropdownMenuShortcut>
-                        </DropdownMenuItem>
-                    </DropdownMenuContent>
-                </DropdownMenu>
-                {sale.original &&
-                    <FormModal title={"Sale"} showDialog={salesModal} setShowDialog={setSalesModal}>
-                         <AddSalesRowDialog sale={sale.original} updateSale={updateSales} setShowDialog={setSalesModal}/>
-                    </FormModal>
-                }
-            </>
-        );
+            <TooltipProvider>
+                <Tooltip>
+                    <TooltipTrigger asChild>
+                        <p className={'max-w-[200px] text-sm truncate'}>
+                            {cell}
+                        </p>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                        <p>{cell}</p>
+                    </TooltipContent>
+                </Tooltip>
+            </TooltipProvider>
+
+        )
     }
 
     function SortButton(name: string, column: Column<Tables<'Sales'>>) {
@@ -176,8 +141,10 @@ export default function SalesTable() {
             header: ({column}) => SortButton("SaleTime", column),
             cell: ({row}) => {
                 return (
-                    <p className={'text-sm'}>
-                        {new Date(row.original.SaleTime || new Date()).toDateString()}
+                    <p className={'text-sm min-w-fit'}>
+                        {/*{new Date(row.original.SaleTime || new Date()).toDateString()}*/}
+                        {/*{format(new Date(row.original.SaleTime || new Date()), 'yyyy-MMM-dd')}*/}
+                        {format(new Date(row.original.SaleTime || new Date()), "LLL dd, y")}
                     </p>
                 )
             },
@@ -192,10 +159,10 @@ export default function SalesTable() {
             cell: ({row}) => {
                 // return employees.find((employee) => employee.id === row.original.EmployeeID)?.Name
                 return (
-                    <div className="flex space-x-2">
+                    <div className="flex space-x-2 ml-1">
                         <Badge variant="outline">
-                            <span className="max-w-[500px] truncate font-medium">
-                                {employees.find((employee) => employee.id === row.original.EmployeeID)?.Name}
+                            <span className="max-w-[200px] truncate font-medium">
+                                {tooltip(employees.find((employee) => employee.id === row.original.EmployeeID)?.Name || 'Employee Name')}
                             </span>
                         </Badge>
                     </div>
@@ -205,6 +172,9 @@ export default function SalesTable() {
         {
             accessorKey: "VehicleMake",
             header: ({column}) => SortButton("VehicleMake", column),
+            cell: ({row}) => {
+                return (tooltip(row.original.VehicleMake))
+            }
         },
         {
             accessorKey: "ActualCashValue",
@@ -233,33 +203,35 @@ export default function SalesTable() {
         },
         {
             id: "actions",
-            cell: ({row}) => DropDownMenu(row),
+            cell: ({row}) => DropDownMenu({row, sales, setSales}),
         },
     ]
 
     return (
-        <DataTable data={sales} columns={columns} loading={loading}/>
+        <DataTable defaultData={sales} columns={columns} loading={loading}/>
     )
 }
 
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[]
-    data: TData[]
+    defaultData: TData[]
     loading?: boolean
 }
 
-function DataTable<TData, TValue>({data, columns, loading}: DataTableProps<TData, TValue>) {
+export function DataTable<TData, TValue>({defaultData, columns, loading}: DataTableProps<TData, TValue>) {
     const [sorting, setSorting] = useState<SortingState>([])
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
     const pageSizes = [10, 25, 50, 100]
+    const ref = React.useRef<HTMLTableSectionElement>(null)
+    const [data, setData] = useState( defaultData);
 
     const table = useReactTable({
         data,
         columns,
         getCoreRowModel: getCoreRowModel(),
-        getPaginationRowModel: getPaginationRowModel(),
         onSortingChange: setSorting,
+        getPaginationRowModel: getPaginationRowModel(),
         onColumnFiltersChange: setColumnFilters,
         getFilteredRowModel: getFilteredRowModel(),
         getSortedRowModel: getSortedRowModel(),
@@ -267,29 +239,29 @@ function DataTable<TData, TValue>({data, columns, loading}: DataTableProps<TData
             sorting,
             columnFilters
         },
-
+        enableSorting: true,
+        enableColumnFilters: true,
     })
-
-    // const newRow: Sale = {
-    //     id: 0,
-    //     EmployeeID: 1,
-    //     SaleTime: new Date().toDateString(),
-    //     VehicleMake: '',
-    //     ActualCashValue: 0,
-    //     GrossProfit: 0,
-    //     FinAndInsurance: 0,
-    //     Holdback: 0,
-    //     Total: 0,
-    //     StockNumber: '',
-    //     CustomerID: 0,
-    //     FinancingID: 0,
-    //     TradeInID: 0,
-    //     NewSale: false,
-    //     LotPack: 0,
-    //     DaysInStock: 0,
-    //     DealerCost: 0,
-    //     ROI: 0,
-    // };
+    const newRow: Sale = {
+        id: table.getRowModel().rows.length + 1,
+        EmployeeID: '1',
+        SaleTime: new Date().toDateString(),
+        VehicleMake: 'VehicleMake',
+        ActualCashValue: 0,
+        GrossProfit: 0,
+        FinAndInsurance: 0,
+        Holdback: 0,
+        Total: 0,
+        StockNumber: '12345',
+        CustomerID: 0,
+        FinancingID: 0,
+        TradeInID: 0,
+        NewSale: false,
+        LotPack: 0,
+        DaysInStock: 0,
+        DealerCost: 0,
+        ROI: 0,
+    };
 
     return (
         <div className="space-y-4">
@@ -300,14 +272,31 @@ function DataTable<TData, TValue>({data, columns, loading}: DataTableProps<TData
                     onChange={(event) => table.getColumn("Name")?.setFilterValue(event.target.value)}
                     className="max-w-sm"
                 />
-                <Button
-                    size="sm"
-                    className="ml-auto hidden h-8 lg:flex"
-                    // onClick={() => console.log("Add row")}
-                >
-                    <Plus className="mr-2 h-4 w-4" />
-                    Add Row
-                </Button>
+                <div className="flex items-center space-x-2 w-full">
+                    <Button
+                        size="sm"
+                        variant="outline"
+                        className="ml-auto hidden h-8 lg:flex"
+                        onClick={() => {
+                            const setFunc = (old: Sale[]) => [...old, newRow];
+                            setData(setFunc as DbResult<Sale[]>);
+                            table.setSorting([{id: "SaleTime", desc: false,}])
+                        }}
+                    >
+                        <Plus className="mr-2 h-4 w-4" />
+                        Add Row
+                    </Button>
+                    <Button
+                        size="sm"
+                        variant="outline"
+                        className="ml-auto hidden h-8 lg:flex"
+                        onClick={() => {
+                            // save
+                        }}
+                    >
+                        save
+                    </Button>
+                </div>
             </div>
             <div className="rounded-md border">
                 <Table>
@@ -327,7 +316,7 @@ function DataTable<TData, TValue>({data, columns, loading}: DataTableProps<TData
                             </TableRow>
                         ))}
                     </TableHeader>
-                    <TableBody>
+                    <TableBody ref={ref}>
                         {table.getRowModel().rows?.length ? (
                             table.getRowModel().rows.map((row) => (
                                 <TableRow
@@ -346,13 +335,13 @@ function DataTable<TData, TValue>({data, columns, loading}: DataTableProps<TData
                                 <TableCell colSpan={columns.length} className="h-24 text-center">
                                     {/* Todo */}
                                     No result? refresh..?
-                                    <div className="flex items-center justify-center h-24">
-                                        <div className="flex items-center space-x-2">
-                                            <div className="w-4 h-4 bg-accent rounded-full animate-bounce"/>
-                                            <div className="w-4 h-4 bg-accent rounded-full animate-bounce delay-75"/>
-                                            <div className="w-4 h-4 bg-accent rounded-full animate-bounce delay-150"/>
-                                        </div>
-                                    </div>
+                                    {/*<div className="flex items-center justify-center h-24">*/}
+                                    {/*    <div className="flex items-center space-x-2">*/}
+                                    {/*        <div className="w-4 h-4 bg-accent rounded-full animate-bounce"/>*/}
+                                    {/*        <div className="w-4 h-4 bg-accent rounded-full animate-bounce delay-75"/>*/}
+                                    {/*        <div className="w-4 h-4 bg-accent rounded-full animate-bounce delay-150"/>*/}
+                                    {/*    </div>*/}
+                                    {/*</div>*/}
                                 </TableCell>
                             </TableRow>
                         )}
@@ -363,7 +352,7 @@ function DataTable<TData, TValue>({data, columns, loading}: DataTableProps<TData
             {/* Pagination */}
             <div className="flex items-center justify-between px-2">
                 <div className="flex-1 text-sm text-muted-foreground">
-                    {table.getFilteredSelectedRowModel().rows.length} of{" "}
+                    {table.getFilteredSelectedRowModel().rows.length} of {" "}
                     {table.getFilteredRowModel().rows.length} item(s) selected.
                 </div>
                 <div className="flex items-center space-x-6 lg:space-x-8">
@@ -434,3 +423,6 @@ function DataTable<TData, TValue>({data, columns, loading}: DataTableProps<TData
         </div>
     )
 }
+
+
+

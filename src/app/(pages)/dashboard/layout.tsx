@@ -7,10 +7,10 @@ import {DashboardProvider} from "@/app/(pages)/dashboard/components/dashboard-pr
  */
 export default async function DashboardLayout({ children }: {children: React.ReactNode}) {
   return (
-    <div className="relative py-10">
+    <>
       <DashboardProvider>
           {children}
       </DashboardProvider>
-    </div>
+    </>
   )
 }

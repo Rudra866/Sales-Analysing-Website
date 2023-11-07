@@ -29,20 +29,23 @@ export interface Database {
       }
       Employees: {
         Row: {
+          Avatar: string
           Email: string | null
           EmployeeNumber: string
           id: string
-          Name: string | null
+          Name: string
           Role: number
         }
         Insert: {
+          Avatar?: string
           Email?: string | null
           EmployeeNumber: string
           id: string
-          Name?: string | null
+          Name: string
           Role: number
         }
         Update: {
+          Avatar?: string
           Email?: string | null
           EmployeeNumber?: string
           id?: string

@@ -9,7 +9,7 @@ import {DialogBody} from "next/dist/client/components/react-dev-overlay/internal
 import {Input} from "@/components/ui/input";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 import {Button} from "@/components/ui/button";
-import {Employee, getEmployeeById, Role} from "@/lib/database";
+import {Employee, getEmployeeById, Role, updateToEmployees} from "@/lib/database";
 import {DialogClose} from "@radix-ui/react-dialog";
 import {existingEmployeeFormSchema} from "@/lib/types";
 
@@ -21,6 +21,7 @@ export type EmployeeSelectModalFormProps = {
   roles: Role[]
   updateEmployee: (employee: Employee) => void
   setShowDialog: Dispatch<SetStateAction<boolean>>;
+  createUser?: "invite" | "register" | null
 }
 
 /**
@@ -29,7 +30,7 @@ export type EmployeeSelectModalFormProps = {
  * @param {EmployeeSelectModalFormProps} props
  * @group React Components
  */
-export function EmployeeSelectModalForm({ employee, roles, setShowDialog, updateEmployee }: EmployeeSelectModalFormProps) {
+export function EmployeeSelectModalForm({ employee, roles, setShowDialog, updateEmployee, createUser }: EmployeeSelectModalFormProps) {
   const [editState, setEditState] = useState(false);
   const supabase = getSupabaseBrowserClient();
   const form = useForm<z.infer<typeof existingEmployeeFormSchema>>({
@@ -38,16 +39,19 @@ export function EmployeeSelectModalForm({ employee, roles, setShowDialog, update
       EmployeeNumber: employee?.EmployeeNumber ?? "",
       Name: employee?.Name ?? "",
       Role: employee?.Role.toString() ?? "",
+      email: employee?.Email ?? "",
+      ...(!createUser || createUser === "register" ? {password: ""} : {})
     },
   })
 
   async function onSubmit(values: z.infer<typeof existingEmployeeFormSchema>) {
     try {
-      const { EmployeeNumber, Name, Role } = values;
-      const employeeResult = await getEmployeeById(supabase, employee.id);
+      const { EmployeeNumber, Name, Role, email } = values;
+      const employeeResult = await updateToEmployees(supabase, {
+        id:employee.id, EmployeeNumber, Name, Role: parseInt(Role), Email:email});
 
       if (!employeeResult) {
-        throw new Error("No employee was found by that id.");
+        throw new Error("No employee was updated.");
       }
 
       updateEmployee(employeeResult);

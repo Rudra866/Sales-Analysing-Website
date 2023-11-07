@@ -3,6 +3,7 @@ import Image from "next/image"
 
 import { Separator } from "@/registry/new-york/ui/separator"
 import { SidebarNav } from "./components/sidebar-nav"
+import ContainerLayout from "@/components/container-layout";
 
 
 const sidebarNavItems = [
@@ -34,7 +35,7 @@ interface SettingsLayoutProps {
 
 export default function SettingsLayout({ children }: SettingsLayoutProps) {
   return (
-    <>
+    <ContainerLayout>
       <div className="md:hidden">
         <Image
           src="/examples/forms-light.png"
@@ -66,6 +67,6 @@ export default function SettingsLayout({ children }: SettingsLayoutProps) {
           <div className="flex-1 lg:max-w-2xl">{children}</div>
         </div>
       </div>
-    </>
+    </ContainerLayout>
   )
 }
