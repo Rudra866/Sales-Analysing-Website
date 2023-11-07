@@ -22,12 +22,18 @@ import {useTheme} from "next-themes";
 import { useRouter } from 'next/navigation'
 import useAuth from "@/hooks/use-auth";
 import {getSupabaseBrowserClient} from "@/lib/database";
+import EmployeeAvatar from "@/components/dashboard-components/EmployeeAvatar";
+
+// temp -- replace if needed
+const userDirectory = {
+  profile: "/admin"
+}
 
 export function UserNav() {
   const { setTheme, theme } = useTheme()
   const router = useRouter()
   const supabase = getSupabaseBrowserClient();
-  const {user, employee} = useAuth();
+  const {employee} = useAuth();
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
@@ -37,10 +43,7 @@ export function UserNav() {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-          <Avatar className="h-8 w-8">
-            <AvatarImage src="/avatars/01.png" alt="@shadcn" />
-            <AvatarFallback>SC</AvatarFallback>
-          </Avatar>
+          <EmployeeAvatar employee={employee}/>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56" align="end" forceMount>
@@ -54,7 +57,7 @@ export function UserNav() {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <DropdownMenuItem>
+          <DropdownMenuItem onClick={() => router.push(userDirectory.profile)}>
             Profile
             <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
           </DropdownMenuItem>

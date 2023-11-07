@@ -1,5 +1,5 @@
 'use client'
-import {createContext, PropsWithChildren, ReactNode, useEffect, useMemo, useState} from "react";
+import {createContext, PropsWithChildren, useEffect, useMemo, useState} from "react";
 import {Database, Employee, Role,
   getEmployeeFromAuthUser, getRoleFromEmployee, User,
   getSupabaseBrowserClient, SupabaseClient} from "@/lib/database";
@@ -89,19 +89,21 @@ export const AuthContextProvider = ({initialSession = null, children}:
     return () => {
       subscription.unsubscribe();
     };
-  }, [supabase.auth]);
+  }, [supabase, supabase.auth]);
 
 
   async function updateEmployee(supabase: SupabaseClient, session?: Session | null) {
     if (!session) {
       setEmployee(null);
       setRole(null);
+      setUser(null)
       return;
     }
     const employee = await getEmployeeFromAuthUser(supabase, session.user)
     if (!employee) throw Error("No employee found but user is signed in.") // todo
     const role = await getRoleFromEmployee(supabase, employee);
     if (!role) throw Error("No role found but employee was found.") // todo error page in prod
+    setUser(session.user)
     setEmployee(employee);
     setRole(role);
   }

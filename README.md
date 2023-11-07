@@ -1,5 +1,3 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
-
 ## Getting Started
 
 First, run the development server:
@@ -18,17 +16,34 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 
 This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
 
-## Learn More
+## Documentation
+Some links to help you get started:
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Next.js Documentation](https://nextjs.org/docs)
 - [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- [Next.js GitHub repository](https://github.com/vercel/next.js/)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
 
-## Deploy on Vercel
+- [React Documentation](https://react.dev/reference/react)
+- [shadcn/ui Documentation](https://ui.shadcn.com/docs/)
+- [Database Documentation](https://docs.codeallergy.dev/interfaces/DatabaseUsage.html)
+- [Supabase-js Documentation](https://supabase.com/docs/reference/javascript/introduction)
+- [Project Documentation](https://docs.codeallergy.dev)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+TODO: Write a section about writing documentation and JSDoc comments.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+
+## Deployments
+The following subdomains are set up to mirror the latest deployment of each user's branch:
+
+| Branch   | URL                                                          |
+|----------|--------------------------------------------------------------|
+| main     | [codeallergy.dev](https://codeallergy.dev)                   |
+| dev      | [dev.codeallergy.dev](https://dev.codeallergy.dev)           |
+| alex     | [alex.codeallergy.dev](https://alex.codeallergy.dev)         |
+| Amir     | [amir.codeallergy.dev](https://amir.codeallergy.dev)         |
+| bill     | [bill.codeallergy.dev](https://bill.codeallergy.dev)         |
+| Rudra    | [rudra.codeallergy.dev](https://rudra.codeallergy.dev)       |
+| ryan     | [ryan.codeallergy.dev](https://ryan.codeallergy.dev)         |
+| Suchetan | [suchetan.codeallergy.dev](https://suchetan.codeallergy.dev) |
+| tolu     | [tolu.codeallergy.dev](https://tolu.codeallergy.dev)         |

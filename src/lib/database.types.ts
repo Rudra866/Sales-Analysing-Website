@@ -30,7 +30,7 @@ export interface Database {
       Employees: {
         Row: {
           Avatar: string
-          Email: string | null
+          Email: string
           EmployeeNumber: string
           id: string
           Name: string
@@ -38,7 +38,7 @@ export interface Database {
         }
         Insert: {
           Avatar?: string
-          Email?: string | null
+          Email?: string
           EmployeeNumber: string
           id: string
           Name: string
