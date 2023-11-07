@@ -1,12 +1,17 @@
 stages:
   - deploy
-  - build_typedoc
-  - build_dbdocs
-  - build_storybook
-  - qodana
-  - test_storybook
+  - docs
   - test
   - teardown
+
+
+default:
+  cache:
+    key: $CI_COMMIT_REF_SLUG
+    paths:
+      - .npm/
+  before_script:
+    - npm ci --cache .npm --prefer-offline
 
 deploy_generic_preview:
   stage: deploy
@@ -87,11 +92,10 @@ deploy_production:
       - .next/cache/
 
 generate_storybook_main:
-  stage: build_storybook
+  stage: docs
   only:
     - main
   script:
-    - npm ci
     - npm run build-storybook
     - rm -rf /var/www/storybook/*
     - cp -r storybook-static/* /var/www/storybook
@@ -100,50 +104,46 @@ generate_storybook_main:
     url: https://storybook.codeallergy.dev
 
 generate_storybook_dev:
-  stage: build_storybook
+  stage: docs
   only:
     - dev
     - test-stack
   script:
-    - npm ci
     - npm run build-storybook
     - rm -rf /var/www/storybook/*
-    - cp -r storybook-static/* /var/www/storybook
+    - cp -r storybook-static/* /var/www/dev.storybook
   environment:
     name: "storybook-dev"
     url: https://dev.storybook.codeallergy.dev
 
 # still not working on my bash runner, setup later, run locally if you want.
 #qodana-qa:
-#  stage: qodana
+#  stage: test
 
 
 
 test_storybook_main:
-  stage: test_storybook
+  stage: test
   only:
     - main
   script:
-    - npm ci
     - npm run test-storybook -- --url https://storybook.codeallergy.dev
 
 test_storybook_dev:
-  stage: test_storybook
+  stage: test
   only:
     - dev
     - test-stack
   script:
-    - npm ci
     - npm run test-storybook -- --url https://dev.storybook.codeallergy.dev
 
 test:
   stage: test
   script:
-    - npm ci
     - npm run test
 
 generate_typedoc_info:
-  stage: build_typedoc
+  stage: docs
   only:
     - main
   script:
@@ -156,7 +156,7 @@ generate_typedoc_info:
     url: https://docs.codeallergy.dev
 
 generate_dbdocs_info:
-  stage: build_dbdocs
+  stage: docs
   script:
     - dbdocs build src/data/database_schema.dbml --project="370 Binary Bandits"
   rules:
