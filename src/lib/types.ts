@@ -24,57 +24,6 @@ export interface MainNavItem extends NavItem {}
 
 export interface SidebarNavItem extends NavItemWithChildren {}
 
-/**
- * @group Zod Schemas
- */
-export const  new_vehicle_sales_schema = z.object({
-    stock_number: z.number(),
-    sales_rep: z.string(),
-    fin_mgr: z.string(),
-    financing: z.string(),
-    customer_name: z.string(),
-    city: z.string(),
-    vehicle_make: z.string(),
-    trade_in: z.string(),
-    actual_cash_value: z.number(),
-    gross_profit: z.number(),
-    gross_profit_MTD: z.number(),
-    f_i_gross: z.number(),
-    f_i_gross_MTD: z.number(),
-    hold_back_MTD: z.number(),
-    total: z.number(),
-    total_MTD: z.number(),
-})
-
-/**
- * @group Zod Schemas
- */
-export const use_vehicle_sales_schema = z.object({
-    stock_number: z.number(),
-    sales_rep: z.string(),
-    fin_mgr: z.string(),
-    financing: z.string(),
-    customer_name: z.string(),
-    city: z.string(),
-    vehicle_make: z.string(),
-    Trade_in: z.string(),
-    actual_cash_value: z.number(),
-    gross_profit: z.number(),
-    gross_profit_MTD: z.number(),
-    f_i_gross: z.number(),
-    f_i_gross_MTD: z.number(),
-    lot_pack: z.number(),
-    lot_pack_MTD: z.number(),
-    total: z.number(),
-    total_MTD: z.number(),
-    days_in_stock: z.number(),
-    cost: z.number(),
-    roi: z.number(),
-})
-
-/**
- * @group Zod Schemas
- */
 export const existingEmployeeFormSchema = z.object({
     EmployeeNumber:
         z.string().min(1, {
@@ -110,7 +59,7 @@ export const existingEmployeeFormSchema = z.object({
         )
 })
 
-export type new_vehicle_sales_type = z.infer<typeof new_vehicle_sales_schema>
+
 
 // unused
 /** @ignore */
@@ -122,3 +71,31 @@ export const navigationMenu = [
     "Profile",
     "Log Out",
 ]
+
+export type SaleWithEmployeeAndFinancingType = {
+    EmployeeID: string;
+    Employees: {
+        Name: string | null;
+        Email: string | null;
+        EmployeeNumber: string;
+        Role: number; // This should reference to the 'Roles' table
+    };
+    ActualCashValue: number;
+    CustomerID: number;
+    DaysInStock: number | null;
+    DealerCost: number | null;
+    FinancingID: number | null;
+    Financing: {
+        Method: string;
+    };
+    FinAndInsurance: number;
+    GrossProfit: number;
+    LotPack: number | null;
+    NewSale: boolean | null;
+    ROI: number | null;
+    SaleTime: string | null;
+    StockNumber: string;
+    Total: number;
+    TradeInID: number | null;
+    VehicleMake: string;
+};

@@ -3,9 +3,9 @@
 import {Button} from "@/registry/new-york/ui/button"
 import {Card, CardContent, CardDescription, CardHeader, CardTitle,} from "@/registry/new-york/ui/card"
 import {Tabs, TabsContent, TabsList, TabsTrigger,} from "@/registry/new-york/ui/tabs"
-import {CalendarDateRangePicker} from "@/components/dashboard-components/date-range-picker"
+import {CalendarDateRangePicker} from "./components/date-range-picker"
 import {Overview} from "./components/overview"
-import {RecentSales} from "@/components/dashboard-components/RecentSales"
+import {RecentSales} from "./components/recent-sales"
 import {useEffect, useState} from "react";
 import * as React from "react";
 import {format} from "date-fns";
@@ -13,10 +13,10 @@ import {CreditCard, DollarSign} from "lucide-react";
 import {Icons} from "@/components/icons";
 import {cn} from "@/lib/utils";
 import {useDashboard} from "./components/dashboard-provider";
+import {getSupabaseBrowserClient} from "@/lib/supabase";
 import {DbResult} from "@/lib/types";
 import useAuth from "@/hooks/use-auth";
-import {getAllNotifications, getSupabaseBrowserClient, Notification} from "@/lib/database";
-import SalesTable from "@/app/(pages)/sales/components/SalesTable";
+import {getAllNotifications} from "@/lib/database";
 
 // TODO maybe we can split this page to some public components? We can also add db method to handle this db request.
 /**
@@ -28,6 +28,8 @@ export default function DashboardPage() {
     const {data, date, setDate} = useDashboard()
     const [totalRevenue, setTotalRevenue] = useState<number>(0);
     const [totalGoal, setTotalGoal] = useState<number[]>([]);
+    const [totalRevenueForTheYear, setTotalRevenueForTheYear] = useState<number>(0);
+    const [totalRevMonth, setTotalRevMonth] = useState<number>(0);
     const supabase = getSupabaseBrowserClient();
     const {user, employee} = useAuth();
 
@@ -47,6 +49,7 @@ export default function DashboardPage() {
                 setTotalGoal(SalesGoals as DbResult<SalesGoalFragment[]>);
             }
             const getNotifications = async ()=> {
+                // @ts-ignore
                 setNotifications(await getAllNotifications(supabase));
             }
 
@@ -63,7 +66,26 @@ export default function DashboardPage() {
         setTotalRevenue(data
             ?.map((sale) => sale?.Total)
             .reduce((a, b) => a + b, 0) ?? 0)
-    }, [data]);
+    }, [data, date, supabase]);
+
+    useEffect(() => {
+        const fetchTable = async () => {
+            let { data: MonthlySales, error } = await supabase
+                .from('MonthlySales')
+                .select('Total, GrossProfit, TimePeriod');
+
+            const month = format(new Date(), 'yyyy-MMM');
+            const monthlySales = MonthlySales?.filter((sale) => format(
+                new Date(sale?.TimePeriod || new Date())
+                , 'yyyy-MMM') === month)?.map((sale) => sale?.Total)?.reduce((a, b) => a + b, 0) || 0
+
+            setTotalRevMonth(monthlySales as DbResult<typeof monthlySales[]>);
+        };
+
+        fetchTable();
+
+    }, [])
+
 
     return (
         <>
@@ -188,22 +210,26 @@ export default function DashboardPage() {
                                         </h2>
                                         <p className="text-muted-foreground">
                                             Here&apos;s a list of your sales for this month!
-                                            <SalesTable/> {/* temporary - need some caching or something,
+                                            {/*<SalesTable/> */}
+                                            {/* temporary - need some caching or something,
                                             queries every time tab is swapped.*/}
                                         </p>
                                     </div>
                                     <div className="flex items-center space-x-2">
+                                        {/*<UserNav />*/}
                                     </div>
                                 </div>
+                                {/*<DataTable data={tasks} columns={test_columns} />*/}
                             </div>
 
                         </TabsContent>
                         <TabsContent value="reports">Reports</TabsContent>
                         <TabsContent value="notifications"> {/* temp */}
                             {notifications && notifications.map((notification) =>
-                            <div key={notification.id}>
-                                <p>New Sale: {notification.Sale}</p>
-                            </div>
+                                <></>
+                            // <div key={notification.id}>
+                            //     <p>New Sale: {notification.Sale}</p>
+                            // </div>
                             )}
                         </TabsContent>
                     </Tabs>
