@@ -1,16 +1,3 @@
-qodana:
-  only:
-    - main
-    - bill
-    - merge_requests
-  image:
-    name: jetbrains/qodana-js
-    entrypoint: [""]
-  variables:
-    QODANA_TOKEN: $qodana_token
-  script:
-    - qodana --save-report --results-dir=$CI_PROJECT_DIR/.qodana
-
 stages:
   - deploy
   - build_typedoc
