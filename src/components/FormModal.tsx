@@ -1,21 +1,36 @@
 import {Dialog, DialogContent, DialogHeader, DialogTitle} from "@/components/ui/dialog";
-import React, {Dispatch, ReactNode, SetStateAction} from "react";
+import React, {createContext, Dispatch, ReactElement, ReactNode, SetStateAction, useContext, useState} from "react";
 
-interface FormModalProps {
+export interface FormModalProps {
   title: string
   showDialog: boolean;
   setShowDialog: Dispatch<SetStateAction<boolean>>;
+  onSubmit: (data:any) => void;
   children?: ReactNode;
 }
-export default function FormModal({ title, showDialog, setShowDialog, children }: FormModalProps) {
+
+const FormModalContext = createContext<FormModalProviderProps | null>(null);
+type FormModalProviderProps = {
+  showDialog: boolean;
+  setShowDialog: React.Dispatch<React.SetStateAction<boolean>>;
+  onSubmit: (data:any) => void;
+};
+
+export const useFormModalContext = () => {
+  return useContext(FormModalContext);
+};
+
+export default function FormModal({ title, showDialog, setShowDialog, onSubmit, children }: FormModalProps) {
   return (
-      <Dialog open={showDialog} onOpenChange={setShowDialog}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{title}</DialogTitle>
-          </DialogHeader>
-          {children}
-        </DialogContent>
-      </Dialog>
+      <FormModalContext.Provider value={{ showDialog, setShowDialog, onSubmit }}>
+        <Dialog open={showDialog} onOpenChange={setShowDialog}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>{title}</DialogTitle>
+            </DialogHeader>
+            {children}
+          </DialogContent>
+        </Dialog>
+      </FormModalContext.Provider>
   );
 }

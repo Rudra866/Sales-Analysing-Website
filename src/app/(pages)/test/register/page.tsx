@@ -6,10 +6,45 @@ import {Input} from "@/components/ui/input";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 import {useForm} from "react-hook-form";
 import * as z from "zod";
-import {existingEmployeeFormSchema} from "@/lib/types";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {getSupabaseBrowserClient} from "@/lib/supabase";
 import {getAllRoles, Database, Role, SupabaseClient, User} from "@/lib/database";
+
+// temp duplicate
+const existingEmployeeFormSchema = z.object({
+  EmployeeNumber:
+      z.string().min(1, {
+        message: "EmployeeNumber must not be empty."})
+          .max(255, {
+            message: "EmployeeNumber must be shorter than 255 characters."}),
+
+  Name:
+      z.string()
+          .min(1, {
+            message: "Employee Name must not be empty."})
+          .max(255, {
+            message: "Employee Name must be less than 255 characters."}),
+
+  email:
+      z.string()
+          .min(1, {
+            message: "Employee Email must not be empty."})
+          .max(320, {
+            message: "Employee Email must be less than 255 characters."})
+          .email({
+            message: "Employee Email must be a valid email address."}),
+
+  password: z.string().min(6, "Password must be greater than 8 characters."),
+
+  Role:
+      z.string().refine(
+          (value) => {
+            return !isNaN(Number(value)) && Number(value) >= 1
+          }, {
+            message: "Invalid."
+          }
+      )
+})
 
 export default function AuthRegistrationTestPage() {
   const supabase: SupabaseClient<Database> = getSupabaseBrowserClient();

@@ -17,7 +17,7 @@ export default function AuthenticationPage() {
 
         <div className="relative hidden h-full flex-col bg-muted p-10 text-white dark:border-r lg:flex ">
           <div className="absolute inset-0 bg-zinc-900 bg-[url('/img4.jpg')" />
-          <Image src={'/images/img2.jpg'} alt={'icon'} fill sizes={'100%'} className={'grayscale-[25%]'}/>
+          <Image src={'/images/img2.jpg'} alt={'decorative sidebar image'} fill sizes={'100%'} className={'grayscale-[25%]'}/>
           <div className="relative z-20 flex items-center text-lg font-medium">
 
           </div>
