@@ -5,13 +5,44 @@ stages:
   - teardown
 
 
-default:
+#default:
+#  cache:
+#    key: $CI_COMMIT_REF_SLUG
+#    paths:
+#      - .next/cache/
+#      - .npm/
+#  before_script:
+#    - npm ci --cache .npm --prefer-offline
+
+cache:
+  # most npm libraries will only have 1 entry for the base project deps
+  key: &global_cache_node_mods
+    files:
+      - package-lock.json
+  paths:
+    - node_modules/
+  policy: pull  # prevent subsequent jobs from modifying cache
+
+install:
+  stage: .pre
   cache:
-    key: $CI_COMMIT_REF_SLUG
-    paths:
-      - .next/cache/
-      - .npm/
-  before_script:
+    # store npm cache for all branches (stores download pkg.tar.gz's)
+    # will not be necessary for any other job
+    - key: ${CI_JOB_NAME}
+      paths:
+        - .npm/
+      when: on_success
+      policy: pull-push
+
+    - key:
+        files:
+          - package-lock.json
+      paths:
+        - node_modules/
+      when: on_success
+      policy: pull-push
+  
+  script:
     - npm ci --cache .npm --prefer-offline
 
 
@@ -35,6 +66,8 @@ deploy_generic_preview:
     - echo "DEPLOY_URL=$DEPLOY_URL" >> deploy.env
 
   artifacts:
+    paths:
+      - .next/
     reports:
       dotenv: deploy.env
 
@@ -64,10 +97,22 @@ deploy_user_preview:
     - if [ $code -eq 0 ]; then
     - deploymentUrl=`cat deploy.env`
     - vercel alias $deploymentUrl ${CI_COMMIT_REF_SLUG}.codeallergy.dev --token=$VERCEL_TOKEN
+    - echo "DEPLOY_URL=$DEPLOY_URL" >> deploy.env
     - else
     - errorMessage=`cat error.txt`
     - echo "Error occurred with deployment $errorMessage"
     - fi
+
+  artifacts:
+    paths:
+      - .next/
+    reports:
+      dotenv: deploy.env
+
+  environment:
+    name: "$CI_COMMIT_REF_SLUG"
+    url: $DEPLOY_URL
+    on_stop: end_deployment
 
 
 deploy_production:
@@ -94,6 +139,9 @@ deploy_production:
 
 generate_storybook_main:
   stage: docs
+  needs:
+    - job: deploy_production
+      artifacts: true
 
   only: [ main ]
 
