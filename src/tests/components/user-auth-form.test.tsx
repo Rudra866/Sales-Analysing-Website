@@ -24,7 +24,7 @@ function getCookieName() {
   return "sb-ciguaogfmmnxjxfqpwhp-auth-token"
 }
 
-describe("user-auth-form", () => {
+describe("User Authentication form", () => {
   test('renders with a email label', () => {
     render(<UserAuthForm/>);
     const messageElement = screen.getByLabelText("Email");

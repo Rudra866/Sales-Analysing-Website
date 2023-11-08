@@ -59,6 +59,12 @@ export const existingEmployeeFormSchema = z.object({
         )
 })
 
+export const forgotPasswordDialogSchema = z.object({
+    email: z.string().min(1, "Email must not be empty")
+        .max(255, "Email exceeds maximum length")
+        .email("Only enter a valid email address")
+})
+
 
 
 // unused

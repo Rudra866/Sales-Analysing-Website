@@ -9,6 +9,9 @@ import useAuth from "@/hooks/use-auth";
 import React, { useState, ChangeEvent, FormEvent } from 'react';
 import { z } from 'zod';
 import {getSupabaseBrowserClient} from "@/lib/database";
+import FormModal from "@/components/FormModal";
+import ForgotPasswordDialog from "@/components/ForgotPasswordDialog";
+import {forgotPasswordDialogSchema} from "@/lib/types";
 
 export type UserAuthFormProps = React.HTMLAttributes<HTMLDivElement>;
 
@@ -16,6 +19,12 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [signedIn, setSignedIn] = useState(false);
   const [error, setError] = useState(null);
+
+  const [passwordDialogOpen, setPasswordDialogOpen] = useState<boolean>(false)
+  const [passwordResetSuccess, setPasswordResetSuccess] = useState<boolean>(false)
+  const [passwordResetError, setPasswordResetError] = useState<string | null>(null)
+
+
   const supabase = getSupabaseBrowserClient();
   const router = useRouter();
   const LoginSchema = z.object({
@@ -33,6 +42,10 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
     await supabase.auth.resetPasswordForEmail(email);
   }
 
+  function showPasswordResetDialog() {
+    setPasswordDialogOpen(true);
+  }
+
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     // Update the form data and clear validation errors for the specific field.
@@ -45,6 +58,20 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
       [name]: '',
     });
   };
+
+  const changeUserPassword = async (data: z.infer<typeof forgotPasswordDialogSchema>) => {
+    const {error} = await supabase.auth.resetPasswordForEmail(data.email);
+    const message = error?.message;
+    if (message) setPasswordResetError(message)
+    else setPasswordResetSuccess(true)
+
+
+    // formContext?.onSubmit({}); // no function in parent yet?
+
+
+
+
+  }
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -115,7 +142,7 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
                   onChange={handleChange}
               />
               {validationErrors.password && <div className="text-red-600">{validationErrors.password}</div>}
-              <Button type={"button"} variant={"link"} onClick={()=> resetUserPassword(formData.email)}>Forgot password?</Button>
+              <Button type={"button"} variant={"link"} onClick={()=> showPasswordResetDialog()}>Forgot password?</Button>
             </div>
             <Button disabled={isLoading}>
               {isLoading && (
@@ -129,6 +156,18 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
           {error && <div className={"text-red-600"}>{error}</div>}
           {signedIn && <div className={""}>success!</div>}
         </div>
+          <FormModal
+              showDialog={passwordDialogOpen} setShowDialog={setPasswordDialogOpen}
+              onSubmit={changeUserPassword}
+              title={"Request Password Reset"}
+          >
+            <ForgotPasswordDialog
+                success={passwordResetSuccess}
+                setSuccess={setPasswordResetSuccess}
+                error={passwordResetError}
+                setError={setPasswordResetError}
+            />
+          </FormModal>
       </div>
   );
 }
