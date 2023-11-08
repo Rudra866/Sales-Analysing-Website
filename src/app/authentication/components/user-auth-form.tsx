@@ -38,10 +38,6 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
   const [validationErrors, setValidationErrors] =
       useState({ email: '', password: '' });
 
-  const resetUserPassword = async (email: string) => {
-    await supabase.auth.resetPasswordForEmail(email);
-  }
-
   function showPasswordResetDialog() {
     setPasswordDialogOpen(true);
   }
@@ -59,18 +55,11 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
     });
   };
 
-  const changeUserPassword = async (data: z.infer<typeof forgotPasswordDialogSchema>) => {
+  const resetUserPassword = async (data: z.infer<typeof forgotPasswordDialogSchema>) => {
     const {error} = await supabase.auth.resetPasswordForEmail(data.email);
     const message = error?.message;
     if (message) setPasswordResetError(message)
     else setPasswordResetSuccess(true)
-
-
-    // formContext?.onSubmit({}); // no function in parent yet?
-
-
-
-
   }
 
   const handleSubmit = async (e: FormEvent) => {
@@ -104,7 +93,7 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
       setIsLoading(false);
     }
   };
-
+  // TODO replace this with react-hook table
   return (
       <div className={cn("grid gap-6", className)} {...props}>
         <form onSubmit={handleSubmit}>
@@ -148,17 +137,23 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
               {isLoading && (
                   <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
               )}
-              Sign In
+              {signedIn && (
+                  <Icons.check className="text-green-700" data-testid="success"/>
+              )}
+              {error && (
+                  <Icons.warning className="text-red-500"/>
+              )}
+              {!signedIn && !isLoading && !error && "Sign In"}
             </Button>
           </div>
         </form>
         <div className={"flex flex-col items-center"}>
           {error && <div className={"text-red-600"}>{error}</div>}
-          {signedIn && <div className={""}>success!</div>}
+          {/*{signedIn && <div className={""}>success!</div>}*/}
         </div>
           <FormModal
               showDialog={passwordDialogOpen} setShowDialog={setPasswordDialogOpen}
-              onSubmit={changeUserPassword}
+              onSubmit={resetUserPassword}
               title={"Request Password Reset"}
           >
             <ForgotPasswordDialog

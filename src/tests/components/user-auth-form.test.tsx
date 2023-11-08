@@ -1,5 +1,5 @@
 import React from 'react';
-import {render, screen, waitFor} from '@testing-library/react';
+import {render, RenderResult, screen, waitFor} from '@testing-library/react';
 import '@testing-library/jest-dom';
 import {UserAuthForm} from "@/app/authentication/components/user-auth-form";
 import {userEvent} from "@storybook/testing-library";
@@ -76,7 +76,7 @@ describe("User Authentication form", () => {
       await userEvent.click(submitButton)
     })
 
-    await waitFor(() => screen.getByText('success!'), {timeout: 10000}) // todo change on login UI
+    await waitFor(() => screen.getByTestId("success"), {timeout: 10000})
     const cookie = getCookie(getCookieName());
     expect(cookie).not.toBeNull()
   })
