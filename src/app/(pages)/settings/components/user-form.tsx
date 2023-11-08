@@ -9,7 +9,9 @@ import {Checkbox} from "@/components/ui/checkbox"
 import {Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage,} from "@/components/ui/form"
 import {toast, useToast} from "@/components/ui/use-toast"
 import {Input} from "@/components/ui/input";
+import {Switch} from "@/components/ui/switch";
 import {FormToggleField} from "@/components/form-components/form-toggle-field";
+// import {FormToggleField} from "@/components/form-components/form-toggle-field";
 
 const role_options_config = [
     {
@@ -49,6 +51,9 @@ const role_options_config = [
         default: false
     },
 ]
+
+
+
 
 const roles = Object.fromEntries(
     role_options_config.map((role) => [role.name, z.boolean()])
@@ -97,6 +102,8 @@ const FormInputField = ({form, name, label}: FormInputFieldProps) => (
         )}
     />
 )
+
+
 
 interface UserFormProps {
     name?: string,

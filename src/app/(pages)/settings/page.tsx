@@ -21,13 +21,13 @@ export default function SettingsProfilePage() {
       </div>
       <Separator />
         <ProfileForm />
-        <FormModal
-            title={'Settings'}
-            showDialog={showDialog}
-            setShowDialog={setShowDialog}
-            onSubmit={(data) => {console.log(data)}}>
-            <CreateRoleDialog />
-        </FormModal>
+        {/*<FormModal*/}
+        {/*    title={'Settings'}*/}
+        {/*    showDialog={showDialog}*/}
+        {/*    setShowDialog={setShowDialog}*/}
+        {/*    onSubmit={(data) => {console.log(data)}}>*/}
+        {/*    <CreateRoleDialog />*/}
+        {/*</FormModal>*/}
     </div>
   )
 }

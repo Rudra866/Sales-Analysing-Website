@@ -43,6 +43,7 @@ export function DemoShareDocument() {
         <div className="space-y-4">
           <h4 className="text-sm font-medium">People with access</h4>
           <div className="grid gap-6">
+
             <div className="flex items-center justify-between space-x-4">
               <div className="flex items-center space-x-4">
                 <Avatar>
@@ -56,6 +57,7 @@ export function DemoShareDocument() {
                   <p className="text-sm text-muted-foreground">m@example.com</p>
                 </div>
               </div>
+
               <Select defaultValue="edit">
                 <SelectTrigger className="ml-auto w-[110px]">
                   <SelectValue placeholder="Select" />
