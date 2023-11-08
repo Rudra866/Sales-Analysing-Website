@@ -89,7 +89,7 @@ export function RoleSelectModalForm({ employee, roles }: RoleSelectModalFormProp
           <Button type={"submit"} variant={"ghost"}>
             Change
           </Button>
-          <DialogClose>
+          <DialogClose asChild>
             <Button type="button" variant="secondary">
               Close
             </Button>
