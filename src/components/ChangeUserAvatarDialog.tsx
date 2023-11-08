@@ -48,9 +48,11 @@ export default function ChangeUserAvatarDialog({loading}: {loading?:boolean}) {
   const formContext = useFormModalContext()
   const [selectedAvatar, setSelectedAvatar] = useState(-1)
   const [profilePics, setProfilePics] = useState<string[]>([])
+  // use later
 
   // todo make dynamic -- probably on build time
-  const profile_pics = ["01.png", "02.png", "03.png", "04.png",
+  const profile_pics = [
+    "01.png", "02.png", "03.png", "04.png",
     "01.png", "02.png", "03.png", "04.png",
     "01.png", "02.png", "03.png", "04.png",
     "01.png", "02.png", "03.png", "04.png",
@@ -64,7 +66,7 @@ export default function ChangeUserAvatarDialog({loading}: {loading?:boolean}) {
   })
 
   function handleAvatarClick(index:number) {
-    form.setValue('image', profilePics[index])
+    form.setValue('image', profile_pics[index])
   }
 
   return (
@@ -74,7 +76,7 @@ export default function ChangeUserAvatarDialog({loading}: {loading?:boolean}) {
               formContext?.onSubmit(data))} className="space-y-8">
             <DialogBody className={"flex justify-center"}>
               <div className={"grid grid-cols-3 w-full"}>
-                {profilePics.map((image, index) => (
+                {profile_pics.map((image, index) => (
                     <SelectableAvatar
                         onClick={() => handleAvatarClick(index)}
                         key={index}
