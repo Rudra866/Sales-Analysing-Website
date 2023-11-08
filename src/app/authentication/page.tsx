@@ -3,6 +3,7 @@
 import { UserAuthForm } from "./components/user-auth-form"
 import Image from "next/image";
 import * as React from "react";
+import ContainerLayout from "@/components/container-layout";
 
 /**
  * Allows the user to login using the {@link UserAuthForm} component.
@@ -11,7 +12,7 @@ import * as React from "react";
  */
 export default function AuthenticationPage() {
   return (
-    <>
+    <ContainerLayout>
       <div className="md:hidden">
         {/*todo use tabs for this*/}
 
@@ -40,6 +41,6 @@ export default function AuthenticationPage() {
           </div>
         </div>
       </div>
-    </>
+    </ContainerLayout>
   )
 }
