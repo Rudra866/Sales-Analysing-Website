@@ -77,7 +77,6 @@
     "@storybook/addon-interactions": "^7.5.2",
     "@storybook/addon-jest": "^7.5.2",
     "@storybook/addon-links": "^7.5.2",
-    "@storybook/addon-onboarding": "^1.0.8",
     "@storybook/blocks": "^7.5.2",
     "@storybook/jest": "^0.2.3",
     "@storybook/manager-api": "^7.5.2",
