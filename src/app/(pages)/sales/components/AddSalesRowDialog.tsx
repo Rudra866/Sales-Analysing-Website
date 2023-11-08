@@ -1,4 +1,4 @@
-import React, {Dispatch, SetStateAction, useState} from "react";
+import React, {Dispatch, SetStateAction, useEffect, useState} from "react";
 import {useForm} from "react-hook-form";
 import * as z from "zod";
 import {zodResolver} from "@hookform/resolvers/zod";
@@ -17,64 +17,61 @@ export interface SaleSelectModalFormProps {
   sale?: Sale | null
 }
 
-// todo duplicate and should be saleFormSchema?
-const employeeFormSchema = z.object({
-  EmployeeID:
-      z.string().min(1, {
-        message: "EmployeeID must not be empty."})
-          .max(255, {
-            message: "EmployeeID must be shorter than 255 characters."}),
 
+const saleFormSchemaCommon = {
+  StockNumber: z.string().min(1, {
+    message: "StockNumber must not be empty."})
+      .max(255, {
+        message: "StockNumber must be shorter than 255 characters."}),
   VehicleMake:z.string().min(1, {
     message: "VehicleMake must not be empty."})
       .max(255, {
         message: "VehicleMake must be shorter than 255 characters."}),
 
-  ActualCashValue:
-      z.number().min(1, {
-        message: "ActualCashValue must not be empty."})
-          .max(255, {
-            message: "ActualCashValue must be shorter than 255 characters."}),
+  CustomerName: z.string(), // todo
+  CustomerCity: z.string(), // todo
 
-    GrossProfit: z.number(),
+  ActualCashValue: z.number(), //todo
 
-    FinAndInsurance: z.number(),
+  GrossProfit: z.number(), //todo
 
-    Holdback: z.number(),
+  FinAndInsurance: z.number(), //todo
 
-    Total: z.number(),
+  FinancingMethod: z.string().optional(), //todo
 
-    StockNumber: z.string().min(1, {
-        message: "StockNumber must not be empty."})
-            .max(255, {
-            message: "StockNumber must be shorter than 255 characters."}),
+  UsedSale: z.boolean(), //todo
 
-    CustomerID: z.number().min(1, {
-        message: "CustomerNumber must not be empty."})
-            .max(255, {
-            message: "CustomerNumber must be shorter than 255 characters."}),
+  TradeIn: z.string().optional(), //todo
 
-    FinancingID: z.number().min(1, {
-        message: "FinancingID must not be empty."})
-            .max(255, {
-            message: "FinancingID must be shorter than 255 characters."}).optional(),
+  TradeInValue: z.string().optional(), //todo
+}
 
-    TradeInID: z.number().min(1, {
-        message: "TradeInID must not be empty."})
-            .max(255, {
-            message: "TradeInID must be shorter than 255 characters."}).optional(),
-    NewSales: z.boolean(),
-    LotPack: z.number().optional(),
-    DaysInStock: z.number(),
-    DealerCost: z.number(),
-    ROI: z.number().min(-100, {
-        message: "ROI must not be empty."})
-            .max(100, {
-            message: "ROI must be between -100 and 100 percent"}).optional(),
+
+const saleFormSchema = z.object({
+  ...saleFormSchemaCommon,
+  Holdback: z.string()
+      .transform((value) => {
+        const numberValue = parseFloat(value);
+
+        return !isNaN(numberValue) ? numberValue : value;
+      }),
+})
+
+const usedSaleFormSchema = z.object({
+  ...saleFormSchemaCommon,
+
+  LotPack: z.number(),
+  DaysInStock: z.number(),
+  DealerCost: z.number(),
+  ROI: z.number().min(-100, {
+    message: "ROI must not be empty."})
+      .max(100, {
+        message: "ROI must be between -100 and 100 percent"}),
 
 })
 
 // todo database calls update
+// todo need customer && trade-in && financiers.
 /**
  * Component used to render adding a new sale on the sales page.
  * @group React Components
@@ -82,112 +79,154 @@ const employeeFormSchema = z.object({
 export function AddSalesRowDialog({ sale }: SaleSelectModalFormProps) {
   const formContext = useFormModalContext();
   const [editState, setEditState] = useState(false);
-  const supabase = getSupabaseBrowserClient();
-  const form = useForm<z.infer<typeof employeeFormSchema>>({
-    resolver: zodResolver(employeeFormSchema),
-    defaultValues: {
-      EmployeeID: sale?.EmployeeID ?? "",
-      VehicleMake: sale?.VehicleMake ?? "",
-      ActualCashValue: sale?.ActualCashValue ?? 0,
-      GrossProfit: sale?.GrossProfit ?? 0,
-      FinAndInsurance: sale?.FinAndInsurance ?? 0,
-      Holdback: sale?.Holdback ?? 0,
-      Total: sale?.Total ?? 0,
-      StockNumber: sale?.StockNumber ?? "",
-      CustomerID: sale?.CustomerID ?? 0,
-      FinancingID: sale?.FinancingID ?? 0,
-      TradeInID: sale?.TradeInID ?? 0,
-      NewSales: sale?.NewSale ?? false,
-      LotPack: sale?.LotPack ?? 0,
-      DaysInStock: sale?.DaysInStock ?? 0,
-      DealerCost: sale?.DealerCost ?? 0,
-      ROI: sale?.ROI ?? 0,
-    },
-  })
-    // console.log("sale:", sale)
-
-  async function onSubmit(values: z.infer<typeof employeeFormSchema>) {
-    if (!sale) {
-      console.log("ayo");
-      return
-    } // todo handle insert case
-    try {
-      const { data: data, error} = await supabase
-          .from('Sales').update(
-              {
-                    EmployeeID: values.EmployeeID,
-                    VehicleMake: values.VehicleMake,
-                    ActualCashValue: values.ActualCashValue,
-                    GrossProfit: values.GrossProfit,
-                    FinAndInsurance: values.FinAndInsurance,
-                    Holdback: values.Holdback,
-                    Total: values.Total,
-                    StockNumber: values.StockNumber,
-                    CustomerID: values.CustomerID,
-                    FinancingID: values.FinancingID,
-                    TradeInID: values.TradeInID,
-                    NewSales: values.NewSales,
-                    LotPack: values.LotPack,
-                    DaysInStock: values.DaysInStock,
-                    DealerCost: values.DealerCost,
-                    ROI: values.ROI,
-              }
-          ).eq('id', sale.id).select()
-        console.log(data)
-
-      if (error) {
-        console.log("Supabase error: ", error);
-        throw new Error("An error occurred while updating the employee record.");
-      }
-
-      data && formContext?.onSubmit(data[0]); // todo this should throw an error not conditional
-    } catch (error) {
-      console.log(error)
-    } finally {
-      formContext?.setShowDialog(false);
+  const [newSaleSelection, setNewSaleSelection] = useState<boolean>()
+  const [noFinancing, setNoFinancing] = useState<boolean>(!!sale?.FinancingID)
+  const [noTradeIn, setNoTradeIn] = useState<boolean>(!!sale?.TradeInID)
+  const form = useForm<z.infer<typeof saleFormSchema | typeof usedSaleFormSchema>>(
+newSaleSelection ?
+    {
+      resolver: zodResolver(saleFormSchema),
+      defaultValues: {
+        StockNumber: sale?.StockNumber ?? "",
+        VehicleMake: sale?.VehicleMake ?? "",
+        ActualCashValue: sale?.ActualCashValue ?? 0,
+        GrossProfit: sale?.GrossProfit ?? 0,
+        FinAndInsurance: sale?.FinAndInsurance ?? 0,
+        Holdback: sale?.Holdback ?? 0, // new only
+        UsedSale: !sale?.NewSale ?? false,
+      },
     }
+      :
+    {
+      resolver: zodResolver(usedSaleFormSchema),
+      defaultValues: {
+        StockNumber: sale?.StockNumber ?? "",
+        VehicleMake: sale?.VehicleMake ?? "",
+        ActualCashValue: sale?.ActualCashValue ?? 0,
+        GrossProfit: sale?.GrossProfit ?? 0,
+        FinAndInsurance: sale?.FinAndInsurance ?? 0,
+
+        UsedSale: !sale?.NewSale ?? false,
+        LotPack: sale?.LotPack ?? 0,
+        DaysInStock: sale?.DaysInStock ?? 0,
+        DealerCost: sale?.DealerCost ?? 0,
+        ROI: sale?.ROI ? sale.ROI * 100 : 0,
+      },
+    }
+  )
+
+
+
+  useEffect(() => {
+
+  }, []);
+
+  function onSubmit(values: z.infer<typeof saleFormSchema | typeof usedSaleFormSchema>) {
+    formContext?.onSubmit(values)
+    console.log(values)
   }
 
 
+    // done from parent function
+    // try {
+    //
+    // }
+    //   const { data: data, error} = await supabase
+    //       .from('Sales').update(
+    //           {
+    //                 EmployeeID: values.EmployeeID,
+    //                 VehicleMake: values.VehicleMake,
+    //                 ActualCashValue: values.ActualCashValue,
+    //                 GrossProfit: values.GrossProfit,
+    //                 FinAndInsurance: values.FinAndInsurance,
+    //                 Holdback: values.Holdback,
+    //                 Total: values.Total,
+    //                 StockNumber: values.StockNumber,
+    //                 NewSales: values.NewSales,
+    //                 LotPack: values.LotPack,
+    //                 DaysInStock: values.DaysInStock,
+    //                 DealerCost: values.DealerCost,
+    //                 ROI: values.ROI,
+    //           }
+    //       ).eq('id', sale.id).select()
+    //     console.log(data)
+    //
+    //   if (error) {
+    //     console.log("Supabase error: ", error);
+    //     throw new Error("An error occurred while updating the employee record.");
+    //   }
+    //
+    //   data && formContext?.onSubmit(data[0]); // todo this should throw an error not conditional
+    // } catch (error) {
+    //   console.log(error)
+    // } finally {
+    //   formContext?.setShowDialog(false);
+    // }
+
+  // todo ts-any
   return (
       <ScrollArea className='flex flex-col max-h-[700px] text-foreground pr-4 '>
           <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)}>
                   <DialogBody className={'space-y-4'}>
+                    <div className={"flex flex-row"}>
                       <FormField
                           control={form.control}
-                          name="EmployeeID"
+                          name="StockNumber"
                           render={({ field }) => (
                               <FormItem>
-                                  <FormLabel>Employee ID</FormLabel>
-                                  <FormControl>
-                                      <Input
-                                          placeholder="EmployeeID"
-                                          {...field}
-                                          disabled={!editState}
-                                      />
-                                  </FormControl>
-                                  <FormMessage />
+                                <FormLabel>Stock Number</FormLabel>
+                                <FormControl>
+                                  <Input
+                                      className={"w-32"}
+                                      placeholder="0"
+                                      {...field}
+                                      disabled={!editState}
+                                  />
+                                </FormControl>
+                                <FormMessage />
                               </FormItem>
                           )}
                       />
-                      <FormField
-                          control={form.control}
-                          name="VehicleMake"
-                          render={({ field }) => (
-                              <FormItem>
-                                  <FormLabel>Vehicle Make</FormLabel>
-                                  <FormControl>
-                                      <Input
-                                          placeholder="VehicleMake"
-                                          {...field}
-                                          disabled={!editState}
-                                      />
-                                  </FormControl>
-                                  <FormMessage />
-                              </FormItem>
-                          )}
-                      />
+                      <div className={"flex-grow pl-2"}>
+                        <FormField
+                            control={form.control}
+                            name="VehicleMake"
+                            render={({ field }) => (
+                                <FormItem className={""}>
+                                    <FormLabel>Vehicle Make</FormLabel>
+                                    <FormControl>
+                                        <Input
+
+                                            placeholder="VehicleMake"
+                                            {...field}
+                                            disabled={!editState}
+                                        />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                      </div>
+                    </div>
+                    <FormField
+                        control={form.control}
+                        name="ActualCashValue"
+                        render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Actual Cash Value</FormLabel>
+                              <FormControl>
+                                <Input
+                                    placeholder="ActualCashValue"
+                                    {...field}
+                                    disabled={!editState}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <div className={"flex flex-row gap-2"}>
                       <FormField
                           control={form.control}
                           name="GrossProfit"
@@ -210,7 +249,7 @@ export function AddSalesRowDialog({ sale }: SaleSelectModalFormProps) {
                           name="FinAndInsurance"
                           render={({ field }) => (
                               <FormItem>
-                                  <FormLabel>Finance and Insurance</FormLabel>
+                                  <FormLabel>F&I</FormLabel>
                                   <FormControl>
                                       <Input
                                           placeholder="0"
@@ -222,6 +261,7 @@ export function AddSalesRowDialog({ sale }: SaleSelectModalFormProps) {
                               </FormItem>
                           )}
                       />
+                      {newSaleSelection &&
                       <FormField
                           control={form.control}
                           name="Holdback"
@@ -230,7 +270,7 @@ export function AddSalesRowDialog({ sale }: SaleSelectModalFormProps) {
                                   <FormLabel>Hold Back</FormLabel>
                                   <FormControl>
                                       <Input
-                                          placeholder="0"
+                                          placeholder={"0"}
                                           {...field}
                                           disabled={!editState}
                                       />
@@ -239,103 +279,154 @@ export function AddSalesRowDialog({ sale }: SaleSelectModalFormProps) {
                               </FormItem>
                           )}
                       />
+                      }
+                    </div>
+                    <div className={"flex flex-row gap-2"}>
                       <FormField
                           control={form.control}
-                          name="Total"
+                          name="CustomerName"
                           render={({ field }) => (
                               <FormItem>
-                                  <FormLabel>Total</FormLabel>
-                                  <FormControl>
-                                      <Input
-                                          placeholder="0"
-                                          {...field}
-                                          disabled={!editState}
-                                      />
-                                  </FormControl>
-                                  <FormMessage />
+                                <FormLabel>Customer Name</FormLabel>
+                                <FormControl>
+                                  <Input
+                                      placeholder="Name"
+                                      {...field}
+                                      disabled={!editState}
+                                  />
+                                </FormControl>
+                                <FormMessage />
                               </FormItem>
                           )}
                       />
                       <FormField
                           control={form.control}
-                          name="StockNumber"
+                          name="CustomerCity"
                           render={({ field }) => (
                               <FormItem>
-                                  <FormLabel>Stock Number</FormLabel>
-                                  <FormControl>
-                                      <Input
-                                          placeholder="0"
-                                          {...field}
-                                          disabled={!editState}
-                                      />
-                                  </FormControl>
-                                  <FormMessage />
+                                <FormLabel>Customer City</FormLabel>
+                                <FormControl>
+                                  <Input
+                                      placeholder="City"
+                                      {...field}
+                                      disabled={!editState}
+                                  />
+                                </FormControl>
+                                <FormMessage />
                               </FormItem>
                           )}
                       />
+                    </div>
+                    <div className={"flex gap-2"}>
                       <FormField
                           control={form.control}
-                          name="CustomerID"
+                          name="TradeIn"
                           render={({ field }) => (
                               <FormItem>
-                                  <FormLabel>Customer ID</FormLabel>
-                                  <FormControl>
-                                      <Input
-                                          placeholder="0"
-                                          {...field}
-                                          disabled={!editState}
-                                      />
-                                  </FormControl>
-                                  <FormMessage />
+                                <FormLabel>Trade-in Name</FormLabel>
+                                <FormControl>
+                                  <Input
+                                      placeholder="Vehicle Make"
+                                      {...field}
+                                      disabled={!editState || noTradeIn}
+                                  />
+                                </FormControl>
+                                <FormMessage />
                               </FormItem>
                           )}
                       />
                       <FormField
                           control={form.control}
-                          name="FinancingID"
+                          name="TradeInValue"
                           render={({ field }) => (
-                              <FormItem>
-                                  <FormLabel>Financing ID</FormLabel>
-                                  <FormControl>
-                                      <Input
-                                          placeholder="0"
-                                          {...field}
-                                          disabled={!editState}
-                                      />
-                                  </FormControl>
-                                  <FormMessage />
+                              <FormItem className={"w-28"}>
+                                <FormLabel>Trade-in Value</FormLabel>
+                                <FormControl>
+                                  <Input
+                                      placeholder="$0.00"
+                                      {...field}
+                                      disabled={!editState || noTradeIn}
+                                  />
+                                </FormControl>
+                                <FormMessage />
                               </FormItem>
                           )}
                       />
+                      <div className={"flex flex-row gap-2 items-center pt-4 pl-2"}>
+                        <Checkbox
+                            disabled={!editState}
+                            checked={noTradeIn}
+                            onCheckedChange={(event) => {
+                              if (event != "indeterminate") setNoTradeIn(event)
+                            }}/>
+                        <FormLabel>No Trade</FormLabel>
+                      </div>
+                    </div>
+                    <div >
                       <FormField
                           control={form.control}
-                          name="TradeInID"
+                          name="FinancingMethod"
                           render={({ field }) => (
-                              <FormItem>
-                                  <FormLabel>Trade In ID</FormLabel>
+                              <FormItem className={"flex flex-row"}>
+                                <div className={"grow"}>
+                                  <FormLabel>Financing Method</FormLabel>
                                   <FormControl>
-                                      <Input
-                                          placeholder="0"
-                                          {...field}
-                                          disabled={!editState}
-                                      />
+                                    <Input
+                                        placeholder = {noFinancing ? "None" : "Financing"}
+                                        {...field}
+                                        disabled={!editState || noFinancing}
+                                    />
                                   </FormControl>
-                                  <FormMessage />
+                                </div>
+                                <FormMessage />
+                                <div className={"flex flex-row gap-2 items-center pt-4 pl-2"}>
+                                  <Checkbox
+                                      disabled={!editState}
+                                      checked={noFinancing}
+                                      onCheckedChange={(event) => {
+                                        if (event != "indeterminate") setNoFinancing(event)
+                                      }}/>
+                                  <FormLabel>No Financing</FormLabel>
+                                </div>
                               </FormItem>
+
                           )}
                       />
+                    </div>
+                      {/*<FormField*/}
+                      {/*    control={form.control}*/}
+                      {/*    name="Total"*/}
+                      {/*    render={({ field }) => (*/}
+                      {/*        <FormItem>*/}
+                      {/*            <FormLabel>Total</FormLabel>*/}
+                      {/*            <FormControl>*/}
+                      {/*                <Input*/}
+                      {/*                    placeholder="0"*/}
+                      {/*                    {...field}*/}
+                      {/*                    disabled={!editState}*/}
+                      {/*                />*/}
+                      {/*            </FormControl>*/}
+                      {/*            <FormMessage />*/}
+                      {/*        </FormItem>*/}
+                      {/*    )}*/}
+                      {/*/>*/}
+
                       <FormField
                           control={form.control}
-                          name="NewSales"
+                          name="UsedSale"
                           render={({ field }) => (
                               <FormItem >
                                   <FormControl >
                                     <div className={'flex items-center gap-2'}>
                                         <Checkbox
+                                            disabled={!editState}
                                             checked={field.value}
-                                            onCheckedChange={field.onChange}
+                                            onCheckedChange={(event) => {
+                                              field.onChange(event)
+                                              setNewSaleSelection(field.value)
+                                            }}
                                         />
-                                        <FormLabel>New Sale</FormLabel>
+                                        <FormLabel>Used Sale</FormLabel>
                                     </div>
                                   </FormControl>
 
@@ -343,74 +434,64 @@ export function AddSalesRowDialog({ sale }: SaleSelectModalFormProps) {
                               </FormItem>
                           )}
                       />
-                      <FormField
-                          control={form.control}
-                          name="LotPack"
-                          render={({ field }) => (
-                              <FormItem>
+                    {!newSaleSelection &&
+                        <><FormField
+                            control={form.control}
+                            name="LotPack"
+                            render={({field}) => (
+                                <FormItem>
                                   <FormLabel>Lot Pack</FormLabel>
                                   <FormControl>
-                                      <Input
-                                          placeholder="0"
-                                          {...field}
-                                          disabled={!editState}
-                                      />
+                                    <Input
+                                        placeholder="0"
+                                        {...field}
+                                        disabled={!editState}/>
                                   </FormControl>
-                                  <FormMessage />
-                              </FormItem>
-                          )}
-                      />
-                      <FormField
-                          control={form.control}
-                          name="DaysInStock"
-                          render={({ field }) => (
-                              <FormItem>
+                                  <FormMessage/>
+                                </FormItem>
+                            )}/><FormField
+                            control={form.control}
+                            name="DaysInStock"
+                            render={({field}) => (
+                                <FormItem>
                                   <FormLabel>Days In Stock</FormLabel>
                                   <FormControl>
-                                      <Input
-                                          placeholder="0"
-                                          {...field}
-                                          disabled={!editState}
-                                      />
+                                    <Input
+                                        placeholder="0"
+                                        {...field}
+                                        disabled={!editState}/>
                                   </FormControl>
-                                  <FormMessage />
-                              </FormItem>
-                          )}
-                      />
-                      <FormField
-                          control={form.control}
-                          name="DealerCost"
-                          render={({ field }) => (
-                              <FormItem>
+                                  <FormMessage/>
+                                </FormItem>
+                            )}/><FormField
+                            control={form.control}
+                            name="DealerCost"
+                            render={({field}) => (
+                                <FormItem>
                                   <FormLabel>Cost</FormLabel>
                                   <FormControl>
-                                      <Input
-                                          placeholder="0"
-                                          {...field}
-                                          disabled={!editState}
-                                      />
+                                    <Input
+                                        placeholder="0"
+                                        {...field}
+                                        disabled={!editState}/>
                                   </FormControl>
-                                  <FormMessage />
-                              </FormItem>
-                          )}
-                      />
-                      <FormField
-                          control={form.control}
-                          name="ROI"
-                          render={({ field }) => (
-                              <FormItem>
+                                  <FormMessage/>
+                                </FormItem>
+                            )}/><FormField
+                            control={form.control}
+                            name="ROI"
+                            render={({field}) => (
+                                <FormItem>
                                   <FormLabel>ROI</FormLabel>
                                   <FormControl>
-                                      <Input
-                                          placeholder="0"
-                                          {...field}
-                                          disabled={!editState}
-                                      />
+                                    <Input
+                                        placeholder="0"
+                                        {...field}
+                                        disabled={!editState}/>
                                   </FormControl>
-                                  <FormMessage />
-                              </FormItem>
-                          )}
-                      />
+                                  <FormMessage/>
+                                </FormItem>
+                            )}/></>}
 
 
                   </DialogBody>
