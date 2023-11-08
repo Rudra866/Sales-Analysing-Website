@@ -34,6 +34,10 @@ export function DynamicChart({ title, color, data, category, date }: DynamicChar
     const [selectedCategory, setSelectedCategory] = useState<string>(category[0]);
     const [grouping, setGrouping] = useState<string>("month");
 
+    function groupBySelect(){
+
+    }
+
 
 
     useEffect(() => {
@@ -63,7 +67,7 @@ export function DynamicChart({ title, color, data, category, date }: DynamicChar
         <Card className="col-span-4">
             <CardHeader className={'flex flex-row justify-between gap-2'}>
                 <CardTitle className={'w-full self-center'}>{title}</CardTitle>
-                <Select defaultValue="monthly">
+                <Select defaultValue="month">
                     <SelectTrigger id="area"  >
                         <SelectValue placeholder="month" />
                     </SelectTrigger>

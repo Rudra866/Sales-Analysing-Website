@@ -126,8 +126,8 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
           </div>
         </form>
         <div className={"flex flex-col items-center"}>
-          {error && <div className={"text-red-600"}>{error}</div>}
-          {signedIn && <div className={""}>success!</div>}
+          {/*{error && <div className={"text-red-600"}>{error}</div>}*/}
+          {/*{signedIn && <div className={""}>success!</div>}*/}
         </div>
       </div>
   );

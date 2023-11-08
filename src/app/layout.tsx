@@ -7,6 +7,7 @@ import Navigation from "@/components/menu/navigation";
 import { ReactNode } from "react";
 
 import dynamic from 'next/dynamic';
+import {Toaster} from "@/components/ui/toaster";
 /**
  * Root layout that is rendered on all pages.
  * @param children
@@ -19,6 +20,7 @@ export default function RootLayout({children,}: { children: ReactNode }) {
         <AuthContextProvider>
           <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
               {children}
+              <Toaster />
           </ThemeProvider>
         </AuthContextProvider>
       </body>
