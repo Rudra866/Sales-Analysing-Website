@@ -18,7 +18,8 @@ const config =  {
     "<rootDir>/src/app/\\(pages\\)/\\(examples\\)",
     "<rootDir>/src/stories",
     // "<rootDir>/src/app/authentication"
-  ]
+  ],
+  modulePathIgnorePatterns: ['node_modules', 'jest-test-results.json'],
 };
 
 export default config;

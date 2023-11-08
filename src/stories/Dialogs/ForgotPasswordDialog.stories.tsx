@@ -5,15 +5,18 @@ import React, {Dispatch, SetStateAction, useEffect, useState} from "react";
 import {Button} from "@/components/ui/button";
 
 import ForgotPasswordDialog, {ForgotPasswordDialogProps} from "@/components/ForgotPasswordDialog";
-import {fireEvent, screen, userEvent, within} from "@storybook/testing-library";
+import {screen, userEvent} from "@storybook/testing-library";
+import {withTests} from "@storybook/addon-jest";
+import results from "../../../.jest-test-results.json";
 
 // todo submit success simulation doesn't work but works in implementation
 
 const delay = 100;
 
 export default {
-  title: 'Dialogs/Change Password',
+  title: 'Dialogs/Forgotten Password',
   component: FormModal,
+  decorators: [withTests({ results })],
   parameters: {
     layout: "centered"
   },

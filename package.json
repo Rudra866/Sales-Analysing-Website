@@ -10,6 +10,7 @@
     "build_start": "next build && next start",
     "docs": "typedoc",
     "test": "jest",
+    "test:generate-output": "jest --json --outputFile=.jest-test-results.json",
     "storybook": "storybook dev -p 6006",
     "test-storybook": "test-storybook",
     "build-storybook": "storybook build"
