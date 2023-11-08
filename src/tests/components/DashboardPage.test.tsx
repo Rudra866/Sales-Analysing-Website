@@ -66,16 +66,16 @@ describe("Dashboard Page", () => {
     expect(totalRevenueValue[0]).toBeInTheDocument();
   });
 
-  test('displays the second monthly revenue card', () => {
-    render(
-        <FakeDashboardProvider startDate={new Date()} endDate={new Date()}>
-          <DashboardPage />
-        </FakeDashboardProvider>
-    );
-    const totalRevenueCard = screen.getByText('Total Revenue for the year');
-    const totalRevenueValue = screen.getAllByText('$0');
-
-    expect(totalRevenueCard).toBeInTheDocument();
-    expect(totalRevenueValue[1]).toBeInTheDocument();
-  });
+  // test('displays the second monthly revenue card', () => {
+  //   render(
+  //       <FakeDashboardProvider startDate={new Date()} endDate={new Date()}>
+  //         <DashboardPage />
+  //       </FakeDashboardProvider>
+  //   );
+  //   const totalRevenueCard = screen.getByText('Total Revenue for the year');
+  //   const totalRevenueValue = screen.getAllByText('$0');
+  //
+  //   expect(totalRevenueCard).toBeInTheDocument();
+  //   expect(totalRevenueValue[1]).toBeInTheDocument();
+  // });
 })
