@@ -1,4 +1,3 @@
-import Navigation from "@/components/menu/navigation";
 
 /**
  * Layout that is rendered on all pages in the (pages) directory.
@@ -8,7 +7,6 @@ import Navigation from "@/components/menu/navigation";
 export default function PagesLayout({ children }: { children: React.ReactNode}) {
   return (
       <>
-          <Navigation />
           <div className="relative py-10">
               {children}
           </div>

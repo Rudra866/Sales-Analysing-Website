@@ -12,6 +12,8 @@ export interface DataTableProps<TData> {
   loading: boolean
 }
 
+export const tablePageSizes = [10, 25, 50, 100, 250, 1000]
+
 /**
  * Component to create a table for whatever table is passed in.
  * Can pass components as children and render them in the header.
@@ -19,8 +21,6 @@ export interface DataTableProps<TData> {
  */
 export default function DataTable<TData>({table, loading, children}:
                               PropsWithChildren<DataTableProps<TData>>) {
-  const pageSizes = [10, 25, 50, 100]
-
   return (
       <div className="space-y-4">
         <div className="flex items-center">
@@ -63,7 +63,6 @@ export default function DataTable<TData>({table, loading, children}:
                     <TableRow>
                       <TableCell colSpan={columns.length} className="h-24 text-center">
                         {/* Todo */}
-                        No result? refresh..?
                         <div className="flex items-center justify-center h-24">
                           <div className="flex items-center space-x-2">
                             <div className="w-4 h-4 bg-accent rounded-full animate-bounce"/>
@@ -95,7 +94,7 @@ export default function DataTable<TData>({table, loading, children}:
                     <SelectValue placeholder={table.getState().pagination.pageSize}/>
                   </SelectTrigger>
                   <SelectContent>
-                    {pageSizes.map((pageSize) => (
+                    {tablePageSizes.map((pageSize) => (
                         <SelectItem key={pageSize} value={`${pageSize}`}>
                           {pageSize}
                         </SelectItem>
