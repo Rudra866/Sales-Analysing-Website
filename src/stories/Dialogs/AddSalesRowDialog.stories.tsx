@@ -1,55 +1,48 @@
-import {Meta, StoryObj} from "@storybook/react";
+import {StoryObj} from "@storybook/react";
 import {AddSalesRowDialog, SaleSelectModalFormProps} from "@/app/(pages)/sales/components/AddSalesRowDialog";
 import FormModal, {FormModalProps} from "@/components/FormModal";
 import {test_sales_set} from "@/stories/test_data";
-import {useArgs} from "@storybook/preview-api";
-import {Dispatch, SetStateAction} from "react";
 import {Button} from "@/components/ui/button";
+import {useTestDialogControls} from "@/stories/Dialogs/useDialogArgs";
 
+type TestProps = SaleSelectModalFormProps & FormModalProps
+type Story = StoryObj<TestProps>
 
-export default {
+const meta = {
   title: 'Dialogs/Sale Form',
   component: AddSalesRowDialog,
   parameters: {
     layout: "centered",
   },
   argTypes: {
-    showDialog: {
-      type: "boolean",
-      control: {type: "boolean"}
-    },
     onSubmit: {
-      type: "function",
+      action: true
     },
-    setShowDialog: {
-      type: "function",
-    }
-  }
-} as Meta;
-
-export const Default: StoryObj<SaleSelectModalFormProps & FormModalProps> = {
-  args: {
-    showDialog: true,
-    sale: test_sales_set[0]
   },
-  render: function Render(args) {
-    const [{showDialog}, updateArgs] = useArgs();
-    const setShowDialog = (value: boolean) => {
-      updateArgs({showDialog: value})
-    }
-
+  render: function Render(args: TestProps) {
+    const modalControls = useTestDialogControls();
     return (
         <>
-          <Button onClick={() => setShowDialog(true)}>Trigger</Button>
-          <FormModal onSubmit={() => {
-            return
-          }}
-                     title={"Add Sale"}
-                     setShowDialog={setShowDialog as Dispatch<SetStateAction<boolean>>}
-                     showDialog={showDialog}>
+          <Button onClick={() => modalControls.setShowDialog(true)}>Trigger</Button>
+          <FormModal {...modalControls} {...args}>
             <AddSalesRowDialog sale={args.sale}/>
           </FormModal>
         </>
     )
   }
+}
+export default meta;
+
+export const Default: Story = {
+  args: {
+    showDialog: true,
+    sale: test_sales_set[0]
+  },
+};
+
+export const Empty: Story = {
+  args: {
+    showDialog: true,
+    sale: null
+  },
 };

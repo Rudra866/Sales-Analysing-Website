@@ -9,6 +9,9 @@ import useAuth from "@/hooks/use-auth";
 import React, { useState, ChangeEvent, FormEvent } from 'react';
 import { z } from 'zod';
 import {getSupabaseBrowserClient} from "@/lib/database";
+import FormModal from "@/components/FormModal";
+import ForgotPasswordDialog from "@/components/ForgotPasswordDialog";
+import {forgotPasswordDialogSchema} from "@/lib/types";
 
 export type UserAuthFormProps = React.HTMLAttributes<HTMLDivElement>;
 
@@ -16,6 +19,12 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [signedIn, setSignedIn] = useState(false);
   const [error, setError] = useState(null);
+
+  const [passwordDialogOpen, setPasswordDialogOpen] = useState<boolean>(false)
+  const [passwordResetSuccess, setPasswordResetSuccess] = useState<boolean>(false)
+  const [passwordResetError, setPasswordResetError] = useState<string | null>(null)
+
+
   const supabase = getSupabaseBrowserClient();
   const router = useRouter();
   const LoginSchema = z.object({
@@ -29,8 +38,8 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
   const [validationErrors, setValidationErrors] =
       useState({ email: '', password: '' });
 
-  const resetUserPassword = async (email: string) => {
-    await supabase.auth.resetPasswordForEmail(email);
+  function showPasswordResetDialog() {
+    setPasswordDialogOpen(true);
   }
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -45,6 +54,13 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
       [name]: '',
     });
   };
+
+  const resetUserPassword = async (data: z.infer<typeof forgotPasswordDialogSchema>) => {
+    const {error} = await supabase.auth.resetPasswordForEmail(data.email);
+    const message = error?.message;
+    if (message) setPasswordResetError(message)
+    else setPasswordResetSuccess(true)
+  }
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -77,7 +93,7 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
       setIsLoading(false);
     }
   };
-
+  // TODO replace this with react-hook table
   return (
       <div className={cn("grid gap-6", className)} {...props}>
         <form onSubmit={handleSubmit}>
@@ -115,20 +131,38 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
                   onChange={handleChange}
               />
               {validationErrors.password && <div className="text-red-600">{validationErrors.password}</div>}
-              <Button type={"button"} variant={"link"} onClick={()=> resetUserPassword(formData.email)}>Forgot password?</Button>
+              <Button type={"button"} variant={"link"} onClick={()=> showPasswordResetDialog()}>Forgot password?</Button>
             </div>
             <Button disabled={isLoading}>
               {isLoading && (
                   <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
               )}
-              Sign In
+              {signedIn && (
+                  <Icons.check className="text-green-700" data-testid="success"/>
+              )}
+              {error && (
+                  <Icons.warning className="text-red-500"/>
+              )}
+              {!signedIn && !isLoading && !error && "Sign In"}
             </Button>
           </div>
         </form>
         <div className={"flex flex-col items-center"}>
-          {/*{error && <div className={"text-red-600"}>{error}</div>}*/}
+          {error && <div className={"text-red-600"}>{error}</div>}
           {/*{signedIn && <div className={""}>success!</div>}*/}
         </div>
+          <FormModal
+              showDialog={passwordDialogOpen} setShowDialog={setPasswordDialogOpen}
+              onSubmit={resetUserPassword}
+              title={"Request Password Reset"}
+          >
+            <ForgotPasswordDialog
+                success={passwordResetSuccess}
+                setSuccess={setPasswordResetSuccess}
+                error={passwordResetError}
+                setError={setPasswordResetError}
+            />
+          </FormModal>
       </div>
   );
 }

@@ -10,6 +10,7 @@ import {Dispatch, SetStateAction} from "react";
 import {fireEvent, userEvent, within} from "@storybook/testing-library";
 import {Button} from "@/components/ui/button";
 import { screen } from '@storybook/testing-library';
+import {useTestDialogControls} from "@/stories/Dialogs/useDialogArgs";
 // eslint-disable-next-line storybook/story-exports
 
 const delay = 100
@@ -53,15 +54,11 @@ const meta: Meta<EmployeeSelectModalCustomArgs> = {
 export default meta;
 const Template: Story = {
   render: function Render(args) {
-    const [{showDialog}, updateArgs] = useArgs();
-    const setShowDialog = (value: boolean) => {
-      updateArgs({showDialog: value})
-    }
+    const modalControls = useTestDialogControls();
     return (
       <>
-        <Button onClick={() => setShowDialog(true)}>Trigger</Button>
-        <FormModal {...args} showDialog={showDialog}
-                   setShowDialog={setShowDialog as Dispatch<SetStateAction<boolean>>}>
+        <Button onClick={() => modalControls.setShowDialog(true)}>Trigger</Button>
+        <FormModal {...args} {...modalControls}>
           <EmployeeSelectModalForm {...args}/>
         </FormModal>
       </>
