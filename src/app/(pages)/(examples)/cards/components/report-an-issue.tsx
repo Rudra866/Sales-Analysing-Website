@@ -45,6 +45,18 @@ export function DemoReportAnIssue() {
                 <SelectItem value="support">Support</SelectItem>
               </SelectContent>
             </Select>
+            <Select defaultValue="billing">
+              <SelectTrigger id="area">
+                <SelectValue placeholder="Select" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="team">Team</SelectItem>
+                <SelectItem value="billing">Billing</SelectItem>
+                <SelectItem value="account">Account</SelectItem>
+                <SelectItem value="deployments">Deployments</SelectItem>
+                <SelectItem value="support">Support</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
           <div className="grid gap-2">
             <Label htmlFor="security-level">Security Level</Label>

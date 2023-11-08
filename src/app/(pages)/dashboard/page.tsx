@@ -17,6 +17,7 @@ import {getSupabaseBrowserClient} from "@/lib/supabase";
 import {DbResult} from "@/lib/types";
 import useAuth from "@/hooks/use-auth";
 import {getAllNotifications} from "@/lib/database";
+import {DynamicChart} from "@/components/dynamic-chart";
 
 // TODO maybe we can split this page to some public components? We can also add db method to handle this db request.
 /**
@@ -43,12 +44,12 @@ export default function DashboardPage() {
     useEffect(() => {
         try {
             const fetchTable = async () => {
-                const { data: SalesGoals, error } = await supabase
+                const {data: SalesGoals, error} = await supabase
                     .from('SalesGoals')
                     .select('TotalGoal, EndDate')
                 setTotalGoal(SalesGoals as DbResult<SalesGoalFragment[]>);
             }
-            const getNotifications = async ()=> {
+            const getNotifications = async () => {
                 // @ts-ignore
                 setNotifications(await getAllNotifications(supabase));
             }
@@ -70,7 +71,7 @@ export default function DashboardPage() {
 
     useEffect(() => {
         const fetchTable = async () => {
-            let { data: MonthlySales, error } = await supabase
+            let {data: MonthlySales, error} = await supabase
                 .from('MonthlySales')
                 .select('Total, GrossProfit, TimePeriod');
 
@@ -110,7 +111,8 @@ export default function DashboardPage() {
                                 <Card>
                                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                                         {/*todo  total revenue for the month - total estimated sales*/}
-                                        <CardTitle className="text-sm font-medium">Total Revenue for the month</CardTitle>
+                                        <CardTitle className="text-sm font-medium">Total Revenue for the
+                                            month</CardTitle>
                                         <DollarSign className="h-4 w-4 text-muted-foreground"/>
                                     </CardHeader>
                                     <CardContent>
@@ -130,7 +132,7 @@ export default function DashboardPage() {
                                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                                         <CardTitle className="text-sm font-medium">
                                             Total revenue for the year
-                                        {/*    todo*/}
+                                            {/*    todo*/}
                                         </CardTitle>
                                         <Icons.persons className="h-4 w-4 text-muted-foreground"/>
                                     </CardHeader>
@@ -199,6 +201,16 @@ export default function DashboardPage() {
                                         <Overview/>
                                     </CardContent>
                                 </Card>
+                                <DynamicChart
+                                    data={data}
+                                    date={date}
+                                    title={'Total Goal'}
+                                    category={[
+                                        'Total Goal',
+                                        'Total Revenue',
+                                        'Total Profit',
+                                    ]}/>
+
                             </div>
                         </TabsContent>
                         <TabsContent value="Sales Table">
@@ -226,10 +238,10 @@ export default function DashboardPage() {
                         <TabsContent value="reports">Reports</TabsContent>
                         <TabsContent value="notifications"> {/* temp */}
                             {notifications && notifications.map((notification) =>
-                                <></>
-                            // <div key={notification.id}>
-                            //     <p>New Sale: {notification.Sale}</p>
-                            // </div>
+                                    <></>
+                                // <div key={notification.id}>
+                                //     <p>New Sale: {notification.Sale}</p>
+                                // </div>
                             )}
                         </TabsContent>
                     </Tabs>
