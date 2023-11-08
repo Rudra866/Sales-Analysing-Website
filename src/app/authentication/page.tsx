@@ -3,6 +3,7 @@
 import { UserAuthForm } from "./components/user-auth-form"
 import Image from "next/image";
 import * as React from "react";
+import ContainerLayout from "@/components/container-layout";
 
 /**
  * Allows the user to login using the {@link UserAuthForm} component.
@@ -11,7 +12,7 @@ import * as React from "react";
  */
 export default function AuthenticationPage() {
   return (
-    <>
+    <ContainerLayout>
       <div className="container relative hidden h-[800px] flex-col items-center justify-center md:grid lg:max-w-none lg:grid-cols-2 lg:px-0 ">
         <Image src={'/images/logo.png'} alt={'icon'} width={120} height={50} className={"absolute right-4 top-4 md:right-8 md:top-8"}/>
 
@@ -36,6 +37,6 @@ export default function AuthenticationPage() {
           </div>
         </div>
       </div>
-    </>
+    </ContainerLayout>
   )
 }
