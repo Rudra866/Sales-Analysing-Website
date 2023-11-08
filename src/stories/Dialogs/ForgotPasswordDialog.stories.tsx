@@ -8,6 +8,7 @@ import ForgotPasswordDialog, {ForgotPasswordDialogProps} from "@/components/Forg
 import {screen, userEvent} from "@storybook/testing-library";
 import {withTests} from "@storybook/addon-jest";
 import results from "../../../.jest-test-results.json";
+import {useTestDialogControls} from "@/stories/Dialogs/useDialogArgs";
 
 // todo submit success simulation doesn't work but works in implementation
 
@@ -22,6 +23,7 @@ export default {
   },
   args: {
     showDialog: true,
+    title: "Request Password Reset",
   },
 } as Meta;
 
@@ -30,32 +32,25 @@ type Story = StoryObj<TestProps>
 
 const RenderTemplate = {
   render: function Render(args: TestProps){
-    const [{showDialog, success, error}, updateArgs] = useArgs();
-    const setShowDialog = (value: boolean) => {
-      updateArgs({showDialog: value})
-    }
+    const [{success, error}, updateArgs] = useArgs();
     const setError = (value: string | null) => {
       updateArgs({error: value})
     }
     const setSuccess = (value: boolean) => {
       updateArgs({success: value})
     }
-    const modalControls = {showDialog: showDialog,
-      setShowDialog: setShowDialog as Dispatch<SetStateAction<boolean>>}
 
+    const modalControls = useTestDialogControls();
     return (
         <>
-          <Button onClick={() => setShowDialog(true)}>Trigger</Button>
-          <FormModal
-              {...args}
-              {...modalControls}
-              title={"Request Password Reset"}
-          >
+          <Button onClick={() => modalControls.setShowDialog(true)}>Trigger</Button>
+          <FormModal {...args} {...modalControls} >
             <ForgotPasswordDialog
                 success={success}
                 error={error}
                 setError={setError as unknown as Dispatch<SetStateAction<string | null>>}
-                setSuccess={setSuccess as unknown as Dispatch<SetStateAction<boolean>>} />
+                setSuccess={setSuccess as unknown as Dispatch<SetStateAction<boolean>>}
+            />
           </FormModal>
         </>
     )

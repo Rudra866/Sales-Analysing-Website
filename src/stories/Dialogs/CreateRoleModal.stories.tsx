@@ -5,6 +5,7 @@ import React, {Dispatch, SetStateAction} from "react";
 import {Button} from "@/components/ui/button";
 import {CreateRoleDialog} from "@/components/CreateRoleDialog";
 import {fireEvent, screen, userEvent, within} from "@storybook/testing-library";
+import {useTestDialogControls} from "@/stories/Dialogs/useDialogArgs";
 
 export default {
   title: 'Dialogs/Create Role',
@@ -14,27 +15,17 @@ export default {
   },
   args: {
     showDialog: true,
+    title: "Create Custom Role"
   },
 } as Meta;
 
-
 export const Default: StoryObj<FormModalProps> = {
   render: function Render(args){
-    const [{showDialog}, updateArgs] = useArgs();
-    const setShowDialog = (value: boolean) => {
-      updateArgs({showDialog: value})
-    }
-    const modalControls = {showDialog: showDialog,
-      setShowDialog: setShowDialog as Dispatch<SetStateAction<boolean>>}
-
+    const modalControls = useTestDialogControls();
     return (
       <>
-        <Button onClick={() => setShowDialog(true)}>Trigger</Button>
-        <FormModal
-            {...args}
-            {...modalControls}
-            title={"Create Custom Role"}
-        >
+        <Button onClick={() => modalControls.setShowDialog(true)}>Trigger</Button>
+        <FormModal {...args} {...modalControls}>
           <CreateRoleDialog/>
         </FormModal>
       </>

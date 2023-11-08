@@ -6,16 +6,24 @@ import FormModal, {FormModalProps} from "@/components/FormModal";
 import {test_employee_set, test_roles_set} from "@/stories/test_data";
 import {Meta, StoryObj} from "@storybook/react";
 import {Dispatch, SetStateAction} from "react";
-import {useArgs} from "@storybook/preview-api";
 import {Button} from "@/components/ui/button";
+import results from "../../../.jest-test-results.json";
+import {withTests} from "@storybook/addon-jest";
+import {useTestDialogControls} from "@/stories/Dialogs/useDialogArgs";
 
-type RoleSelectModalCustomArgs = RoleSelectModalFormProps & FormModalProps;
+type RoleSelectModalCustomArgs = FormModalProps & RoleSelectModalFormProps;
 type Story = StoryObj<RoleSelectModalCustomArgs>
-const meta: Meta<RoleSelectModalCustomArgs> = {
+
+export default {
   title: "Dialogs/Role Form",
   component: RoleSelectModalForm,
+  decorators: [withTests({ results })],
   parameters: {
     layout: "centered",
+  },
+  args: {
+    title: "Role Selection",
+    showDialog: true,
   },
   argTypes: {
     employee: {
@@ -34,35 +42,31 @@ const meta: Meta<RoleSelectModalCustomArgs> = {
         "All Roles": test_roles_set
       }
     },
-    showDialog: {
-      type: "boolean",
+    onSubmit: { // need this here only because argTypes is being overridden
+      action: 'clicked'
     }
   },
-  render: function Render(args) {
-    const [{showDialog}, updateArgs] = useArgs();
-    const setShowDialog = (value: boolean) => {
-      updateArgs({showDialog: value})
-    }
+} as Meta;
+
+
+const Template = {
+  render: function Render(args: RoleSelectModalCustomArgs) {
+    const modalControls = useTestDialogControls();
     return (
         <>
-          <Button onClick={() => setShowDialog(true)}>Trigger</Button>
-          <FormModal title={"Form Modal"} onSubmit={() => {
-            return
-          }}
-                     setShowDialog={setShowDialog as Dispatch<SetStateAction<boolean>>}
-                     showDialog={showDialog}>
+          <Button onClick={() => modalControls.setShowDialog(true)}>Trigger</Button>
+          <FormModal {...args} {...modalControls}>
             <RoleSelectModalForm {...args}/>
           </FormModal>
         </>
     )
   }
 }
-export default meta;
 
 export const Default: Story = {
+  ...Template,
   args: {
     roles: test_roles_set,
     employee: test_employee_set[0],
-    showDialog: true,
   }
 }
