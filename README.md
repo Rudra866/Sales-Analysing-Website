@@ -28,9 +28,13 @@ Some links to help you get started:
 - [shadcn/ui Documentation](https://ui.shadcn.com/docs/)
 - [Database Documentation](https://docs.codeallergy.dev/interfaces/DatabaseUsage.html)
 - [Supabase-js Documentation](https://supabase.com/docs/reference/javascript/introduction)
-- [Project Documentation](https://docs.codeallergy.dev)
+
+- [Jest documentation](https://jestjs.io/docs/getting-started)
+- [What's a story? (Storybook)](https://storybook.js.org/docs/react/get-started/whats-a-story)
+- [Writing stories (Storybook)](https://storybook.js.org/docs/react/writing-stories/introduction)
 
 TODO: Write a section about writing documentation and JSDoc comments.
+TODO: Write a section about creating simple stories with Storybook to aid component development
 
 
 ## Deployments
@@ -47,3 +51,11 @@ The following subdomains are set up to mirror the latest deployment of each user
 | ryan     | [ryan.codeallergy.dev](https://ryan.codeallergy.dev)         |
 | Suchetan | [suchetan.codeallergy.dev](https://suchetan.codeallergy.dev) |
 | tolu     | [tolu.codeallergy.dev](https://tolu.codeallergy.dev)         |
+
+There are also deployments of the Storybook for dev and main branches, along with auto-generated TypeDoc documentation:
+| Site                 | URL                                                                     |
+|----------------------|-------------------------------------------------------------------------|
+| Storybook (main)     | [storybook.codeallergy.dev](https://storybook.codeallergy.dev)          |
+| Storybook (dev)      | [dev.storybook.codeallergy.dev](https://dev.storybook.codeallergy.dev)  |
+| TypeDocs             | [docs.codeallergy.dev](https://docs.codeallergy.dev)                    |
+
