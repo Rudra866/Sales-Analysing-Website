@@ -1,7 +1,10 @@
 "use client"
-import EmployeeTable from "@/components/EmployeeTable";
+// import EmployeeTable from "@/components/EmployeeTable";
 import React from "react";
 import useAuth from "@/hooks/use-auth";
+import dynamic from "next/dynamic";
+
+const EmployeeTable = dynamic(() => import("@/components/EmployeeTable"))
 
 /**
  * Dashboard page that displays an EmployeeTable component.
@@ -10,8 +13,7 @@ import useAuth from "@/hooks/use-auth";
  */
 export default function EmployeeManagementPage() {
   const {user, isLoading} = useAuth()
-    return (!isLoading &&
-        // todo the table disappears for any small update
+    return (
         <>
           <div className="hidden h-full flex-1 flex-col space-y-8 p-8 md:flex">
               <EmployeeTable/>

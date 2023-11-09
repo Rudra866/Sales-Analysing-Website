@@ -1,0 +1,14 @@
+
+GET http://localhost:3000/api/admin/employee/af1245d3-5f5d-4434-b9c9-37f2522b73b1
+Cookie: {{cookie}}
+
+####
+PATCH http://localhost:3000/api/admin/employee/af1245d3-5f5d-4434-b9c9-37f2522b73b1
+Content-Type: application/json
+Cookie: {{cookie}}
+
+
+{
+  "email": "boaty@boat.com",
+  "Role": "2"
+}

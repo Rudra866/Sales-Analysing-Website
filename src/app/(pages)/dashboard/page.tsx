@@ -1,22 +1,26 @@
 'use client'
 
 import {Button} from "@/components/ui/button"
-import {Card, CardContent, CardDescription, CardHeader, CardTitle,} from "@/components/ui/card"
 import {Tabs, TabsContent, TabsList, TabsTrigger,} from "@/components/ui/tabs"
-import {CalendarDateRangePicker} from "./components/date-range-picker"
-import {Overview} from "./components/overview"
-import {RecentSales} from "./components/recent-sales"
-import {useEffect, useState} from "react";
-import * as React from "react";
-import {format} from "date-fns";
-import {CreditCard, DollarSign} from "lucide-react";
-import {Icons} from "@/components/icons";
-import {cn} from "@/lib/utils";
+// import {CalendarDateRangePicker} from "./components/date-range-picker"
 import {useDashboard} from "./components/dashboard-provider";
-import {getSupabaseBrowserClient} from "@/lib/supabase";
-import {DbResult} from "@/lib/types";
 import useAuth from "@/hooks/use-auth";
-import {getAllNotifications} from "@/lib/database";
+// import Dashboard from "@/app/(pages)/dashboard/components/Dashboard";
+import dynamic from "next/dynamic";
+import Loading from "@/app/(pages)/dashboard/loading";
+// import DashboardSalesTable from "@/app/(pages)/dashboard/components/DashboardSalesTable";
+// import DashboardHeader from "@/app/(pages)/dashboard/components/DashboardHeader";
+
+const Dashboard =
+    dynamic(() => import('./components/Dashboard'), {loading: () => <Loading />})
+
+const DashboardSalesTable =
+    dynamic(() => import('./components/DashboardSalesTable'), {loading: () => <Loading />})
+
+const DashboardHeader =
+    dynamic(() => import('./components/DashboardHeader'), {loading: () => <Loading />})
+
+
 
 // TODO maybe we can split this page to some public components? We can also add db method to handle this db request.
 /**
@@ -25,79 +29,11 @@ import {getAllNotifications} from "@/lib/database";
  * @route `/dashboard`
  */
 export default function DashboardPage() {
-    const {data, date, setDate} = useDashboard()
-    const [totalRevenue, setTotalRevenue] = useState<number>(0);
-    const [totalGoal, setTotalGoal] = useState<number[]>([]);
-    const [totalRevenueForTheYear, setTotalRevenueForTheYear] = useState<number>(0);
-    const [totalRevMonth, setTotalRevMonth] = useState<number>(0);
-    const supabase = getSupabaseBrowserClient();
-    const {user, employee} = useAuth();
-
-    // temp -- ryan
-    const [notifications, setNotifications] = useState<Notification[] | null>(null)
-    type SalesGoalFragment = {
-        TotalGoal: number;
-        EndDate: string;
-    }
-
-    useEffect(() => {
-        try {
-            const fetchTable = async () => {
-                const { data: SalesGoals, error } = await supabase
-                    .from('SalesGoals')
-                    .select('TotalGoal, EndDate')
-                setTotalGoal(SalesGoals as DbResult<SalesGoalFragment[]>);
-            }
-            const getNotifications = async ()=> {
-                // @ts-ignore
-                setNotifications(await getAllNotifications(supabase));
-            }
-
-            fetchTable();
-            getNotifications();
-
-        } catch (error) {
-            console.error(error) // todo handle better later
-        }
-    }, [supabase]);
-
-
-    useEffect(() => {
-        setTotalRevenue(data
-            ?.map((sale) => sale?.Total)
-            .reduce((a, b) => a + b, 0) ?? 0)
-    }, [data, date, supabase]);
-
-    useEffect(() => {
-        const fetchTable = async () => {
-            let { data: MonthlySales, error } = await supabase
-                .from('MonthlySales')
-                .select('Total, GrossProfit, TimePeriod');
-
-            const month = format(new Date(), 'yyyy-MMM');
-            const monthlySales = MonthlySales?.filter((sale) => format(
-                new Date(sale?.TimePeriod || new Date())
-                , 'yyyy-MMM') === month)?.map((sale) => sale?.Total)?.reduce((a, b) => a + b, 0) || 0
-
-            setTotalRevMonth(monthlySales as DbResult<typeof monthlySales[]>);
-        };
-
-        fetchTable();
-
-    }, [])
-
-
     return (
         <>
             <div className="hidden flex-col md:flex">
                 <div className="flex-1 space-y-4 p-8 pt-6">
-                    <div className="flex items-center justify-between space-y-2">
-                        <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
-                        <div className="flex items-center space-x-2">
-                            <CalendarDateRangePicker date={date} setDate={setDate}/>
-                            <Button>Download</Button>
-                        </div>
-                    </div>
+                    <DashboardHeader/>
                     <Tabs defaultValue="overview" className="space-y-4">
                         <TabsList>
                             <TabsTrigger value="overview">Overview</TabsTrigger>
@@ -106,131 +42,16 @@ export default function DashboardPage() {
                             <TabsTrigger value="notifications">Notifications</TabsTrigger>
                         </TabsList>
                         <TabsContent value="overview" className="space-y-4">
-                            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                                <Card>
-                                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                        {/*todo  total revenue for the month - total estimated sales*/}
-                                        <CardTitle className="text-sm font-medium">Total Revenue for the month</CardTitle>
-                                        <DollarSign className="h-4 w-4 text-muted-foreground"/>
-                                    </CardHeader>
-                                    <CardContent>
-                                        <div className="text-2xl font-bold">{`$${totalRevenue.toLocaleString()}`}</div>
-                                        <p className="text-xs text-muted-foreground">
-                                            <span className={cn('text-[#adfa1d]')}>+20.1% </span>
-                                            from last
-                                            <span>
-                                          {" "}
-                                                {format(new Date(date?.from || new Date()), 'yyyy-MM-dd')}
-                                            </span>
-                                        </p>
-                                    </CardContent>
-                                </Card>
-
-                                <Card>
-                                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                        <CardTitle className="text-sm font-medium">
-                                            Total revenue for the year
-                                        {/*    todo*/}
-                                        </CardTitle>
-                                        <Icons.persons className="h-4 w-4 text-muted-foreground"/>
-                                    </CardHeader>
-                                    <CardContent>
-                                        <div className="text-2xl font-bold">+2350</div>
-                                        <p className="text-xs text-muted-foreground">
-                                            <span className={cn('text-[#adfa1d]')}>+180.1% </span>
-                                            from last month
-                                        </p>
-                                    </CardContent>
-                                </Card>
-                                <Card>
-                                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                        <CardTitle className="text-sm font-medium">Gross profit</CardTitle>
-                                        {/*todo*/}
-                                        <CreditCard className="h-4 w-4 text-muted-foreground"/>
-                                    </CardHeader>
-                                    <CardContent>
-                                        <div className="text-2xl font-bold">+12,234</div>
-                                        <p className="text-xs text-muted-foreground">
-                                            <span className={'text-[#FA7A1E]'}>+19% </span>
-                                            from last month
-                                        </p>
-                                    </CardContent>
-                                </Card>
-                                <Card>
-                                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                        <CardTitle className="text-sm font-medium">
-                                            Active Now
-                                        </CardTitle>
-                                        <Icons.sparkline className="h-4 w-4 text-muted-foreground"/>
-                                    </CardHeader>
-                                    <CardContent>
-                                        <div className="text-2xl font-bold">+573</div>
-                                        <p className="text-xs text-muted-foreground">
-                                            +201 since last hour
-                                        </p>
-                                    </CardContent>
-                                </Card>
-                            </div>
-                            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-                                <Card className="col-span-4">
-                                    <CardHeader>
-                                        <CardTitle>Sales</CardTitle>
-                                    </CardHeader>
-                                    <CardContent className="pl-2">
-                                        <Overview/>
-                                    </CardContent>
-                                </Card>
-                                <Card className="col-span-3">
-                                    <CardHeader>
-                                        <CardTitle>Recent Sales</CardTitle>
-                                        <CardDescription>
-                                            You made 265 sales this month.
-                                        </CardDescription>
-                                    </CardHeader>
-                                    <CardContent>
-                                        <RecentSales/>
-                                    </CardContent>
-                                </Card>
-                                <Card className="col-span-4">
-                                    <CardHeader>
-                                        <CardTitle>Sales</CardTitle>
-                                    </CardHeader>
-                                    <CardContent className="pl-2">
-                                        <Overview/>
-                                    </CardContent>
-                                </Card>
-                            </div>
+                            <Dashboard/>
                         </TabsContent>
                         <TabsContent value="Sales Table">
-                            <div className="hidden h-full flex-1 flex-col space-y-8 p-8 md:flex">
-                                <div className="flex items-center justify-between space-y-2">
-                                    <div>
-                                        <h2 className="text-2xl font-bold tracking-tight">
-                                            Welcome back {employee?.Name}!
-                                        </h2>
-                                        <p className="text-muted-foreground">
-                                            Here&apos;s a list of your sales for this month!
-                                            {/*<SalesTable/> */}
-                                            {/* temporary - need some caching or something,
-                                            queries every time tab is swapped.*/}
-                                        </p>
-                                    </div>
-                                    <div className="flex items-center space-x-2">
-                                        {/*<UserNav />*/}
-                                    </div>
-                                </div>
-                                {/*<DataTable data={tasks} columns={test_columns} />*/}
-                            </div>
-
+                            <DashboardSalesTable/>
                         </TabsContent>
-                        <TabsContent value="reports">Reports</TabsContent>
-                        <TabsContent value="notifications"> {/* temp */}
-                            {notifications && notifications.map((notification) =>
-                                <></>
-                            // <div key={notification.id}>
-                            //     <p>New Sale: {notification.Sale}</p>
-                            // </div>
-                            )}
+                        <TabsContent value="reports">
+                            Reports
+                        </TabsContent>
+                        <TabsContent value="notifications">
+                            Notifications
                         </TabsContent>
                     </Tabs>
                 </div>

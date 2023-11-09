@@ -9,17 +9,19 @@ import {Button} from "@/components/ui/button";
 import {useForm} from "react-hook-form";
 import * as z from "zod";
 import {zodResolver} from "@hookform/resolvers/zod";
+import {passwordFieldSchema} from "@/lib/types";
+import { passwordChangeFormSchema } from "./components/ChangePasswordForm";
+import dynamic from "next/dynamic";
+
+const ChangePasswordForm = dynamic(() => import("./components/ChangePasswordForm"))
+
+// todo probably move this page, or at least redesign it completely and use it in the auth flow (currently unused)
 
 export default function UpdatePassword() {
   const router = useRouter();
   const supabase: SupabaseClient<Database> = getSupabaseBrowserClient();
 
-  const passwordChangeFormSchema = z.object({
-    password: z.string().min(6)
-  })
-
-  // todo ts:any
-  const handleSubmit = async (formData: any) => {
+  const handleSubmit = async (formData: z.infer<typeof passwordChangeFormSchema>) => {
     const {error } = await supabase.auth.updateUser(formData);
     if (error) {
       console.error('Error updating password:', error);
@@ -29,38 +31,10 @@ export default function UpdatePassword() {
     }
   };
 
-  const form = useForm<z.infer<typeof passwordChangeFormSchema>>({
-    resolver: zodResolver(passwordChangeFormSchema),
-    defaultValues: {
-      password: 'password',
-    },
-  });
-
   return (
       <div className={"flex"}>
         <div className={"flex items-center justify-center mx-4 my-4"}>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-8">
-              <FormField
-                  control={form.control}
-                  name="password"
-                  render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Password</FormLabel>
-                        <FormControl>
-                          <Input
-                              placeholder="******"
-                              type={"password"}
-                              {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                  )}
-              />
-              <Button type={"submit"}>Submit</Button>
-            </form>
-          </Form>
+          <ChangePasswordForm onSubmit={handleSubmit}/>
         </div>
       </div>
   );

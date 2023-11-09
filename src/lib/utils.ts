@@ -41,3 +41,7 @@ export function groupByMonth(data: Tables<"Sales">[]): { [p: string]: number } {
 
     return groupedData;
 }
+
+// tmp used at testing pages
+export const generateRandomString = (length: number) => [...Array(length)].map(() =>
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"[Math.floor(Math.random() * 62)]).join('');

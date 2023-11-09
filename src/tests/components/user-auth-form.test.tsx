@@ -1,7 +1,7 @@
 import React from 'react';
 import {render, RenderResult, screen, waitFor} from '@testing-library/react';
 import '@testing-library/jest-dom';
-import {UserAuthForm} from "@/app/authentication/components/user-auth-form";
+import UserAuthForm from "@/app/authentication/components/user-auth-form";
 import {userEvent} from "@storybook/testing-library";
 import {act} from "react-dom/test-utils";
 import {test_user_info} from "../../../jest-setup";

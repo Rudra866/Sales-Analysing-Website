@@ -4,20 +4,14 @@ import React from 'react';
 import { useRouter } from 'next/navigation';
 import {Database, getSupabaseBrowserClient} from "@/lib/database";
 import {SupabaseClient} from "@supabase/supabase-js";
-import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
-import {Input} from "@/components/ui/input";
-import {Button} from "@/components/ui/button";
-import {useForm} from "react-hook-form";
-import * as z from "zod";
-import {zodResolver} from "@hookform/resolvers/zod";
+import dynamic from "next/dynamic";
+
+const ChangePasswordForm = dynamic(() =>
+    import("@/app/authentication/change-password/components/ChangePasswordForm"))
 
 export default function UpdatePassword() {
   const router = useRouter();
   const supabase: SupabaseClient<Database> = getSupabaseBrowserClient();
-
-  const passwordChangeFormSchema = z.object({
-    password: z.string().min(6)
-  })
 
   // todo ts:any
   const handleSubmit = async (e: any) => {
@@ -27,43 +21,11 @@ export default function UpdatePassword() {
       console.error('Error updating password:', error);
     } else {
       console.log('Password updated successfully');
-      router.push('dashboard'); // todo add success page
+      router.push('/dashboard'); // todo add success page
     }
   };
 
-  const form = useForm<z.infer<typeof passwordChangeFormSchema>>({
-    resolver: zodResolver(passwordChangeFormSchema),
-    defaultValues: {
-      password: '',
-    },
-  });
-
   return (
-      <div className={"flex flex-col items-center"}>
-        <h1>No interaction on this page yet, check console to verify it worked.</h1>
-        <div className={"flex items-center justify-center mx-4 my-4"}>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-8">
-              <FormField
-                  control={form.control}
-                  name="password"
-                  render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Password</FormLabel>
-                        <FormControl>
-                          <Input
-                              type={"password"}
-                              {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                  )}
-              />
-              <Button type={"submit"}>Submit</Button>
-            </form>
-          </Form>
-        </div>
-      </div>
+    <ChangePasswordForm onSubmit={handleSubmit}/>
   );
 }

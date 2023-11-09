@@ -11,11 +11,11 @@ import { z } from 'zod';
 import {getSupabaseBrowserClient} from "@/lib/database";
 import FormModal from "@/components/FormModal";
 import ForgotPasswordDialog from "@/components/ForgotPasswordDialog";
-import {forgotPasswordDialogSchema} from "@/lib/types";
+import {forgotPasswordDialogSchema, passwordFieldSchema} from "@/lib/types";
 
 export type UserAuthFormProps = React.HTMLAttributes<HTMLDivElement>;
 
-export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
+export default function UserAuthForm({ className, ...props }: UserAuthFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [signedIn, setSignedIn] = useState(false);
   const [error, setError] = useState(null);
@@ -30,7 +30,7 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
   const LoginSchema = z.object({
     email: z.string().email('Invalid email format'),
     // todo admin setting up password restraints or sane defaults?
-    password: z.string().min(1, 'Password must not be empty!'),
+    password: passwordFieldSchema,
   });
 
   const [formData, setFormData] =
@@ -95,74 +95,85 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
   };
   // TODO replace this with react-hook table
   return (
-      <div className={cn("grid gap-6", className)} {...props}>
-        <form onSubmit={handleSubmit}>
-          <div className="grid gap-2">
-            <div className="grid gap-1">
-              <Label className="sr-only" htmlFor="email">
-                Email
-              </Label>
-              <Input
-                  id="email"
-                  name="email"
-                  placeholder="name@example.com"
-                  type="email"
-                  autoCapitalize="none"
-                  autoComplete="email"
-                  autoCorrect="off"
-                  disabled={isLoading}
-                  value={formData.email}
-                  onChange={handleChange}
-              />
-              {validationErrors.email && <div className="text-red-600">{validationErrors.email}</div>}
-              <Label className="sr-only" htmlFor="password">
-                Password
-              </Label>
-              <Input
-                  id="password"
-                  name="password"
-                  placeholder="password"
-                  type="password"
-                  autoCapitalize="none"
-                  autoComplete="password"
-                  autoCorrect="off"
-                  disabled={isLoading}
-                  value={formData.password}
-                  onChange={handleChange}
-              />
-              {validationErrors.password && <div className="text-red-600">{validationErrors.password}</div>}
-              <Button type={"button"} variant={"link"} onClick={()=> showPasswordResetDialog()}>Forgot password?</Button>
-            </div>
-            <Button disabled={isLoading}>
-              {isLoading && (
-                  <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
-              )}
-              {signedIn && (
-                  <Icons.check className="text-green-700" data-testid="success"/>
-              )}
-              {error && (
-                  <Icons.warning className="text-red-500"/>
-              )}
-              {!signedIn && !isLoading && !error && "Sign In"}
-            </Button>
+      <div className="lg:p-8">
+        <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
+          <div className="flex flex-col space-y-2 text-center">
+            <h1 className="text-2xl font-semibold tracking-tight">
+              Login to your account
+            </h1>
+            <p className="text-sm text-muted-foreground">
+              Enter your email below to login
+            </p>
           </div>
-        </form>
-        <div className={"flex flex-col items-center"}>
-          {error && <div className={"text-red-600"}>{error}</div>}
-          {/*{signedIn && <div className={""}>success!</div>}*/}
+          <div className={cn("grid gap-6", className)} {...props}>
+            <form onSubmit={handleSubmit}>
+              <div className="grid gap-2">
+                <div className="grid gap-1">
+                  <Label className="sr-only" htmlFor="email">
+                    Email
+                  </Label>
+                  <Input
+                      id="email"
+                      name="email"
+                      placeholder="name@example.com"
+                      type="email"
+                      autoCapitalize="none"
+                      autoComplete="email"
+                      autoCorrect="off"
+                      disabled={isLoading}
+                      value={formData.email}
+                      onChange={handleChange}
+                  />
+                  {validationErrors.email && <div className="text-red-600">{validationErrors.email}</div>}
+                  <Label className="sr-only" htmlFor="password">
+                    Password
+                  </Label>
+                  <Input
+                      id="password"
+                      name="password"
+                      placeholder="password"
+                      type="password"
+                      autoCapitalize="none"
+                      autoComplete="password"
+                      autoCorrect="off"
+                      disabled={isLoading}
+                      value={formData.password}
+                      onChange={handleChange}
+                  />
+                  {validationErrors.password && <div className="text-red-600">{validationErrors.password}</div>}
+                  <Button type={"button"} variant={"link"} onClick={()=> showPasswordResetDialog()}>Forgot password?</Button>
+                </div>
+                <Button disabled={isLoading}>
+                  {isLoading && (
+                      <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+                  )}
+                  {signedIn && (
+                      <Icons.check className="text-green-700" data-testid="success"/>
+                  )}
+                  {error && (
+                      <Icons.warning className="text-red-500"/>
+                  )}
+                  {!signedIn && !isLoading && !error && "Sign In"}
+                </Button>
+              </div>
+            </form>
+            <div className={"flex flex-col items-center"}>
+              {error && <div className={"text-red-600"}>{error}</div>}
+            </div>
+            <FormModal
+                showDialog={passwordDialogOpen} setShowDialog={setPasswordDialogOpen}
+                onSubmit={resetUserPassword}
+                title={"Request Password Reset"}
+            >
+              <ForgotPasswordDialog
+                  success={passwordResetSuccess}
+                  setSuccess={setPasswordResetSuccess}
+                  error={passwordResetError}
+                  setError={setPasswordResetError}
+              />
+            </FormModal>
+          </div>
         </div>
-          <FormModal
-              showDialog={passwordDialogOpen} setShowDialog={setPasswordDialogOpen}
-              onSubmit={resetUserPassword}
-              title={"Request Password Reset"}
-          >
-            <ForgotPasswordDialog
-                success={passwordResetSuccess}
-                setSuccess={setPasswordResetSuccess}
-                error={passwordResetError}
-                setError={setPasswordResetError}
-            />
-          </FormModal>
       </div>
   );
 }

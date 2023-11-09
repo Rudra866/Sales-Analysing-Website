@@ -1,7 +1,7 @@
 import React, {PropsWithChildren, useState} from "react";
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table";
 import {flexRender} from "@tanstack/react-table";
-import {columns} from "@/app/(pages)/(examples)/tasks/components/columns";
+import {columns} from "@/app/(pages)/tasks/components/columns";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 import {Button} from "@/components/ui/button";
 import {ChevronLeftIcon, ChevronRightIcon, DoubleArrowLeftIcon, DoubleArrowRightIcon} from "@radix-ui/react-icons";
@@ -14,6 +14,7 @@ export interface DataTableProps<TData> {
 
 export const tablePageSizes = [10, 25, 50, 100, 250, 1000]
 
+// todo need to refactor the way this works, I don't like it.
 /**
  * Component to create a table for whatever table is passed in.
  * Can pass components as children and render them in the header.
