@@ -6,7 +6,6 @@ import {
     Employee,
     getAllEmployees,
     getAllRoles,
-    getEmployeeFromAuthUser,
     getSupabaseBrowserClient, Role
 } from "@/lib/database";
 import {Button} from "@/components/ui/button";

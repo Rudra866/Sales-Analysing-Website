@@ -4,7 +4,6 @@ import React, {useEffect, useState} from 'react';
 import {useParams, useRouter} from "next/navigation";
 import {Employee, getEmployeeById, getRoleFromEmployee, getSupabaseBrowserClient, Role} from "@/lib/database";
 import {UserForm} from "@/app/(pages)/settings/components/user-form";
-import * as z from "zod";
 
 function Page() {
     const params = useParams()
@@ -37,7 +36,9 @@ function Page() {
                     name={employee.Name}
                     number={employee.EmployeeNumber}
                     email={employee.Email}
-                    password={employee.Email} // todo: check if current auth user is admin, if so reset password
+                    password={employee.Email}// todo: check if current auth user is admin, if so reset password
+                    employee={employee}
+                    role={role}
                 />
             }
 

@@ -16,8 +16,50 @@ import {useDashboard} from "./components/dashboard-provider";
 import {getSupabaseBrowserClient} from "@/lib/supabase";
 import {DbResult} from "@/lib/types";
 import useAuth from "@/hooks/use-auth";
-import {getAllNotifications} from "@/lib/database";
+import {getAllNotifications, MonthlySale, SalesGoal} from "@/lib/database";
 import {DynamicChart} from "@/components/dynamic-chart";
+import SalesLineChart from "@/components/sales-line-chart";
+
+// placeholder data
+const placeholderData = [
+    {
+        date: "Sep-23",
+        actual: 4000,
+        estimate: 2400,
+    },
+    {
+        date: "Aug-23",
+        actual: 3000,
+        estimate: 1398,
+    },
+    {
+        date: "Jul-23",
+        actual: 2000,
+        estimate: 9800,
+    },
+    {
+        date: "Jun-23",
+        actual: 2780,
+        estimate: 3908,
+    },
+    {
+        date: "May-23",
+        actual: 1890,
+        estimate: 4800,
+
+    },
+    {
+        date: "Apr-23",
+        actual: 2390,
+        estimate: 3800,
+    },
+    {
+        date: "Mar-23",
+        actual: 3490,
+        estimate: 4300,
+    }
+];
+
 
 // TODO maybe we can split this page to some public components? We can also add db method to handle this db request.
 /**
@@ -26,13 +68,21 @@ import {DynamicChart} from "@/components/dynamic-chart";
  * @route `/dashboard`
  */
 export default function DashboardPage() {
+    const supabase = getSupabaseBrowserClient();
     const {data, date, setDate} = useDashboard()
     const [totalRevenue, setTotalRevenue] = useState<number>(0);
-    const [totalGoal, setTotalGoal] = useState<number[]>([]);
-    const [totalRevenueForTheYear, setTotalRevenueForTheYear] = useState<number>(0);
-    const [totalRevMonth, setTotalRevMonth] = useState<number>(0);
-    const supabase = getSupabaseBrowserClient();
+    const [saleGoal, setSaleGoal] = useState<SalesGoal[]>();
+    const [monthlySales, setMonthlySales] = useState<MonthlySale[]>();
     const {user, employee} = useAuth();
+    // console.log('user: ', user, 'employee: ', employee)
+
+
+
+    useEffect(() => {
+
+
+    }, [saleGoal, monthlySales])
+
 
     // temp -- ryan
     const [notifications, setNotifications] = useState<Notification[] | null>(null)
@@ -44,10 +94,10 @@ export default function DashboardPage() {
     useEffect(() => {
         try {
             const fetchTable = async () => {
-                const {data: SalesGoals, error} = await supabase
+                const {data: goal, error} = await supabase
                     .from('SalesGoals')
-                    .select('TotalGoal, EndDate')
-                setTotalGoal(SalesGoals as DbResult<SalesGoalFragment[]>);
+                    .select('*')
+                setSaleGoal(goal as DbResult<SalesGoal[]>);
             }
             const getNotifications = async () => {
                 // @ts-ignore
@@ -71,16 +121,16 @@ export default function DashboardPage() {
 
     useEffect(() => {
         const fetchTable = async () => {
-            let {data: MonthlySales, error} = await supabase
+            let {data: monthly_sales, error} = await supabase
                 .from('MonthlySales')
-                .select('Total, GrossProfit, TimePeriod');
+                .select('*');
 
             const month = format(new Date(), 'yyyy-MMM');
-            const monthlySales = MonthlySales?.filter((sale) => format(
+            const ms = monthly_sales?.filter((sale) => format(
                 new Date(sale?.TimePeriod || new Date())
                 , 'yyyy-MMM') === month)?.map((sale) => sale?.Total)?.reduce((a, b) => a + b, 0) || 0
 
-            setTotalRevMonth(monthlySales as DbResult<typeof monthlySales[]>);
+            setMonthlySales(ms as DbResult<typeof ms[]>);
         };
 
         fetchTable();
@@ -182,34 +232,26 @@ export default function DashboardPage() {
                                         <Overview/>
                                     </CardContent>
                                 </Card>
-                                <Card className="col-span-3">
-                                    <CardHeader>
-                                        <CardTitle>Recent Sales</CardTitle>
-                                        <CardDescription>
-                                            You made 265 sales this month.
-                                        </CardDescription>
-                                    </CardHeader>
-                                    <CardContent>
-                                        <RecentSales/>
-                                    </CardContent>
-                                </Card>
+                                <RecentSales />
                                 <Card className="col-span-4">
                                     <CardHeader>
                                         <CardTitle>Sales</CardTitle>
                                     </CardHeader>
                                     <CardContent className="pl-2">
-                                        <Overview/>
+                                        <SalesLineChart data={placeholderData} />
                                     </CardContent>
                                 </Card>
                                 <DynamicChart
-                                    data={data}
+                                    className="col-span-3"
+                                    data={data!}
                                     date={date}
-                                    title={'Total Goal'}
+                                    title={'My Sales'}
                                     category={[
                                         'Total Goal',
                                         'Total Revenue',
                                         'Total Profit',
                                     ]}/>
+
 
                             </div>
                         </TabsContent>

@@ -28,8 +28,7 @@ import {DropDownMenu} from "@/app/(pages)/sales/components/drop-down-menu";
 import {format} from "date-fns";
 import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger} from "@/components/ui/tooltip";
 import {DbResult} from "@/lib/types";
-
-// todo align rows and columns
+import useAuth from "@/hooks/use-auth";
 
 /**
  * Component used to render sales page table at `/sales`
@@ -40,7 +39,7 @@ export default function SalesTable() {
     const [sales, setSales] = useState<Tables<'Sales'>[]>([]);
     const [employees, setEmployees] = useState<Employee[]>([]);
     const supabase = getSupabaseBrowserClient();
-    // const [salesModal, setSalesModal] = useState(false);
+    const {user, employee } = useAuth();
 
     useEffect(() => {
         function fetchData() {
@@ -74,12 +73,6 @@ export default function SalesTable() {
         loadData().then(() => setLoading(false));
     }, [supabase]);
 
-    // function updateSales(sale: Sale) {
-    //   const originalSales = [...sales]
-    //   const updatedSales = originalSales
-    //       .map((oldSale) => oldSale.id === sale.id ? sale: oldSale)
-    //   setSales(updatedSales)
-    // }
     function tooltip(cell:string){
         return (
             <TooltipProvider>
@@ -94,7 +87,6 @@ export default function SalesTable() {
                     </TooltipContent>
                 </Tooltip>
             </TooltipProvider>
-
         )
     }
 
@@ -137,32 +129,24 @@ export default function SalesTable() {
         },
         {
             accessorKey: "SaleTime",
-            // header: ({column}) => SortButton("SaleTime", column),
             header: ({column}) => SortButton("SaleTime", column),
             cell: ({row}) => {
                 return (
                     <p className={'text-sm min-w-fit'}>
-                        {/*{new Date(row.original.SaleTime || new Date()).toDateString()}*/}
-                        {/*{format(new Date(row.original.SaleTime || new Date()), 'yyyy-MMM-dd')}*/}
                         {format(new Date(row.original.SaleTime || new Date()), "LLL dd, y")}
                     </p>
                 )
             },
         },
-        // {
-        //     accessorKey: "EmployeeID",
-        //     header: ({column}) => SortButton("EmployeeID", column)
-        // },
         {
             accessorKey: "Name",
             header: ({column}) => SortButton("Name", column),
             cell: ({row}) => {
-                // return employees.find((employee) => employee.id === row.original.EmployeeID)?.Name
                 return (
                     <div className="flex space-x-2 ml-1">
                         <Badge variant="outline">
                             <span className="max-w-[200px] truncate font-medium">
-                                {tooltip(employees.find((employee) => employee.id === row.original.EmployeeID)?.Name || 'Employee Name')}
+                                {tooltip(employees.find((employee) => employee.id === row.original.EmployeeID)?.Name!)}
                             </span>
                         </Badge>
                     </div>
@@ -226,6 +210,10 @@ export function DataTable<TData, TValue>({defaultData, columns, loading}: DataTa
     const ref = React.useRef<HTMLTableSectionElement>(null)
     const [data, setData] = useState( defaultData);
 
+    useEffect(() => {
+
+    }, [data]);
+
     const table = useReactTable({
         data,
         columns,
@@ -268,8 +256,8 @@ export function DataTable<TData, TValue>({defaultData, columns, loading}: DataTa
             <div className="flex items-center">
                 <Input
                     placeholder="Filter sales..."
-                    value={(table.getColumn("Name")?.getFilterValue() as string) ?? ""}
-                    onChange={(event) => table.getColumn("Name")?.setFilterValue(event.target.value)}
+                    value={(table.getColumn("VehicleMake")?.getFilterValue() as string) ?? ""}
+                    onChange={(event) => table.getColumn("VehicleMake")?.setFilterValue(event.target.value)}
                     className="max-w-sm"
                 />
                 <div className="flex items-center space-x-2 w-full">
@@ -333,15 +321,7 @@ export function DataTable<TData, TValue>({defaultData, columns, loading}: DataTa
                         ) : (
                             <TableRow>
                                 <TableCell colSpan={columns.length} className="h-24 text-center">
-                                    {/* Todo */}
                                     No result? refresh..?
-                                    {/*<div className="flex items-center justify-center h-24">*/}
-                                    {/*    <div className="flex items-center space-x-2">*/}
-                                    {/*        <div className="w-4 h-4 bg-accent rounded-full animate-bounce"/>*/}
-                                    {/*        <div className="w-4 h-4 bg-accent rounded-full animate-bounce delay-75"/>*/}
-                                    {/*        <div className="w-4 h-4 bg-accent rounded-full animate-bounce delay-150"/>*/}
-                                    {/*    </div>*/}
-                                    {/*</div>*/}
                                 </TableCell>
                             </TableRow>
                         )}

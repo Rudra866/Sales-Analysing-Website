@@ -1,22 +1,23 @@
-"use client"
+'use client'
 
-import {Bar, BarChart, ResponsiveContainer, Tooltip, XAxis, YAxis} from "recharts"
-import {useDashboard} from "@/app/(pages)/dashboard/components/dashboard-provider";
-import {useEffect, useState} from "react";
-import {groupByMonth} from "@/lib/utils";
+import React from "react";
+import {
+    XAxis,
+    YAxis,
+    Tooltip, ResponsiveContainer, LineChart, Line
+} from "recharts";
 
-export function Overview() {
 
-    const {data, date, setDate} = useDashboard()
-    const [salesByMonth, setSalesByMonth] = useState<{ name: string; total: number }[]>();
 
-    useEffect(() => {
-        setSalesByMonth(
-            Object.entries(groupByMonth(data || [])).map(([key, value]) => ({
-                name: key,
-                total: value,
-            })))
-    }, [data, date]);
+interface SalesLineChartProps {
+    data: {
+        date: string,
+        actual: number,
+        estimate: number
+    }[]
+}
+
+export default function SalesLineChart({ data }: SalesLineChartProps ) {
 
     const customToolTip = (props: any) => {
         // console.log(props)
@@ -37,9 +38,9 @@ export function Overview() {
 
     return (
         <ResponsiveContainer width="100%" height={350}>
-            <BarChart data={salesByMonth}>
+            <LineChart data={data}>
                 <XAxis
-                    dataKey="name"
+                    dataKey="date"
                     stroke={"#888888"}
                     fontSize={12}
                     tickLine={false}
@@ -50,14 +51,11 @@ export function Overview() {
                     fontSize={12}
                     tickLine={false}
                     axisLine={false}
-                    tickFormatter={(value) => `$${Number(value).toLocaleString()}`}
                 />
-                <Bar dataKey="total" fill={"#adfa1d"} radius={[4, 4, 0, 0]}/>
-                <Tooltip
-                    content={customToolTip}
-                    cursor={{fill: 'rgba(250,250,250,0.3)', radius: 4
-                    }}/>
-            </BarChart>
+                <Line type="monotone" dataKey="estimate" stroke={"#8884d8"} activeDot={{ r: 8 }} />
+                <Line type="monotone" dataKey="actual" stroke={"#82ca9d"} />
+                <Tooltip />
+            </LineChart>
         </ResponsiveContainer>
-    )
+    );
 }

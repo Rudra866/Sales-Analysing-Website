@@ -26,8 +26,7 @@ import {
 } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
 import { toast } from "@/components/ui/use-toast"
-import {useEffect} from "react";
-import {getEmployeeFromAuthUser} from "@/lib/database";
+
 
 const profileFormSchema = z.object({
   username: z

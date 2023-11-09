@@ -1,66 +1,16 @@
 "use client"
 
-import Link from "next/link"
 import {zodResolver} from "@hookform/resolvers/zod"
 import {useForm, UseFormReturn} from "react-hook-form"
 import * as z from "zod"
 import {Button} from "@/components/ui/button"
-import {Checkbox} from "@/components/ui/checkbox"
 import {Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage,} from "@/components/ui/form"
 import {toast, useToast} from "@/components/ui/use-toast"
 import {Input} from "@/components/ui/input";
-import {Switch} from "@/components/ui/switch";
-import {FormToggleField} from "@/components/form-components/form-toggle-field";
-// import {FormToggleField} from "@/components/form-components/form-toggle-field";
+import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
+import React, {useEffect} from "react";
+import {Employee, getAllRoles, getSupabaseBrowserClient, Role} from "@/lib/database";
 
-const role_options_config = [
-    {
-        label: "Read Access",
-        name: "read",
-        description: "Employee can view and read sales ",
-        default: true
-    },
-    {
-        label: "Create Access",
-        name: "create",
-        description: "Employee can create new sales ",
-        default: true
-    },
-    {
-        label: "Modify Own Sales",
-        name: "modifySelf",
-        description: "Employee can modify their own sales ",
-        default: true
-    },
-    {
-        label: "Modify All Sales",
-        name: "modifyAll",
-        description: "Employee can modify any sales in the system.",
-        default: false
-    },
-    {
-        label: "Employee Management",
-        name: "employees",
-        description: "Employee can manage employees ",
-        default: false
-    },
-    {
-        label: "Full Access",
-        name: "admin",
-        description: "Employee has full administrative access ",
-        default: false
-    },
-]
-
-
-
-
-const roles = Object.fromEntries(
-    role_options_config.map((role) => [role.name, z.boolean()])
-);
-const role_defaults = Object.fromEntries(
-    role_options_config.map((role) => [role.name, role.default])
-);
 const createRoleModalSchema = z.object({
     name: z.string()
         .min(1, "Role Name must not be empty")
@@ -75,7 +25,7 @@ const createRoleModalSchema = z.object({
     number: z.string()
         .min(1, "Employee Number must not be empty")
         .max(255, "Employee Number exceeds limit"),
-    ...roles
+    role: z.string()
 });
 
 type FormInputFieldProps = { // fk typescript
@@ -103,16 +53,27 @@ const FormInputField = ({form, name, label}: FormInputFieldProps) => (
     />
 )
 
-
-
 interface UserFormProps {
     name?: string,
     email?: string,
     password?: string,
     number?: string
+    employee?: Employee,
+    role?: Role
 }
-export function UserForm({name, email, password, number}: UserFormProps) {
+export function UserForm({name, email, password, number, employee, role}: UserFormProps) {
+    const supabase = getSupabaseBrowserClient();
+    const [roles, setRoles] = React.useState<Role[]>([])
+
+    useEffect(() => {
+        getAllRoles(supabase).then((res) => {
+            setRoles(res as Role[])
+            return res
+        })
+    }, []);
+
     const {toast} = useToast();
+    const [showRoleModal, setShowRoleModal] = React.useState(false)
     const form = useForm<z.infer<typeof createRoleModalSchema>>({
         resolver: zodResolver(createRoleModalSchema),
         defaultValues: {
@@ -120,7 +81,6 @@ export function UserForm({name, email, password, number}: UserFormProps) {
             email: email || "",
             password: password || "",
             number: number || "",
-            ...role_defaults
         }
     })
 
@@ -140,17 +100,36 @@ export function UserForm({name, email, password, number}: UserFormProps) {
     return (
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
-
                 <FormInputField form={form} name="name" label="Employee Name" />
                 <FormInputField form={form} name="email" label="Account Email" />
                 <FormInputField form={form} name="password" label="Account Password" />
                 <FormInputField form={form} name="number" label="Employee Number" />
-
-                {role_options_config.map((role) => (
-                    <div key={role.name} className="">
-                        <FormToggleField {...role} form={form} />
-                    </div>
-                ))}
+                <FormField
+                    control={form.control}
+                    name="role" // todo
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Role</FormLabel>
+                            <Select
+                                onValueChange={field.onChange}
+                                defaultValue={field.value}
+                            >
+                                <FormControl>
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Employee Role" {...field} />
+                                    </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                    {roles.map((role) => (
+                                        <SelectItem value={role.id.toString()} key={role.id}>
+                                            {role.RoleName}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                            <FormMessage />
+                        </FormItem>)}
+                />
                 <Button type="submit">Add User</Button>
             </form>
         </Form>

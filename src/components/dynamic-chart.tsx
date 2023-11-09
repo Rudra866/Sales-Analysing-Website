@@ -3,7 +3,7 @@
 import {Bar, BarChart, ResponsiveContainer, Tooltip, XAxis, YAxis} from "recharts"
 import {useDashboard} from "@/app/(pages)/dashboard/components/dashboard-provider";
 import React, {useEffect, useState} from "react";
-import {groupByMonth} from "@/lib/utils";
+import {cn, groupByMonth} from "@/lib/utils";
 import {DateRange} from "react-day-picker";
 import {subDays} from "date-fns";
 import {Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle} from "@/components/ui/card";
@@ -18,17 +18,19 @@ import {
 import {Button} from "@/components/ui/button";
 import {ArrowDownIcon, ArrowUpIcon, CaretSortIcon, EyeNoneIcon} from "@radix-ui/react-icons";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
+import {Sale} from "@/lib/database";
 
 
 interface DynamicChartProps {
     title: string
     color?: string
-    data: any[]
+    data: Sale[]
     category: string[]
     date: DateRange | undefined
+    className?: string
 }
 
-export function DynamicChart({ title, color, data, category, date }: DynamicChartProps) {
+export function DynamicChart({ title, color, data, category, date, className }: DynamicChartProps) {
 
     const [keyValues, setKeyValues] = useState<{ key: string; value: number }[]>();
     const [selectedCategory, setSelectedCategory] = useState<string>(category[0]);
@@ -64,7 +66,7 @@ export function DynamicChart({ title, color, data, category, date }: DynamicChar
     }
 
     return (
-        <Card className="col-span-4">
+        <Card className={cn("col-span-4", className)}>
             <CardHeader className={'flex flex-row justify-between gap-2'}>
                 <CardTitle className={'w-full self-center'}>{title}</CardTitle>
                 <Select defaultValue="month">
@@ -121,7 +123,7 @@ export function DynamicChart({ title, color, data, category, date }: DynamicChar
                     </BarChart>
                 </ResponsiveContainer>
             </CardContent>
-            <CardDescription>Monthly sales</CardDescription>
+            <CardDescription className={'pb-4 pl-4'}>Monthly sales</CardDescription>
         </Card>
 
     )

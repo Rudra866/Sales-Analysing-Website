@@ -299,6 +299,9 @@ export async function getTask(supabase: SupabaseClient, taskName: string): Promi
   if (error) throw error;
   return task;
 }
+// todo get task by id
+// todo get task by employee id
+
 
 // is there much point to this one? There may be multiple duplicates, and our sales record holds an id.
 // we probably want to return multiple if we have?

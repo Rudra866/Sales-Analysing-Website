@@ -6,7 +6,7 @@ import {Employee, getAllEmployees, getAllSales, getSupabaseBrowserClient, Sale} 
 import {DbResult, SaleWithEmployeeAndFinancingType} from "@/lib/types";
 
 export type DataContextProps = {
-    // data?: SaleWithEmployeeAndFinancingType[];
+    saleWithEmployeeAndFinancing?: SaleWithEmployeeAndFinancingType[];
     data?: Sale[];
     employees?: Employee[];
     date?: DateRange;
@@ -34,26 +34,7 @@ export const DashboardProvider: React.FC<DashboardProviderProps> = ({children}) 
 
     const [data, setData] = useState<Sale[]>();
     const [employees, setEmployees] = useState<Employee[]>();
-    const [saleWithEmployeeAndFinancing, setSaleWithEmployeeAndFinancing] = useState<Sale[]>();
-
-
-    // function filterDataByDate(sales: SaleWithEmployeeAndFinancingType[] | undefined, date: DateRange | undefined) {  //todo why the fuck is this not working?
-    //     // console.log('filtering data by date: ', filteredData, date)
-    //     return sales?.filter((sale) => {
-    //         const saleDate = new Date(sale?.SaleTime?.toString() || '')
-    //         if (date?.from === undefined || date?.to === undefined) return false
-    //         console.log('from: ', date?.from, 'to: ', date?.to, 'saleDate: ', sale)
-    //         return saleDate >= date?.from && saleDate <= date?.to
-    //     })
-    // }
-
-    // useEffect(() => { // for date range
-    //     const f =    filterDataByDate(saleWithEmployeeAndFinancing, date) as SaleWithEmployeeAndFinancingType[]
-    //     console.log('filtered data: ', f)  // todo now this is fked too
-    //     setData(f)
-    //
-    // }, [date])
-
+    const [saleWithEmployeeAndFinancing, setSaleWithEmployeeAndFinancing] = useState<SaleWithEmployeeAndFinancingType[]>();
 
     useEffect(() => {
         getAllSales(supabase).then((res) => {
@@ -108,19 +89,12 @@ export const DashboardProvider: React.FC<DashboardProviderProps> = ({children}) 
                 `)
                 .order('SaleTime', { ascending: false })
                 .range(0, 100)
+                setSaleWithEmployeeAndFinancing(sales as DbResult<typeof sales>[])
 
             if (error) throw error;
             return sales;
         }
         getEmployeeSales()
-        //     .then((res) => {
-        //         const esales = res && res.length > 0 ? res : []
-        //         // setData(esales as SaleWithEmployeeAndFinancingType[])
-        //         setData(esales as SaleWithEmployeeAndFinancingType[])
-        //         setSaleWithEmployeeAndFinancing(esales as DbResult<SaleWithEmployeeAndFinancingType>)
-        //         return res
-        // })
-
         function filterSalesByDate(sales: Sale[], date: DateRange | undefined) {
             return sales.filter((sale) => {
                 const saleDate = new Date(sale?.SaleTime?.toString() || '')
@@ -134,7 +108,7 @@ export const DashboardProvider: React.FC<DashboardProviderProps> = ({children}) 
     }, [date]); // todo on every date change, it should not pull data form the db, only filter the data that is already in state.
 
     return (
-        <DashboardContext.Provider value={{data, employees, date, setDate}}>
+        <DashboardContext.Provider value={{data, employees, date, saleWithEmployeeAndFinancing, setDate}}>
             {children}
         </DashboardContext.Provider>
     );

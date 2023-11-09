@@ -1,49 +1,75 @@
-// import {Avatar, AvatarFallback, AvatarImage,} from "@/components/ui/avatar"
+
 import {useRouter} from "next/navigation";
 import {useDashboard} from "@/app/(pages)/dashboard/components/dashboard-provider";
-// import EmployeeAvatar from "@/components/dashboard-components/EmployeeAvatar";
 import useAuth from "@/hooks/use-auth";
 import EmployeeAvatar from "@/components/EmployeeAvatar";
+import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card";
+import * as React from "react";
+import {ScrollArea, ScrollBar} from "@/components/ui/scroll-area";
+import {format} from "date-fns";
+
 /** @ignore these for now */
+
+
 export function RecentSales() {
-    const {date, setDate} = useDashboard()
+    const {saleWithEmployeeAndFinancing, setDate} = useDashboard()
     const {employee} = useAuth()
+    console.log("Auth employee: ", employee)
 
-    /* can we have this take an employee? */
-    function SalesRow({name, email, amount, id}: { name: string; email: string; amount: number; id: string }) {
-        // const random = (max: number) => Math.floor(Math.random() * max) + 1
+
+    function SalesRow({name, vehicle, amount, id, date}: { name: string; vehicle: string; amount: number; id: string, date: string }) {
         const router = useRouter()
-
         return (
-            <div className="flex items-center border border-background hover:border-border rounded-lg p-2 cursor-pointer"
-                 onClick={() => {
-                     router.push(`/profile/${id}`)
-                 }}
+            <div
+                className="flex items-center border border-background hover:border-border rounded-lg p-2 cursor-pointer"
+                onClick={() => {
+                    // router.push(`/profile/${id}`)
+                    console.log("employee id: ", id)
+                }}
             >
-                {/*<Avatar className="h-9 w-9">*/}
-                {/*    <AvatarImage src={`/avatars/0${random(5)}.png`} alt="Avatar"/>*/}
-                {/*    <AvatarFallback>{name[0]}</AvatarFallback>*/}
-                {/*</Avatar>*/}
-                <EmployeeAvatar employee={employee!}/> {/* for now since no user info yet, just use signed in employee */}
+                <EmployeeAvatar
+                    employee={employee!}/> {/* for now since no user info yet, just use signed in employee */}
                 <div className="ml-4 space-y-1">
                     <p className="text-sm font-medium leading-none">{name}</p>
-                    <p className="text-sm text-muted-foreground">{email}</p>
+                    <p className="text-sm text-muted-foreground">{format(new Date(date), "LLL dd, y")}</p>
                 </div>
-                <div className="ml-auto font-medium">
-                    +${amount.toLocaleString('en-US', {minimumFractionDigits: 2})}
+                <div className="ml-auto flex flex-col items-end ">
+                    <p className="text-sm font-medium leading-none">+${amount.toLocaleString('en-US', {minimumFractionDigits: 2})}</p>
+                    <p className="text-sm text-muted-foreground truncate max-w-[200px]">{vehicle}</p>
                 </div>
             </div>
 
         )
     }
 
-
     return (
-        <div className="space-y-2">
-            {SalesRow({name: 'Sofia Davis', email: 'sofia.davis@email.com', amount: 39.00, id:'123'})}
-            {SalesRow({name: 'Sofia Davis', email: 'sofia.davis@email.com', amount: 39.00, id:'123'})}
-            {SalesRow({name: 'Sofia Davis', email: 'sofia.davis@email.com', amount: 39.00, id:'123'})}
-            {SalesRow({name: 'Sofia Davis', email: 'sofia.davis@email.com', amount: 39.00, id:'123'})}
-        </div>
+        <Card className="col-span-3">
+            <CardHeader>
+                <CardTitle>Recent Sales</CardTitle>
+                <CardDescription>
+                    You made 265 sales this month.
+                </CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ScrollArea className="h-96">
+                    <div className="space-y-2 mr-4">
+                        {saleWithEmployeeAndFinancing?.slice(0,10)?.map((sale) => {
+                            return (
+                                <SalesRow
+                                    key={sale.SaleTime}
+                                    name={sale.Employees?.Name!}
+                                    vehicle={sale.VehicleMake}
+                                    amount={sale.Total}
+                                    id={sale.EmployeeID}
+                                    date={sale.SaleTime!}
+                                />
+                            )
+                        })}
+                    </div>
+                    <ScrollBar/>
+                </ScrollArea>
+            </CardContent>
+        </Card>
+
     )
 }
