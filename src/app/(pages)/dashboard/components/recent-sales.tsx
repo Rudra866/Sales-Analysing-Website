@@ -7,6 +7,7 @@ import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/compo
 import * as React from "react";
 import {ScrollArea, ScrollBar} from "@/components/ui/scroll-area";
 import {format} from "date-fns";
+import {getRoleFromEmployee} from "@/lib/database";
 
 /** @ignore these for now */
 
@@ -14,7 +15,7 @@ import {format} from "date-fns";
 export function RecentSales() {
     const {saleWithEmployeeAndFinancing, setDate} = useDashboard()
     const {employee} = useAuth()
-    console.log("Auth employee: ", employee)
+    // console.log("Auth employee: ", employee?.Role)
 
 
     function SalesRow({name, vehicle, amount, id, date}: { name: string; vehicle: string; amount: number; id: string, date: string }) {
@@ -46,9 +47,9 @@ export function RecentSales() {
         <Card className="col-span-3">
             <CardHeader>
                 <CardTitle>Recent Sales</CardTitle>
-                <CardDescription>
-                    You made 265 sales this month.
-                </CardDescription>
+                {/*<CardDescription>*/}
+                {/*    You made 265 sales this month.*/}
+                {/*</CardDescription>*/}
             </CardHeader>
             <CardContent>
                 <ScrollArea className="h-96">

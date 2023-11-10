@@ -16,7 +16,7 @@ export const docsConfig: DocsConfig = {
         },
         {
             title: "Cards",
-            href: "/cards",
+            href: "/examples/cards",
         },
         {
             title: "Tasks",

@@ -22,7 +22,28 @@ export const mediaRatios = {
     cinema: 21 / 9,
 }
 
-export function groupByMonth(data: Tables<"Sales">[]): { [p: string]: number } {
+const adminRoles = [2, 3]; // todo how to do viewing privileges?
+
+// export function isAdmin(role: number) {
+//     return adminRoles.includes(role);
+// }
+
+export const numericSales = [
+    "ActualCashValue",
+    "DaysInStock",
+    "DealerCost",
+    "FinAndInsurance",
+    "GrossProfit",
+    "Holdback",
+    "LotPack",
+    "ROI",
+    "Total",
+    "TradeInID",
+];
+
+
+
+export function groupByTimeFrame(data: Tables<"Sales">[], grouping: string): { [p: string]: number } {
     const groupedData: { [key: string]: number } = {};
 
     data.forEach(item => {
@@ -30,7 +51,7 @@ export function groupByMonth(data: Tables<"Sales">[]): { [p: string]: number } {
             item.SaleTime?.toString() || ''
         );
 
-        const monthYearKey = format(date, 'MMM-yy');
+        const monthYearKey = format(date, grouping);
 
         if (!groupedData[monthYearKey]) {
             groupedData[monthYearKey] = 0;
@@ -38,6 +59,5 @@ export function groupByMonth(data: Tables<"Sales">[]): { [p: string]: number } {
 
         groupedData[monthYearKey] += item.Total;
     });
-
     return groupedData;
 }

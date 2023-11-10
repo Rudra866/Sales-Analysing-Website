@@ -42,7 +42,7 @@ export const DashboardProvider: React.FC<DashboardProviderProps> = ({children}) 
             setData(filterSalesByDate(sales, date) as Sale[])
             return res
         }).then((res) => {
-            console.log('filtered sales: ', res)
+            // console.log('filtered sales: ', res)
         }).catch((err) => {
             console.error(err)
         })
@@ -51,7 +51,7 @@ export const DashboardProvider: React.FC<DashboardProviderProps> = ({children}) 
             setEmployees(res as Employee[])
             return res
         }).then((res) => {
-            console.log('employees: ', res)
+            // console.log('employees: ', res)
         }).catch((err) => {
             console.error(err)
         })

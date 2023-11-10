@@ -3,7 +3,7 @@
 import {Bar, BarChart, ResponsiveContainer, Tooltip, XAxis, YAxis} from "recharts"
 import {useDashboard} from "@/app/(pages)/dashboard/components/dashboard-provider";
 import {useEffect, useState} from "react";
-import {groupByMonth} from "@/lib/utils";
+import {groupByTimeFrame} from "@/lib/utils";
 
 export function Overview() {
 
@@ -12,7 +12,7 @@ export function Overview() {
 
     useEffect(() => {
         setSalesByMonth(
-            Object.entries(groupByMonth(data || [])).map(([key, value]) => ({
+            Object.entries(groupByTimeFrame(data || [], 'MMM-yy')).map(([key, value]) => ({
                 name: key,
                 total: value,
             })))

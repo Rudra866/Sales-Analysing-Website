@@ -31,7 +31,7 @@ function UpdateUserPage() {
             setEmployees(res as Employee[])
             return res
         }).then((res) => {
-            console.log('employees: ', res)
+            // console.log('employees: ', res)
         }).catch((err) => {
             console.error(err)
         })
@@ -40,7 +40,7 @@ function UpdateUserPage() {
             setRoles(res as Role[])
             return res
         }).then((res) => {
-            console.log('roles: ', res)
+            // console.log('roles: ', res)
         }).catch((err) => {
             console.error(err)
         })
@@ -51,7 +51,7 @@ function UpdateUserPage() {
     return (
         <div className="space-y-6">
             <div className={'flex flex-row justify-between'}>
-                <div className={'w-full'}>
+                <div className={'hidden md:flex md:flex-col w-full'}>
                     <h3 className="text-lg font-medium">Update User</h3>
                     <p className="text-sm text-muted-foreground">Click on a user to update.</p>
                 </div>
@@ -63,12 +63,12 @@ function UpdateUserPage() {
                 {employees?.map((employee) => {
                     return (
                         <div key={employee.id}
-                             className="flex items-center border-b justify-between space-x-4  p-3 shadow-sm cursor-pointer hover:bg-accent mr-4 my-2"
+                             className="flex items-center border-b justify-between space-x-4 p-3 shadow-sm cursor-pointer hover:bg-accent mr-4 my-2"
                              onClick={() => {
                                  router.push(`/settings/user-settings/update/${employee.id}`)
                              }}
                         >
-                                <div className="flex items-center space-x-4">
+                                <div className="flex items-center space-x-4 w-full">
                                     <Button variant="ghost" className="relative h-8 w-8 rounded-full">
                                         <EmployeeAvatar employee={employee}/>
                                     </Button>
@@ -79,7 +79,7 @@ function UpdateUserPage() {
                                         <p className="text-sm text-muted-foreground">{employee.Email}</p>
                                     </div>
                                 </div>
-                            <Badge variant={'outline'}>{
+                            <Badge variant={'outline'} className={'min-w-fit'}>{
                                 roles?.filter((role) => {
                                     return role.id === employee.Role
                                 })[0].RoleName
@@ -89,7 +89,6 @@ function UpdateUserPage() {
                 })}
                 <ScrollBar/>
             </ScrollArea>
-
         </div>
     );
 }

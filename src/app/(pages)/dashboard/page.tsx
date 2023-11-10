@@ -71,17 +71,8 @@ export default function DashboardPage() {
     const supabase = getSupabaseBrowserClient();
     const {data, date, setDate} = useDashboard()
     const [totalRevenue, setTotalRevenue] = useState<number>(0);
-    const [saleGoal, setSaleGoal] = useState<SalesGoal[]>();
-    const [monthlySales, setMonthlySales] = useState<MonthlySale[]>();
-    const {user, employee} = useAuth();
-    // console.log('user: ', user, 'employee: ', employee)
-
-
-
-    useEffect(() => {
-
-
-    }, [saleGoal, monthlySales])
+    // const [monthlySales, setMonthlySales] = useState<MonthlySale[]>();
+    const { employee} = useAuth();
 
 
     // temp -- ryan
@@ -93,23 +84,12 @@ export default function DashboardPage() {
 
     useEffect(() => {
         try {
-            const fetchTable = async () => {
-                const {data: goal, error} = await supabase
-                    .from('SalesGoals')
-                    .select('*')
-                setSaleGoal(goal as DbResult<SalesGoal[]>);
-            }
             const getNotifications = async () => {
                 // @ts-ignore
                 setNotifications(await getAllNotifications(supabase));
             }
-
-            fetchTable();
             getNotifications();
-
-        } catch (error) {
-            console.error(error) // todo handle better later
-        }
+        } catch (error) {console.error(error)}
     }, [supabase]);
 
 
@@ -119,23 +99,26 @@ export default function DashboardPage() {
             .reduce((a, b) => a + b, 0) ?? 0)
     }, [data, date, supabase]);
 
-    useEffect(() => {
-        const fetchTable = async () => {
-            let {data: monthly_sales, error} = await supabase
-                .from('MonthlySales')
-                .select('*');
 
-            const month = format(new Date(), 'yyyy-MMM');
-            const ms = monthly_sales?.filter((sale) => format(
-                new Date(sale?.TimePeriod || new Date())
-                , 'yyyy-MMM') === month)?.map((sale) => sale?.Total)?.reduce((a, b) => a + b, 0) || 0
 
-            setMonthlySales(ms as DbResult<typeof ms[]>);
-        };
-
-        fetchTable();
-
-    }, [])
+    // todo do we even need monthly sales??
+    // useEffect(() => {
+    //     const fetchTable = async () => {
+    //         let {data: monthly_sales, error} = await supabase
+    //             .from('MonthlySales')
+    //             .select('*');
+    //
+    //         const month = format(new Date(), 'yyyy-MMM');
+    //         const ms = monthly_sales?.filter((sale) => format(
+    //             new Date(sale?.TimePeriod || new Date())
+    //             , 'yyyy-MMM') === month)?.map((sale) => sale?.Total)?.reduce((a, b) => a + b, 0) || 0
+    //
+    //         setMonthlySales(ms as DbResult<typeof ms[]>);
+    //     };
+    //
+    //     fetchTable();
+    //
+    // }, [])
 
 
     return (
@@ -235,7 +218,7 @@ export default function DashboardPage() {
                                 <RecentSales />
                                 <Card className="col-span-4">
                                     <CardHeader>
-                                        <CardTitle>Sales</CardTitle>
+                                        <CardTitle>Actual/Estimated Sales</CardTitle>
                                     </CardHeader>
                                     <CardContent className="pl-2">
                                         <SalesLineChart data={placeholderData} />
@@ -245,14 +228,8 @@ export default function DashboardPage() {
                                     className="col-span-3"
                                     data={data!}
                                     date={date}
-                                    title={'My Sales'}
-                                    category={[
-                                        'Total Goal',
-                                        'Total Revenue',
-                                        'Total Profit',
-                                    ]}/>
-
-
+                                    title={'Sales'}
+                                />
                             </div>
                         </TabsContent>
                         <TabsContent value="Sales Table">
@@ -264,26 +241,18 @@ export default function DashboardPage() {
                                         </h2>
                                         <p className="text-muted-foreground">
                                             Here&apos;s a list of your sales for this month!
-                                            {/*<SalesTable/> */}
-                                            {/* temporary - need some caching or something,
-                                            queries every time tab is swapped.*/}
+                                            {/*todo temporary - need some caching or something,queries every time tab is swapped?*/}
                                         </p>
                                     </div>
-                                    <div className="flex items-center space-x-2">
-                                        {/*<UserNav />*/}
-                                    </div>
                                 </div>
-                                {/*<DataTable data={tasks} columns={test_columns} />*/}
                             </div>
-
                         </TabsContent>
                         <TabsContent value="reports">Reports</TabsContent>
                         <TabsContent value="notifications"> {/* temp */}
                             {notifications && notifications.map((notification) =>
-                                    <></>
-                                // <div key={notification.id}>
-                                //     <p>New Sale: {notification.Sale}</p>
-                                // </div>
+                                <div key={notification.title}>
+                                    <p>New Sale: {notification.data}</p>
+                                </div>
                             )}
                         </TabsContent>
                     </Tabs>

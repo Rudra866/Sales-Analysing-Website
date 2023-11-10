@@ -1,7 +1,7 @@
 import React, {PropsWithChildren, useState} from "react";
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table";
 import {flexRender} from "@tanstack/react-table";
-import {columns} from "@/app/(pages)/(examples)/tasks/components/columns";
+// import {columns} from "@/app/(pages)/examples/tasks/components/columns";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 import {Button} from "@/components/ui/button";
 import {ChevronLeftIcon, ChevronRightIcon, DoubleArrowLeftIcon, DoubleArrowRightIcon} from "@radix-ui/react-icons";
@@ -61,16 +61,8 @@ export default function DataTable<TData>({table, loading, children}:
                     ))
                 ) : (
                     <TableRow>
-                      <TableCell colSpan={columns.length} className="h-24 text-center">
-                        {/* Todo */}
+                      <TableCell colSpan={table.getRowModel().rows?.length} className="h-24 text-center">
                         No result? refresh..?
-                        <div className="flex items-center justify-center h-24">
-                          <div className="flex items-center space-x-2">
-                            <div className="w-4 h-4 bg-accent rounded-full animate-bounce"/>
-                            <div className="w-4 h-4 bg-accent rounded-full animate-bounce delay-75"/>
-                            <div className="w-4 h-4 bg-accent rounded-full animate-bounce delay-150"/>
-                          </div>
-                        </div>
                       </TableCell>
                     </TableRow>
                 )}

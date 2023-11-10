@@ -3,60 +3,88 @@
 import {Bar, BarChart, ResponsiveContainer, Tooltip, XAxis, YAxis} from "recharts"
 import {useDashboard} from "@/app/(pages)/dashboard/components/dashboard-provider";
 import React, {useEffect, useState} from "react";
-import {cn, groupByMonth} from "@/lib/utils";
+import {cn, numericSales} from "@/lib/utils";
 import {DateRange} from "react-day-picker";
-import {subDays} from "date-fns";
-import {Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle} from "@/components/ui/card";
-import {Overview} from "@/app/(pages)/dashboard/components/overview";
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger
-} from "@/components/ui/dropdown-menu";
-import {Button} from "@/components/ui/button";
-import {ArrowDownIcon, ArrowUpIcon, CaretSortIcon, EyeNoneIcon} from "@radix-ui/react-icons";
+import {format} from "date-fns";
+import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 import {Sale} from "@/lib/database";
 
+
+
+// todo limit to only these options since  this component is only for sales and can't be used for other data yet.
+//           ActualCashValue
+//           DaysInStock: number | null
+//           DealerCost: number | null
+//           FinancingID: number | null
+//           FinAndInsurance: number
+//           GrossProfit: number
+//           Holdback: number | null
+//           LotPack: number | null
+//           Total: number
+
+
+
+function groupByTimeFrame(data: Sale[], grouping: string, field: keyof Sale): { [p: string]: number } {
+    return data.reduce((groupedData: { [key: string]: number }, item) => {
+        const date = new Date(item.SaleTime?.toString() || '');
+        const monthYearKey = format(date, grouping);
+
+        if (!groupedData[monthYearKey]) {
+            groupedData[monthYearKey] = 0;
+        }
+
+        groupedData[monthYearKey] += item[field] as unknown as number;
+        return groupedData;
+    }, {});
+}
 
 interface DynamicChartProps {
     title: string
     color?: string
     data: Sale[]
-    category: string[]
     date: DateRange | undefined
     className?: string
 }
 
-export function DynamicChart({ title, color, data, category, date, className }: DynamicChartProps) {
+export function DynamicChart({ title, color, data, date, className }: DynamicChartProps) {
 
     const [keyValues, setKeyValues] = useState<{ key: string; value: number }[]>();
-    const [selectedCategory, setSelectedCategory] = useState<string>(category[0]);
-    const [grouping, setGrouping] = useState<string>("month");
-
-    function groupBySelect(){
-
-    }
-
+    const [selectedCategory, setSelectedCategory] = useState<string>();
+    const [categories, setCategories] = useState<string[]>();
+    const [grouping, setGrouping] = useState("MMM-yy");
 
 
     useEffect(() => {
-        setKeyValues(
-            Object.entries(groupByMonth(data || [])).map(([key, value]) => ({
-                key: key,
-                value: value,
-            })))
-    }, [data, date]);
+        if (selectedCategory) {
+            setKeyValues(
+                Object.entries(groupByTimeFrame(data || [], grouping, selectedCategory as keyof Sale)).map(([key, value]) => ({
+                    key: key,
+                    value: value,
+                }))
+            );
+        }
+    }, [data, date, grouping, selectedCategory]);
+
+    useEffect(() => {
+
+        // get sales columns that are of numeric type
+        const numericColumns = data && Object.keys(data[0]).filter((key) => {
+            // @ts-ignore
+            return typeof data[0][key] === "number" && key !== "id" // todo: fix this
+        });
+        setCategories(numericColumns)
+    }, [data]);
 
     const customToolTip = (props: any) => {
         try {
             if (props.active && props.payload && props.payload.length) {
                 return (
                     <div className="bg-muted p-4 rounded-md shadow-md">
-                        <p className="text-muted-foreground text-sm">{props.label}</p>
-                        <p className="text-muted-foreground text-sm">Total: {`$${Number(props?.payload[0]?.value)?.toLocaleString()}`}</p>
+                        <p className="text-primary text-sm">{props.label}</p>
+                        <p className="text-primary text-sm">
+                            {`$${Number(props?.payload[0]?.value)?.toLocaleString()}`}
+                        </p>
                     </div>
                 )
             }
@@ -69,26 +97,23 @@ export function DynamicChart({ title, color, data, category, date, className }: 
         <Card className={cn("col-span-4", className)}>
             <CardHeader className={'flex flex-row justify-between gap-2'}>
                 <CardTitle className={'w-full self-center'}>{title}</CardTitle>
-                <Select defaultValue="month">
+                <Select defaultValue="MMM-yy" onValueChange={setGrouping}>
                     <SelectTrigger id="area"  >
-                        <SelectValue placeholder="month" />
+                        <SelectValue placeholder="Monthly" />
                     </SelectTrigger>
                     <SelectContent>
-                        <SelectItem value="daily" onSelect={() => {setGrouping("daily")}
-                        }>Daily</SelectItem>
-                        <SelectItem value="month" onSelect={() => {setGrouping("month")}}
-                        >Month</SelectItem>
-                        <SelectItem value="annual" onSelect={() => {setGrouping("annual")}}
-                        >Annual</SelectItem>
+                        <SelectItem value="MMM-dd">Daily</SelectItem>
+                        <SelectItem value="MMM-yy">Monthly</SelectItem>
+                        <SelectItem value="yyyy">Annual</SelectItem>
                     </SelectContent>
                 </Select>
 
-                <Select defaultValue={category[0]} >
+                <Select defaultValue={selectedCategory} onValueChange={setSelectedCategory}>
                     <SelectTrigger id="area" >
                         <SelectValue placeholder="Select"/>
                     </SelectTrigger>
                     <SelectContent>
-                        {category.map((cat, index) => {
+                        {numericSales?.map((cat, index) => {
                             return (
                                 <SelectItem key={index} value={cat}>
                                     {cat}
@@ -123,7 +148,6 @@ export function DynamicChart({ title, color, data, category, date, className }: 
                     </BarChart>
                 </ResponsiveContainer>
             </CardContent>
-            <CardDescription className={'pb-4 pl-4'}>Monthly sales</CardDescription>
         </Card>
 
     )
