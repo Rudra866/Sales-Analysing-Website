@@ -70,12 +70,13 @@ export default function AuthRegistrationTestPage() {
   const handleSubmit = async (formData: any) => {
     try {
       const newFormData = formData;
+      newFormData["method"] = "register"
       // Set new values in form
       form.setValue('Name', "_REGISTER_TEST");
       form.setValue('email', `example${generateRandomString(25)}@email.com`)
-      const response = await fetch("/api/admin/register", {
+      const response = await fetch("/api/admin/employee/register", {
         method: 'POST',
-        body: JSON.stringify(newFormData),
+        body: JSON.stringify(newFormData)
       });
 
       const result = await response.json();

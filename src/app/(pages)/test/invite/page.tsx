@@ -69,7 +69,7 @@ export default function AuthInviteTestPage() {
       const newFormData = formData;
       // Set new values in form
       form.setValue('Name', "_INVITE_TEST");
-      const response = await fetch("/api/admin/invite", {
+      const response = await fetch("/api/admin/employee?method=invite", {
         method: 'POST',
         body: JSON.stringify(newFormData),
       });
