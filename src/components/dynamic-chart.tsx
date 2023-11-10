@@ -3,7 +3,7 @@
 import {Bar, BarChart, ResponsiveContainer, Tooltip, XAxis, YAxis} from "recharts"
 import {useDashboard} from "@/app/(pages)/dashboard/components/dashboard-provider";
 import React, {useEffect, useState} from "react";
-import {cn, numericSales} from "@/lib/utils";
+import {cn} from "@/lib/utils";
 import {DateRange} from "react-day-picker";
 import {format} from "date-fns";
 import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
@@ -12,32 +12,67 @@ import {Sale} from "@/lib/database";
 
 
 
-// todo limit to only these options since  this component is only for sales and can't be used for other data yet.
-//           ActualCashValue
-//           DaysInStock: number | null
-//           DealerCost: number | null
-//           FinancingID: number | null
-//           FinAndInsurance: number
-//           GrossProfit: number
-//           Holdback: number | null
-//           LotPack: number | null
-//           Total: number
+// todo - make this dynamic based on the data as well as dynamic depending on the data type
+const numericSales = [
+    "ActualCashValue",
+    // "DaysInStock",
+    "DealerCost",
+    "FinAndInsurance",
+    "GrossProfit",
+    "Holdback",
+    "LotPack",
+    "ROI",
+    "Total",
+];
 
+// function groupByTimeFrame(data: Sale[], grouping: string, field: keyof Sale): { [p: string]: number } {
+//     return data.reduce((groupedData: { [key: string]: number }, item) => {
+//         const date = new Date(item.SaleTime?.toString() || '');
+//         const monthYearKey = format(date, grouping);
 
+//         if (!groupedData[monthYearKey]) {
+//             groupedData[monthYearKey] = 0;
+//         }
 
-function groupByTimeFrame(data: Sale[], grouping: string, field: keyof Sale): { [p: string]: number } {
-    return data.reduce((groupedData: { [key: string]: number }, item) => {
-        const date = new Date(item.SaleTime?.toString() || '');
-        const monthYearKey = format(date, grouping);
+//         groupedData[monthYearKey] += item[field] as unknown as number;
+//         return groupedData;
+//     }, {});
+// }
 
-        if (!groupedData[monthYearKey]) {
-            groupedData[monthYearKey] = 0;
-        }
+type SaleWithIndex = Sale & {
+    [key: string]: any;
+  };
 
-        groupedData[monthYearKey] += item[field] as unknown as number;
-        return groupedData;
-    }, {});
+function groupByTimeFrame(data: (SaleWithIndex | null | undefined)[], grouping: string): { [p: string]: { [p: string]: number } } {
+  if (!data) {
+    return {};
+  }
+
+  return data.reduce((groupedData: { [key: string]: { [p: string]: number } }, item) => {
+    if (!item) {
+      return groupedData;
+    }
+
+    const date = new Date(item.SaleTime?.toString() || '');
+    const monthYearKey = format(date, grouping);
+
+    if (!groupedData[monthYearKey]) {
+      groupedData[monthYearKey] = {};
+    }
+
+    numericSales.forEach((field) => {
+      if (!groupedData[monthYearKey][field]) {
+        groupedData[monthYearKey][field] = 0;
+      }
+
+      const fieldValue = item[field];
+      groupedData[monthYearKey][field] += typeof fieldValue === 'number' ? fieldValue : 0;
+    });
+
+    return groupedData;
+  }, {});
 }
+
 
 interface DynamicChartProps {
     title: string
@@ -47,10 +82,14 @@ interface DynamicChartProps {
     className?: string
 }
 
+// TODO - On hover tooltip it should display more relevant information such as a list of cars that the bar is summing, average ROI, etc..
+//  However this would require a complex data structure.
+
+
 export function DynamicChart({ title, color, data, date, className }: DynamicChartProps) {
 
     const [keyValues, setKeyValues] = useState<{ key: string; value: number }[]>();
-    const [selectedCategory, setSelectedCategory] = useState<string>();
+    const [selectedCategory, setSelectedCategory] = useState("Total");
     const [categories, setCategories] = useState<string[]>();
     const [grouping, setGrouping] = useState("MMM-yy");
 
@@ -58,9 +97,9 @@ export function DynamicChart({ title, color, data, date, className }: DynamicCha
     useEffect(() => {
         if (selectedCategory) {
             setKeyValues(
-                Object.entries(groupByTimeFrame(data || [], grouping, selectedCategory as keyof Sale)).map(([key, value]) => ({
-                    key: key,
-                    value: value,
+                Object.entries(groupByTimeFrame(data, grouping)).map(([key, value]) => ({
+                    key,
+                    value: value[selectedCategory],
                 }))
             );
         }
@@ -125,7 +164,13 @@ export function DynamicChart({ title, color, data, date, className }: DynamicCha
             </CardHeader>
             <CardContent className="pl-2">
                 <ResponsiveContainer width="100%" height={350}>
-                    <BarChart data={keyValues}>
+                    <BarChart data={keyValues}
+                              margin={{
+                                  top: 0,
+                                  right: 0,
+                                  left: 20,
+                                  bottom: 0,
+                              }}>
                         <XAxis
                             dataKey="key"
                             stroke={"#888888"}

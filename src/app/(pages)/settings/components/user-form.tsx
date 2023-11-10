@@ -10,6 +10,7 @@ import {Input} from "@/components/ui/input";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 import React, {useEffect} from "react";
 import {Employee, getAllRoles, getSupabaseBrowserClient, Role} from "@/lib/database";
+import {useRouter} from "next/navigation";
 
 const createRoleModalSchema = z.object({
     name: z.string()
@@ -38,7 +39,7 @@ const FormInputField = ({form, name, label}: FormInputFieldProps) => (
     <FormField
         control={form.control}
         name={name}
-        render={({ field }) => (
+        render={({field}) => (
             <FormItem>
                 <FormLabel>{label}</FormLabel>
                 <FormControl>
@@ -47,7 +48,7 @@ const FormInputField = ({form, name, label}: FormInputFieldProps) => (
                         value={field.value}
                     />
                 </FormControl>
-                <FormMessage />
+                <FormMessage/>
             </FormItem>
         )}
     />
@@ -60,10 +61,14 @@ interface UserFormProps {
     number?: string
     employee?: Employee,
     role?: Role
+    remove?: boolean
 }
-export function UserForm({name, email, password, number, employee, role}: UserFormProps) {
+
+export function UserForm({name, email, password, number, employee, role, remove}: UserFormProps) {
     const supabase = getSupabaseBrowserClient();
     const [roles, setRoles] = React.useState<Role[]>([])
+    // const router = useRouter()
+
 
     useEffect(() => {
         getAllRoles(supabase).then((res) => {
@@ -97,17 +102,23 @@ export function UserForm({name, email, password, number, employee, role}: UserFo
         })
     }
 
+    const getRoleName = (id: string) => {
+        const role = roles.find(role => role.id.toString() === id)
+        return role?.RoleName
+    }
+
+
     return (
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
-                <FormInputField form={form} name="name" label="Employee Name" />
-                <FormInputField form={form} name="email" label="Account Email" />
-                <FormInputField form={form} name="password" label="Account Password" />
-                <FormInputField form={form} name="number" label="Employee Number" />
+                <FormInputField form={form} name="name" label="Employee Name"/>
+                <FormInputField form={form} name="email" label="Account Email"/>
+                <FormInputField form={form} name="password" label="Account Password"/>
+                <FormInputField form={form} name="number" label="Employee Number"/>
                 <FormField
                     control={form.control}
                     name="role" // todo
-                    render={({ field }) => (
+                    render={({field}) => (
                         <FormItem>
                             <FormLabel>Role</FormLabel>
                             <Select
@@ -116,7 +127,8 @@ export function UserForm({name, email, password, number, employee, role}: UserFo
                             >
                                 <FormControl>
                                     <SelectTrigger>
-                                        <SelectValue placeholder="Employee Role" {...field} />
+                                        <SelectValue
+                                            placeholder={employee && getRoleName(employee.Role.toString())} {...field} />
                                     </SelectTrigger>
                                 </FormControl>
                                 <SelectContent>
@@ -127,10 +139,25 @@ export function UserForm({name, email, password, number, employee, role}: UserFo
                                     ))}
                                 </SelectContent>
                             </Select>
-                            <FormMessage />
+                            <FormMessage/>
                         </FormItem>)}
                 />
-                <Button type="submit">Add User</Button>
+                <div className={'flex gap-2'}>
+                    <Button type="submit">Submit</Button>
+                    {remove && <Button variant="destructive"
+                                       onClick={() => {
+                                           employee?.id &&
+                                           supabase.from('Employees')
+                                               .delete().eq('id', employee.id)
+                                               .then(() => {
+                                                   toast({
+                                                       title: "Employee Deleted",
+                                                       description: "Employee has been deleted",
+                                                   })
+                                           })
+                                       }}
+                    >Delete</Button>}
+                </div>
             </form>
         </Form>
     )

@@ -19,7 +19,6 @@ export function Overview() {
     }, [data, date]);
 
     const customToolTip = (props: any) => {
-        // console.log(props)
         try {
             if (props.active && props.payload && props.payload.length) {
                 return (
@@ -29,9 +28,7 @@ export function Overview() {
                     </div>
                 )
             }
-        }  catch (e) {
-            console.log(e)
-        }
+        }  catch (e) {console.log(e)}
         return null
     }
 

@@ -16,7 +16,7 @@ import {useDashboard} from "./components/dashboard-provider";
 import {getSupabaseBrowserClient} from "@/lib/supabase";
 import {DbResult} from "@/lib/types";
 import useAuth from "@/hooks/use-auth";
-import {getAllNotifications, MonthlySale, SalesGoal} from "@/lib/database";
+import {getAllNotifications, MonthlySale, Sale, SalesGoal} from "@/lib/database";
 import {DynamicChart} from "@/components/dynamic-chart";
 import SalesLineChart from "@/components/sales-line-chart";
 
@@ -216,14 +216,7 @@ export default function DashboardPage() {
                                     </CardContent>
                                 </Card>
                                 <RecentSales />
-                                <Card className="col-span-4">
-                                    <CardHeader>
-                                        <CardTitle>Actual/Estimated Sales</CardTitle>
-                                    </CardHeader>
-                                    <CardContent className="pl-2">
-                                        <SalesLineChart data={placeholderData} />
-                                    </CardContent>
-                                </Card>
+                                <SalesLineChart data={data as Sale[]} date={date} />
                                 <DynamicChart
                                     className="col-span-3"
                                     data={data!}

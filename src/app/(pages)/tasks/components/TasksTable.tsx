@@ -37,7 +37,7 @@ const supabase = getSupabaseBrowserClient();
  * Component used to render sales page table at `/sales`
  * @group React Components
  */
-export default function SalesTable() {
+export default function TasksTable() {
     const [loading, setLoading] = useState(true);
     const [sales, setSales] = useState<Sale[]>([]);
     const [employees, setEmployees] = useState<Employee[]>([]);

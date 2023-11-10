@@ -62,10 +62,10 @@ export function UserNav() {
             Profile
             <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
           </DropdownMenuItem>
-          <DropdownMenuItem>
-            Billing
-            <DropdownMenuShortcut>⌘B</DropdownMenuShortcut>
-          </DropdownMenuItem>
+          {/*<DropdownMenuItem>*/}
+          {/*  Billing*/}
+          {/*  <DropdownMenuShortcut>⌘B</DropdownMenuShortcut>*/}
+          {/*</DropdownMenuItem>*/}
           <DropdownMenuSub>
             <DropdownMenuSubTrigger>
               <UserPlus className="mr-2 h-4 w-4" />

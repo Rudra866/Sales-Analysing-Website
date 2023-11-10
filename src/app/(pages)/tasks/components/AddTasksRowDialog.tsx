@@ -89,7 +89,7 @@ const usedSaleFormSchema = z.object({
  * Component used to render adding a new sale on the sales page.
  * @group React Components
  */
-export function AddSalesRowDialog({sale}: SaleSelectModalFormProps) {
+export function AddTasksRowDialog({sale}: SaleSelectModalFormProps) {
     const supabase = getSupabaseBrowserClient();
     const formContext = useFormModalContext();
     const [editState, setEditState] = useState(false);

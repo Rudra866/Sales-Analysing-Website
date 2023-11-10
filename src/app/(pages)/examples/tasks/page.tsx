@@ -10,7 +10,7 @@ import {test_columns} from "./components/test-column";
 
 async function getTasks() {
   const data = await fs.readFile(
-    path.join(process.cwd(), "src/app/(pages)/(examples)/tasks/data/tasks.json")
+    path.join(process.cwd(), "src/app/(pages)/examples/tasks/data/tasks.json")
   )
   const tasks = JSON.parse(data.toString())
   return z.array(taskSchema).parse(tasks)

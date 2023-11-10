@@ -1,7 +1,7 @@
 import { type ClassValue, clsx } from "clsx"
 import { twMerge } from "tailwind-merge"
 import {format} from "date-fns";
-import {Tables} from "@/lib/database";
+import {Sale, Tables} from "@/lib/database";
 
 /** @ignore */
 export function cn(...inputs: ClassValue[]) {
@@ -43,7 +43,8 @@ export const numericSales = [
 
 
 
-export function groupByTimeFrame(data: Tables<"Sales">[], grouping: string): { [p: string]: number } {
+// grouping by dynamic time frame
+export function groupByTimeFrame(data: Sale[], grouping: string): { [p: string]: number } {
     const groupedData: { [key: string]: number } = {};
 
     data.forEach(item => {
@@ -59,5 +60,25 @@ export function groupByTimeFrame(data: Tables<"Sales">[], grouping: string): { [
 
         groupedData[monthYearKey] += item.Total;
     });
+    return groupedData;
+}
+
+export function groupByMonth(data: Sale[]): { [p: string]: number } {
+    const groupedData: { [key: string]: number } = {};
+
+    data.forEach(item => {
+        const date = new Date(
+            item.SaleTime?.toString() || ''
+        );
+
+        const monthYearKey = format(date, 'MMM-yy');
+
+        if (!groupedData[monthYearKey]) {
+            groupedData[monthYearKey] = 0;
+        }
+
+        groupedData[monthYearKey] += item.Total;
+    });
+
     return groupedData;
 }

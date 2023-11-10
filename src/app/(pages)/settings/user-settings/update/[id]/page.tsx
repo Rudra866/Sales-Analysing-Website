@@ -39,6 +39,7 @@ function Page() {
                     password={employee.Email}// todo: check if current auth user is admin, if so reset password
                     employee={employee}
                     role={role}
+                    remove={true}
                 />
             }
 
