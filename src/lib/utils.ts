@@ -9,19 +9,6 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 
-/** remove?
- *  @ignore
- */
-export const mediaRatios = {
-    video: 16 / 9,
-    image: 4 / 3,
-    classicFilm: 3 / 2,
-    square: 1,
-    portrait: 2 / 3,
-    instagram: 4 / 5,
-    cinema: 21 / 9,
-}
-
 const adminRoles = [2, 3]; // todo how to do viewing privileges?
 
 // export function isAdmin(role: number) {
@@ -30,7 +17,6 @@ const adminRoles = [2, 3]; // todo how to do viewing privileges?
 
 export const numericSales = [
     "ActualCashValue",
-    "DaysInStock",
     "DealerCost",
     "FinAndInsurance",
     "GrossProfit",
@@ -38,7 +24,6 @@ export const numericSales = [
     "LotPack",
     "ROI",
     "Total",
-    "TradeInID",
 ];
 
 
@@ -81,4 +66,38 @@ export function groupByMonth(data: Sale[]): { [p: string]: number } {
     });
 
     return groupedData;
+}
+
+type SaleWithIndex = Sale & {
+    [key: string]: any;
+};
+
+export function groupSelectionByTimeFrame(data: (SaleWithIndex | null | undefined)[], grouping: string): { [p: string]: { [p: string]: number } } {
+    if (!data) {
+        return {};
+    }
+
+    return data.reduce((groupedData: { [key: string]: { [p: string]: number } }, item) => {
+        if (!item) {
+            return groupedData;
+        }
+
+        const date = new Date(item.SaleTime?.toString() || '');
+        const monthYearKey = format(date, grouping);
+
+        if (!groupedData[monthYearKey]) {
+            groupedData[monthYearKey] = {};
+        }
+
+        numericSales.forEach((field) => {
+            if (!groupedData[monthYearKey][field]) {
+                groupedData[monthYearKey][field] = 0;
+            }
+
+            const fieldValue = item[field];
+            groupedData[monthYearKey][field] += typeof fieldValue === 'number' ? fieldValue : 0;
+        });
+
+        return groupedData;
+    }, {});
 }

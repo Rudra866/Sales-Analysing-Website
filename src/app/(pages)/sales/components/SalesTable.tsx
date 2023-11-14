@@ -3,7 +3,7 @@
 import {
     Column,
     ColumnDef,
-    ColumnFiltersState, flexRender,
+    ColumnFiltersState, FilterFn, flexRender,
     getCoreRowModel, getFilteredRowModel,
     getPaginationRowModel, getSortedRowModel,
     SortingState,
@@ -24,15 +24,16 @@ import {Checkbox} from "@/components/ui/checkbox";
 import {Employee, Tables, Sale, getSupabaseBrowserClient, postToSales} from "@/lib/database";
 import {ArrowUpDown, Plus} from "lucide-react";
 import {Badge} from "@/components/ui/badge";
-import {DropDownMenu} from "@/app/(pages)/sales/components/drop-down-menu";
+import {DropDownMenu} from "./drop-down-menu";
 import {format} from "date-fns";
 import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger} from "@/components/ui/tooltip";
 import {DbResult} from "@/lib/types";
 import useAuth from "@/hooks/use-auth";
 import FormModal from "@/components/FormModal";
-import {AddSalesRowDialog} from "@/app/(pages)/sales/components/AddSalesRowDialog";
-const supabase = getSupabaseBrowserClient();
+import {AddSalesRowDialog} from "./AddSalesRowDialog"
 
+
+const supabase = getSupabaseBrowserClient();
 /**
  * Component used to render sales page table at `/sales`
  * @group React Components
@@ -206,7 +207,7 @@ interface DataTableProps<TData, TValue> {
     loading?: boolean
 }
 
-export function DataTable<TData, TValue>({defaultData, columns, loading}: DataTableProps<TData, TValue>) {
+function DataTable<TData, TValue>({defaultData, columns, loading}: DataTableProps<TData, TValue>) {
     const [sorting, setSorting] = useState<SortingState>([])
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
     const pageSizes = [10, 25, 50, 100]
@@ -220,10 +221,15 @@ export function DataTable<TData, TValue>({defaultData, columns, loading}: DataTa
     const table = useReactTable({
         data,
         columns,
+        // filterFns: {
+        //     fuzzy: fuzzyFilter,
+        // },
+        // globalFilterFn: fuzzyFilter,
+        // onGlobalFilterChange: setGlobalFilter,
+        onColumnFiltersChange: setColumnFilters,
         getCoreRowModel: getCoreRowModel(),
         onSortingChange: setSorting,
         getPaginationRowModel: getPaginationRowModel(),
-        onColumnFiltersChange: setColumnFilters,
         getFilteredRowModel: getFilteredRowModel(),
         getSortedRowModel: getSortedRowModel(),
         state: {
@@ -253,6 +259,9 @@ export function DataTable<TData, TValue>({defaultData, columns, loading}: DataTa
         DealerCost: 0,
         ROI: 0,
     };
+    // todo filter multiple columns
+    // https://github.com/TanStack/table/blob/main/examples/react/filters/src/main.tsx#L150
+    // https://tanstack.com/table/v8/docs/examples/react/filters
 
     const [salesModal, setSalesModal] = useState(false);
 
@@ -289,7 +298,7 @@ export function DataTable<TData, TValue>({defaultData, columns, loading}: DataTa
                         }}
                     >
                         <Plus className="mr-2 h-4 w-4" />
-                        Add Row
+                        Add Sale
                     </Button>
                     {/* this button is there just in case we need it of not will be removed in the future.*/}
                     <Button

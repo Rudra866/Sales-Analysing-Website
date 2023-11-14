@@ -2,11 +2,21 @@
 import React, {createContext, ReactNode, useEffect, useState} from 'react';
 import {subDays} from "date-fns";
 import {DateRange} from "react-day-picker";
-import {Employee, getAllEmployees, getAllSales, getSupabaseBrowserClient, Sale} from "@/lib/database";
+import {
+    Employee,
+    getAllEmployees,
+    getAllSales,
+    getAllSalesGoals,
+    getSupabaseBrowserClient,
+    Sale,
+    SalesGoal
+} from "@/lib/database";
 import {DbResult, SaleWithEmployeeAndFinancingType} from "@/lib/types";
+import useAuth from "@/hooks/use-auth";
 
 export type DataContextProps = {
     saleWithEmployeeAndFinancing?: SaleWithEmployeeAndFinancingType[];
+    mySales?: SaleWithEmployeeAndFinancingType[];
     data?: Sale[];
     employees?: Employee[];
     date?: DateRange;
@@ -32,29 +42,33 @@ export const DashboardProvider: React.FC<DashboardProviderProps> = ({children}) 
         to: new Date(),
     })
 
+    const {
+        employee,
+        user,
+        role
+    } = useAuth()
     const [data, setData] = useState<Sale[]>();
     const [employees, setEmployees] = useState<Employee[]>();
     const [saleWithEmployeeAndFinancing, setSaleWithEmployeeAndFinancing] = useState<SaleWithEmployeeAndFinancingType[]>();
+    const [salesGoal, setSalesGoal] = useState<SalesGoal[]>();
+    const [mySales, setMySales] = useState<SaleWithEmployeeAndFinancingType[]>();
 
     useEffect(() => {
+
         getAllSales(supabase).then((res) => {
             const sales = res && res.length > 0 ? res : []
             setData(filterSalesByDate(sales, date) as Sale[])
-            return res
-        }).then((res) => {
-            // console.log('filtered sales: ', res)
-        }).catch((err) => {
-            console.error(err)
         })
 
         getAllEmployees(supabase).then((res) => {
             setEmployees(res as Employee[])
-            return res
-        }).then((res) => {
-            // console.log('employees: ', res)
-        }).catch((err) => {
-            console.error(err)
         })
+
+        getAllSalesGoals(supabase).then((res) => {
+            setSalesGoal(res as SalesGoal[])
+        })
+
+
 
         async function getEmployeeSales() {
             const { data: sales, error } = await supabase
@@ -62,6 +76,7 @@ export const DashboardProvider: React.FC<DashboardProviderProps> = ({children}) 
                 .select(`
                     EmployeeID,
                     Employees (
+                        Avatar,
                         Name,
                         Email,
                         EmployeeNumber,
@@ -88,8 +103,9 @@ export const DashboardProvider: React.FC<DashboardProviderProps> = ({children}) 
                       VehicleMake
                 `)
                 .order('SaleTime', { ascending: false })
-                .range(0, 100)
+                // .range(0, 100)
                 setSaleWithEmployeeAndFinancing(sales as DbResult<typeof sales>[])
+                setMySales(filterSalesByEmployee(sales as DbResult<typeof sales>[], employee as Employee) as DbResult<typeof sales>[])
 
             if (error) throw error;
             return sales;
@@ -103,12 +119,19 @@ export const DashboardProvider: React.FC<DashboardProviderProps> = ({children}) 
             })
         }
 
+        function filterSalesByEmployee(sales: SaleWithEmployeeAndFinancingType[], employee: Employee | undefined) {
+            console.log('employee', employee, 'sales: ', sales)
+            return sales.filter((sale) => {
+                return sale.EmployeeID === employee?.id
+            })
+        }
+
 
 
     }, [date]); // todo on every date change, it should not pull data form the db, only filter the data that is already in state.
 
     return (
-        <DashboardContext.Provider value={{data, employees, date, saleWithEmployeeAndFinancing, setDate}}>
+        <DashboardContext.Provider value={{data, employees, date, saleWithEmployeeAndFinancing, mySales, setDate}}>
             {children}
         </DashboardContext.Provider>
     );

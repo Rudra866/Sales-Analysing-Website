@@ -1,4 +1,3 @@
-
 import {useRouter} from "next/navigation";
 import {useDashboard} from "@/app/(pages)/dashboard/components/dashboard-provider";
 import useAuth from "@/hooks/use-auth";
@@ -7,31 +6,33 @@ import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/compo
 import * as React from "react";
 import {ScrollArea, ScrollBar} from "@/components/ui/scroll-area";
 import {format} from "date-fns";
-import {getRoleFromEmployee} from "@/lib/database";
+import {Employee, getRoleFromEmployee} from "@/lib/database";
+import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs";
 
 /** @ignore these for now */
 
 
 export function RecentSales() {
-    const {saleWithEmployeeAndFinancing, setDate} = useDashboard()
-    const {employee} = useAuth()
-    // console.log("Auth employee: ", employee?.Role)
+    const {saleWithEmployeeAndFinancing, mySales} = useDashboard()
 
 
-    function SalesRow({name, vehicle, amount, id, date}: { name: string; vehicle: string; amount: number; id: string, date: string }) {
-        const router = useRouter()
+    function SalesRow({employee, vehicle, amount, id, date}: {
+        employee: Employee;
+        vehicle: string;
+        amount: number;
+        id: string,
+        date: string
+    }) {
         return (
             <div
                 className="flex items-center border border-background hover:border-border rounded-lg p-2 cursor-pointer"
                 onClick={() => {
-                    // router.push(`/profile/${id}`)
                     console.log("employee id: ", id)
                 }}
             >
-                <EmployeeAvatar
-                    employee={employee!}/> {/* for now since no user info yet, just use signed in employee */}
+                <EmployeeAvatar employee={employee}/> {/* for now since no user info yet, just use signed in employee */}
                 <div className="ml-4 space-y-1">
-                    <p className="text-sm font-medium leading-none">{name}</p>
+                    <p className="text-sm font-medium leading-none">{employee.Name}</p>
                     <p className="text-sm text-muted-foreground">{format(new Date(date), "LLL dd, y")}</p>
                 </div>
                 <div className="ml-auto flex flex-col items-end ">
@@ -44,21 +45,21 @@ export function RecentSales() {
     }
 
     return (
-        <Card className="col-span-3">
-            <CardHeader>
-                <CardTitle>Recent Sales</CardTitle>
-                {/*<CardDescription>*/}
-                {/*    You made 265 sales this month.*/}
-                {/*</CardDescription>*/}
-            </CardHeader>
-            <CardContent>
+        <Tabs defaultValue="Sales Overview" className="col-span-3 space-y-4 border rounded-xl p-4">
+            <TabsList>
+                <TabsTrigger value="Sales Overview">Sales Overview</TabsTrigger>
+                <TabsTrigger value="My Sales">My Sales</TabsTrigger>
+                {/*<TabsTrigger value="reports">Reports</TabsTrigger>*/}
+                {/*<TabsTrigger value="notifications">Notifications</TabsTrigger>*/}
+            </TabsList>
+            <TabsContent value="Sales Overview" className="space-y-4">
                 <ScrollArea className="h-96">
                     <div className="space-y-2 mr-4">
-                        {saleWithEmployeeAndFinancing?.slice(0,10)?.map((sale) => {
+                        {saleWithEmployeeAndFinancing?.slice(0, 10)?.map((sale) => {
                             return (
                                 <SalesRow
                                     key={sale.SaleTime}
-                                    name={sale.Employees?.Name!}
+                                    employee={sale.Employees}
                                     vehicle={sale.VehicleMake}
                                     amount={sale.Total}
                                     id={sale.EmployeeID}
@@ -69,8 +70,86 @@ export function RecentSales() {
                     </div>
                     <ScrollBar/>
                 </ScrollArea>
-            </CardContent>
-        </Card>
+            </TabsContent>
+            <TabsContent value="My Sales" className="space-y-4">
+                <ScrollArea className="h-96">
+                    <div className="space-y-2 mr-4">
+
+                        {/*todo if you refresh the page you get undefined for auth employee*/}
+                        {mySales?.map((sale) => {
+                            return (
+                                <SalesRow
+                                    key={sale.SaleTime}
+                                    employee={sale.Employees}
+                                    vehicle={sale.VehicleMake}
+                                    amount={sale.Total}
+                                    id={sale.EmployeeID}
+                                    date={sale.SaleTime!}
+                                />
+                            )
+                        })}
+                    </div>
+                    <ScrollBar/>
+                </ScrollArea>
+            </TabsContent>
+        </Tabs>
+
 
     )
+}
+
+
+{/*<Card className="col-span-3">*/
+}
+{/*    <CardHeader>*/
+}
+{/*        <CardTitle>Recent Sales</CardTitle>*/
+}
+{/*        /!*<CardDescription>*!/*/
+}
+{/*        /!*    You made 265 sales this month.*!/*/
+}
+{/*        /!*</CardDescription>*!/*/
+}
+{/*    </CardHeader>*/
+}
+{/*    <CardContent>*/
+}
+{/*        <ScrollArea className="h-96">*/
+}
+{/*            <div className="space-y-2 mr-4">*/
+}
+{/*                {saleWithEmployeeAndFinancing?.slice(0,10)?.map((sale) => {*/
+}
+{/*                    return (*/
+}
+{/*                        <SalesRow*/
+}
+{/*                            key={sale.SaleTime}*/
+}
+{/*                            name={sale.Employees?.Name!}*/
+}
+{/*                            vehicle={sale.VehicleMake}*/
+}
+{/*                            amount={sale.Total}*/
+}
+{/*                            id={sale.EmployeeID}*/
+}
+{/*                            date={sale.SaleTime!}*/
+}
+{/*                        />*/
+}
+{/*                    )*/
+}
+{/*                })}*/
+}
+{/*            </div>*/
+}
+{/*            <ScrollBar/>*/
+}
+{/*        </ScrollArea>*/
+}
+{/*    </CardContent>*/
+}
+{/*</Card>*/
 }

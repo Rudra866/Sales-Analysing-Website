@@ -58,6 +58,9 @@ const saleFormSchemaCommon = {
 }
 
 
+// todo drop down for financing method not input
+
+
 const saleFormSchema = z.object({
     ...saleFormSchemaCommon,
     Holdback: z.string()

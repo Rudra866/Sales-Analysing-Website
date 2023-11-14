@@ -12,7 +12,7 @@ import {Button} from "@/components/ui/button";
 import {MoreHorizontal} from "lucide-react";
 // import {AddRowDialog} from "@/app/(pages)/sales/components/AddRowDialog";
 import FormModal from "@/components/FormModal";
-import {getSupabaseBrowserClient, Sale} from "@/lib/database";
+import {getSupabaseBrowserClient, Sale, Task} from "@/lib/database";
 import {AddSalesRowDialog} from "@/app/(pages)/sales/components/AddSalesRowDialog";
 import {
     Dialog,
@@ -22,26 +22,27 @@ import {
     DialogTitle,
     DialogTrigger
 } from "@/components/ui/dialog";
+import {AddTasksRowDialog} from "@/app/(pages)/tasks/components/AddTasksRowDialog";
 // import {createClientComponentClient} from "@supabase/auth-helpers-nextjs";
 
 
 type Props = {
-    row: Row<Sale>
-    sales: Sale[]
-    setSales: (sales: Sale[]) => void
+    row: Row<Task>
+    tasks: Task[]
+    setTasks: (task: Task[]) => void
 }
 
 // TODO TS71007: Props must be serializable for components in the "use client" entry file, "setSales" is invalid
 
-export function DropDownMenu({row, sales, setSales}: Props) {
+export function DropDownMenu({row, tasks, setTasks}: Props) {
     const supabase = getSupabaseBrowserClient();
     const [salesModal, setSalesModal] = useState(false);
 
-    function updateSales(sale: Sale) {
-        const originalSales = [...sales]
-        const updatedSales = originalSales
-            .map((oldSale) => oldSale.id === sale.id ? sale: oldSale)
-        setSales(updatedSales)
+    function updateTasks(task: Task) {
+        const originalTasks = [...tasks]
+        const updatedTasks = originalTasks
+            .map((oldTask) => oldTask.id === task.id ? task: oldTask)
+        setTasks(updatedTasks)
     }
 
     return (
@@ -65,21 +66,21 @@ export function DropDownMenu({row, sales, setSales}: Props) {
                     <DropdownMenuSeparator/>
 
                     <DropdownMenuItem onClick={() => {
-                        row.original.id && supabase.from('Sales').delete().eq('id', row.original.id).then(() => {
-                            const originalSales = [...sales]
-                            const updatedSales = originalSales.filter((oldSale) => oldSale.id !== row.original.id)
-                            setSales(updatedSales)
+                        row.original.id && supabase.from('Tasks').delete().eq('id', row.original.id).then(() => {
+                            const originalTasks = [...tasks]
+                            const updatedTasks = originalTasks.filter((oldTask) => oldTask.id !== row.original.id)
+                            setTasks(updatedTasks)
                         })
                     }}>
-                        Delete
+                        Delete`
                         <DropdownMenuShortcut>⌘⌫</DropdownMenuShortcut>
                     </DropdownMenuItem>
 
                 </DropdownMenuContent>
             </DropdownMenu>
             {salesModal &&
-                <FormModal title={"Sale"} showDialog={salesModal} setShowDialog={setSalesModal} onSubmit={updateSales}>
-                    <AddSalesRowDialog sale={row.original} />
+                <FormModal title={"Sale"} showDialog={salesModal} setShowDialog={setSalesModal} onSubmit={updateTasks}>
+                    <AddTasksRowDialog task={row.original} />
                 </FormModal>
             }
         {/*    if a user clicks edit but closes modal without saving what happens? memory leak? */}

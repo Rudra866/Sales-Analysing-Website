@@ -3,7 +3,7 @@
 import {Bar, BarChart, ResponsiveContainer, Tooltip, XAxis, YAxis} from "recharts"
 import {useDashboard} from "@/app/(pages)/dashboard/components/dashboard-provider";
 import React, {useEffect, useState} from "react";
-import {cn} from "@/lib/utils";
+import {cn, groupSelectionByTimeFrame, numericSales} from "@/lib/utils";
 import {DateRange} from "react-day-picker";
 import {format} from "date-fns";
 import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
@@ -11,68 +11,7 @@ import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/c
 import {Sale} from "@/lib/database";
 
 
-
 // todo - make this dynamic based on the data as well as dynamic depending on the data type
-const numericSales = [
-    "ActualCashValue",
-    // "DaysInStock",
-    "DealerCost",
-    "FinAndInsurance",
-    "GrossProfit",
-    "Holdback",
-    "LotPack",
-    "ROI",
-    "Total",
-];
-
-// function groupByTimeFrame(data: Sale[], grouping: string, field: keyof Sale): { [p: string]: number } {
-//     return data.reduce((groupedData: { [key: string]: number }, item) => {
-//         const date = new Date(item.SaleTime?.toString() || '');
-//         const monthYearKey = format(date, grouping);
-
-//         if (!groupedData[monthYearKey]) {
-//             groupedData[monthYearKey] = 0;
-//         }
-
-//         groupedData[monthYearKey] += item[field] as unknown as number;
-//         return groupedData;
-//     }, {});
-// }
-
-type SaleWithIndex = Sale & {
-    [key: string]: any;
-  };
-
-function groupByTimeFrame(data: (SaleWithIndex | null | undefined)[], grouping: string): { [p: string]: { [p: string]: number } } {
-  if (!data) {
-    return {};
-  }
-
-  return data.reduce((groupedData: { [key: string]: { [p: string]: number } }, item) => {
-    if (!item) {
-      return groupedData;
-    }
-
-    const date = new Date(item.SaleTime?.toString() || '');
-    const monthYearKey = format(date, grouping);
-
-    if (!groupedData[monthYearKey]) {
-      groupedData[monthYearKey] = {};
-    }
-
-    numericSales.forEach((field) => {
-      if (!groupedData[monthYearKey][field]) {
-        groupedData[monthYearKey][field] = 0;
-      }
-
-      const fieldValue = item[field];
-      groupedData[monthYearKey][field] += typeof fieldValue === 'number' ? fieldValue : 0;
-    });
-
-    return groupedData;
-  }, {});
-}
-
 
 interface DynamicChartProps {
     title: string
@@ -97,7 +36,7 @@ export function DynamicChart({ title, color, data, date, className }: DynamicCha
     useEffect(() => {
         if (selectedCategory) {
             setKeyValues(
-                Object.entries(groupByTimeFrame(data, grouping)).map(([key, value]) => ({
+                Object.entries(groupSelectionByTimeFrame(data, grouping)).map(([key, value]) => ({
                     key,
                     value: value[selectedCategory],
                 }))

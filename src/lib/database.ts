@@ -299,8 +299,8 @@ export async function getTask(supabase: SupabaseClient, taskName: string): Promi
   if (error) throw error;
   return task;
 }
-// todo get task by id
-// todo get task by employee id
+
+
 
 
 // is there much point to this one? There may be multiple duplicates, and our sales record holds an id.
@@ -362,6 +362,47 @@ export async function getRoleFromEmployee(supabase: SupabaseClient, employee: Em
 
   if (error) throw error;
   return role;
+}
+
+export async function getAllTasksByAssignee(supabase: SupabaseClient, assigneeID: string): Promise<Task[] | null> {
+  const {data: task, error} = await supabase
+      .from('Tasks')
+      .select('*')
+      .eq('Name', assigneeID)
+      .limit(1)
+      .maybeSingle();
+
+  if (error) throw error;
+  return task;
+}
+
+export async function getAllTasksByCreator(supabase: SupabaseClient, creatorID: string): Promise<Task[] | null> {
+  const {data: task, error} = await supabase
+      .from('Tasks')
+      .select('*')
+      .eq('Creator', creatorID)
+      .limit(1)
+      .maybeSingle();
+
+  if (error) throw error;
+  return task;
+}
+
+/**
+ * Get all rows in the tasks table.
+ * @param {SupabaseClient} supabase Any type of Supabase client (client, server, middleware, route).
+ * @returns {Promise<Task[] | null>} A list of all tasks, or null if none exist.
+ * @throws {@link PostgrestError} on database error.
+ * @group Database Functions
+ */
+export async function getAllTasks(supabase: SupabaseClient): Promise<Task[] | null>
+{
+  const {data: tasks, error} = await supabase
+      .from('Tasks')
+      .select('*')
+
+  if (error) throw error;
+  return tasks;
 }
 
 /**
@@ -499,22 +540,7 @@ export async function getAllSalesGoals(supabase: SupabaseClient): Promise<SalesG
   return salesGoals;
 }
 
-/**
- * Get all rows in the tasks table.
- * @param {SupabaseClient} supabase Any type of Supabase client (client, server, middleware, route).
- * @returns {Promise<Task[] | null>} A list of all tasks, or null if none exist.
- * @throws {@link PostgrestError} on database error.
- * @group Database Functions
- */
-export async function getAllTasks(supabase: SupabaseClient): Promise<Task[] | null>
-{
-  const {data: tasks, error} = await supabase
-      .from('Tasks')
-      .select('*')
 
-  if (error) throw error;
-  return tasks;
-}
 
 /**
  * Get all rows in the TradeIns table.

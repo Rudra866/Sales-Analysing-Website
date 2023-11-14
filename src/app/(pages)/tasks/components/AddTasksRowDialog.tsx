@@ -11,7 +11,7 @@ import {
     Employee,
     Sale,
     getSupabaseBrowserClient,
-    getAllEmployees,
+    getAllEmployees, Task,
 } from "@/lib/database";
 import {DialogClose} from "@radix-ui/react-dialog";
 import {Checkbox} from "@/components/ui/checkbox";
@@ -19,12 +19,12 @@ import {ScrollArea, ScrollBar} from "@/components/ui/scroll-area";
 import {useFormModalContext} from "@/components/FormModal";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 
-export interface SaleSelectModalFormProps {
-    sale?: Sale | null
+export interface TaskSelectModalFormProps {
+    task?: Task | null
 }
 
 
-const saleFormSchemaCommon = {
+const taskFormSchemaCommon = {
     StockNumber: z.string().min(1, {
         message: "StockNumber must not be empty."
     })
@@ -59,7 +59,7 @@ const saleFormSchemaCommon = {
 
 
 const saleFormSchema = z.object({
-    ...saleFormSchemaCommon,
+    ...taskFormSchemaCommon,
     Holdback: z.string()
         .transform((value) => {
             const numberValue = parseFloat(value);
@@ -69,7 +69,7 @@ const saleFormSchema = z.object({
 })
 
 const usedSaleFormSchema = z.object({
-    ...saleFormSchemaCommon,
+    ...taskFormSchemaCommon,
 
     LotPack: z.number(),
     DaysInStock: z.number(),
@@ -89,13 +89,13 @@ const usedSaleFormSchema = z.object({
  * Component used to render adding a new sale on the sales page.
  * @group React Components
  */
-export function AddTasksRowDialog({sale}: SaleSelectModalFormProps) {
+export function AddTasksRowDialog({task: task}: TaskSelectModalFormProps) {
     const supabase = getSupabaseBrowserClient();
     const formContext = useFormModalContext();
     const [editState, setEditState] = useState(false);
     const [newSaleSelection, setNewSaleSelection] = useState<boolean>()
-    const [noFinancing, setNoFinancing] = useState<boolean>(!!sale?.FinancingID)
-    const [noTradeIn, setNoTradeIn] = useState<boolean>(!!sale?.TradeInID)
+    const [noFinancing, setNoFinancing] = useState<boolean>(!!task?.FinancingID)
+    const [noTradeIn, setNoTradeIn] = useState<boolean>(!!task?.TradeInID)
     const [employees, setEmployees] = useState<Employee[]>([])
 
     const form = useForm<z.infer<typeof saleFormSchema | typeof usedSaleFormSchema>>(
@@ -103,31 +103,31 @@ export function AddTasksRowDialog({sale}: SaleSelectModalFormProps) {
             {
                 resolver: zodResolver(saleFormSchema),
                 defaultValues: {
-                    StockNumber: sale?.StockNumber ?? "",
-                    VehicleMake: sale?.VehicleMake ?? "",
-                    ActualCashValue: sale?.ActualCashValue ?? 0,
-                    GrossProfit: sale?.GrossProfit ?? 0,
-                    FinAndInsurance: sale?.FinAndInsurance ?? 0,
-                    Holdback: sale?.Holdback ?? 0, // new only
-                    UsedSale: !sale?.NewSale ?? false,
-                    EmployeeID: sale?.EmployeeID ?? "",
+                    StockNumber: task?.StockNumber ?? "",
+                    VehicleMake: task?.VehicleMake ?? "",
+                    ActualCashValue: task?.ActualCashValue ?? 0,
+                    GrossProfit: task?.GrossProfit ?? 0,
+                    FinAndInsurance: task?.FinAndInsurance ?? 0,
+                    Holdback: task?.Holdback ?? 0, // new only
+                    UsedSale: !task?.NewSale ?? false,
+                    EmployeeID: task?.EmployeeID ?? "",
                 },
             }
             :
             {
                 resolver: zodResolver(usedSaleFormSchema),
                 defaultValues: {
-                    StockNumber: sale?.StockNumber ?? "",
-                    VehicleMake: sale?.VehicleMake ?? "",
-                    ActualCashValue: sale?.ActualCashValue ?? 0,
-                    GrossProfit: sale?.GrossProfit ?? 0,
-                    FinAndInsurance: sale?.FinAndInsurance ?? 0,
-                    UsedSale: !sale?.NewSale ?? false,
-                    LotPack: sale?.LotPack ?? 0,
-                    DaysInStock: sale?.DaysInStock ?? 0,
-                    DealerCost: sale?.DealerCost ?? 0,
-                    ROI: sale?.ROI ? sale.ROI * 100 : 0,
-                    EmployeeID: sale?.EmployeeID ?? "",
+                    StockNumber: task?.StockNumber ?? "",
+                    VehicleMake: task?.VehicleMake ?? "",
+                    ActualCashValue: task?.ActualCashValue ?? 0,
+                    GrossProfit: task?.GrossProfit ?? 0,
+                    FinAndInsurance: task?.FinAndInsurance ?? 0,
+                    UsedSale: !task?.NewSale ?? false,
+                    LotPack: task?.LotPack ?? 0,
+                    DaysInStock: task?.DaysInStock ?? 0,
+                    DealerCost: task?.DealerCost ?? 0,
+                    ROI: task?.ROI ? task.ROI * 100 : 0,
+                    EmployeeID: task?.EmployeeID ?? "",
                 },
             }
     )

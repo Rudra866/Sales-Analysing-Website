@@ -3,6 +3,7 @@ import React, {useEffect, useState} from 'react';
 import {ScrollArea, ScrollBar} from "@/components/ui/scroll-area";
 import {getSupabaseBrowserClient} from "@/lib/supabase";
 import {getAllTasks, Task} from "@/lib/database";
+import TasksTable from "@/app/(pages)/tasks/components/TasksTable";
 
 function Page() {
     const [tasks, setTasks] = React.useState<Task[]>();
@@ -20,14 +21,8 @@ function Page() {
 
 
     return (
-        <div className={'container border rounded'}>
-            tasks
-            <ScrollArea>
-                <div>
-
-                </div>
-                <ScrollBar />
-            </ScrollArea>
+        <div className={'container'}>
+            <TasksTable />
         </div>
     );
 }
