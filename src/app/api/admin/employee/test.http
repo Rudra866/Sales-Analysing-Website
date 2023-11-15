@@ -1,9 +1,9 @@
 
-GET http://localhost:3000/api/admin/employee/af1245d3-5f5d-4434-b9c9-37f2522b73b1
+GET http://localhost:3000/api/admin/employee?id=b6c2269b-9873-4861-9440-0b3a04547cd2
 Cookie: {{cookie}}
 
 ####
-PATCH http://localhost:3000/api/admin/employee/af1245d3-5f5d-4434-b9c9-37f2522b73b1
+PATCH http://localhost:3000/api/admin/employee/b6c2269b-9873-4861-9440-0b3a04547cd2
 Content-Type: application/json
 Cookie: {{cookie}}
 
@@ -11,4 +11,18 @@ Cookie: {{cookie}}
 {
   "email": "boaty@boat.com",
   "Role": "2"
+}
+
+###
+POST http://localhost:3000/api/admin/employee/register
+Content-Type: application/json
+Cookie: {{cookie}}
+
+{
+  "Name": "_REGISTER_TEST",
+  "EmployeeNumber": "_REGISTER_TEST",
+  "Role": 1,
+  "email": "exampleblgcbxrvze4333pyvu2mtXXXX@email.com",
+  "Avatar": "01.png",
+  "password": "FUCKOFF"
 }
