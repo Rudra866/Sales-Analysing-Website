@@ -33,20 +33,31 @@ export const Default: StoryObj<FormModalProps> = {
   },
 }
 
-export const SimulateCreation: StoryObj<FormModalProps> = {
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement); // todo
-    let trigger;
-    // open dialog if not open already
-    if ((trigger = canvas.getByText("Trigger")) && !screen.queryByText("Create Custom Role")) {
-      await  userEvent.click(trigger, {delay:100})
-    }
-
-    // screen.
-
-
-    // submit form
-    const submitButton = screen.getByText("Submit")
-    fireEvent.click(submitButton)
-  }
-}
+// export const SimulateCreation: StoryObj<FormModalProps> = {
+//   render: function Render(args){
+//     const modalControls = useTestDialogControls();
+//     return (
+//         <>
+//           <Button onClick={() => modalControls.setShowDialog(true)}>Trigger</Button>
+//           <FormModal {...args} {...modalControls}>
+//             <CreateRoleDialog/>
+//           </FormModal>
+//         </>
+//     )
+//   },
+//   play: async ({ canvasElement }) => {
+//     const canvas = within(canvasElement); // todo
+//     let trigger;
+//     // open dialog if not open already
+//     if ((trigger = canvas.getByText("Trigger")) && !screen.queryByText("Create Custom Role")) {
+//       await  userEvent.click(trigger, {delay:100})
+//     }
+//
+//     // screen.
+//
+//
+//     // submit form
+//     const submitButton = screen.getByText("Submit")
+//     fireEvent.click(submitButton)
+//   }
+// }
