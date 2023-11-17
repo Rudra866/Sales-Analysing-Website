@@ -272,7 +272,7 @@ export interface Database {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "sales_financingid_fkey"
+            foreignKeyName: "Sales_FinancingID_fkey"
             columns: ["FinancingID"]
             isOneToOne: false
             referencedRelation: "Financing"
@@ -396,7 +396,12 @@ export interface Database {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      create_new_sale: {
+        Args: {
+          sale: Json
+        }
+        Returns: undefined
+      }
     }
     Enums: {
       "Task Status":

@@ -29,6 +29,8 @@ import {format} from "date-fns";
 import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger} from "@/components/ui/tooltip";
 import {DbResult} from "@/lib/types";
 import DataTable from "@/components/DataTable";
+import {AddSalesRowDialog} from "@/app/(pages)/sales/components/AddSalesRowDialog";
+import FormModal from "@/components/FormModal";
 
 // todo align rows and columns
 
@@ -38,10 +40,11 @@ import DataTable from "@/components/DataTable";
  */
 export default function SalesTable() {
     const [loading, setLoading] = useState(true);
-    const [sales, setSales] = useState<Tables<'Sales'>[]>([]);
+    const [sales, setSales] = useState<Sale[]>([]);
     const [employees, setEmployees] = useState<Employee[]>([]);
     const [sorting, setSorting] = useState<SortingState>([])
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
+    const [showSaleDialog, setShowSaleDialog] = useState<boolean>(false)
 
     const supabase = getSupabaseBrowserClient();
     // const [salesModal, setSalesModal] = useState(false);
@@ -100,6 +103,22 @@ export default function SalesTable() {
             </TooltipProvider>
 
         )
+    }
+
+    // todo ts:any
+    async function onSubmit(data:any) {
+        data["EmployeeID"] = '4ff2a2d7-09a1-4d26-81e1-55fcf9b0f49b'; // replace this with the uuid of current employee
+        data["Total"] = 5;
+
+        // @ts-ignore
+        // await supabase.rpc("create_new_sale", {sale: data});
+        await fetch(`http://localhost:3000/api/sale`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
+        })
     }
 
     function SortButton(name: string, column: Column<Tables<'Sales'>>) {
@@ -285,6 +304,10 @@ export default function SalesTable() {
                      save
                  </Button>
              </div>
+            {/* tmp */}
+            <FormModal title={"Create Sale"} showDialog={showSaleDialog} setShowDialog={setShowSaleDialog} onSubmit={onSubmit}>
+                <AddSalesRowDialog/>
+            </FormModal>
         </DataTable>
 
     )
