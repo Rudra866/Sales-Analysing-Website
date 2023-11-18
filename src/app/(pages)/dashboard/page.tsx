@@ -3,18 +3,13 @@
 import {Button} from "@/components/ui/button"
 import {Card, CardContent, CardDescription, CardHeader, CardTitle,} from "@/components/ui/card"
 import {Tabs, TabsContent, TabsList, TabsTrigger,} from "@/components/ui/tabs"
-import {CalendarDateRangePicker} from "./components/date-range-picker"
+import CalendarDateRangePicker from "./components/date-range-picker"
 import {Overview} from "./components/overview"
 import {RecentSales} from "./components/recent-sales"
 import {useEffect, useState} from "react";
 import * as React from "react";
-import {format} from "date-fns";
-import {CreditCard, DollarSign} from "lucide-react";
-import {Icons} from "@/components/icons";
-import {cn} from "@/lib/utils";
 import {useDashboard} from "./components/dashboard-provider";
 import {getSupabaseBrowserClient} from "@/lib/supabase";
-import {DbResult} from "@/lib/types";
 import useAuth from "@/hooks/use-auth";
 import {getAllNotifications, MonthlySale, Sale, SalesGoal} from "@/lib/database";
 import {DynamicChart} from "@/components/dynamic-chart";
@@ -33,7 +28,6 @@ export default function DashboardPage() {
     const {data, date, setDate} = useDashboard()
     const [totalRevenue, setTotalRevenue] = useState<number>(0);
     const [grossProfit, setGrossProfit] = useState<number>(0);
-    // const [monthlySales, setMonthlySales] = useState<MonthlySale[]>();
     const {employee} = useAuth();
 
     useEffect(() => {

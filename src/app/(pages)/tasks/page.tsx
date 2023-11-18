@@ -1,9 +1,9 @@
 'use client'
 import React, {useEffect, useState} from 'react';
-import {ScrollArea, ScrollBar} from "@/components/ui/scroll-area";
+// import {ScrollArea, ScrollBar} from "@/components/ui/scroll-area";
 import {getSupabaseBrowserClient} from "@/lib/supabase";
 import {getAllTasks, Task} from "@/lib/database";
-import TasksTable from "@/app/(pages)/tasks/components/TasksTable";
+// import TasksTable from "@/app/(pages)/tasks/components/TasksTable";
 
 function Page() {
     const [tasks, setTasks] = React.useState<Task[]>();
@@ -22,7 +22,8 @@ function Page() {
 
     return (
         <div className={'container'}>
-            <TasksTable />
+            {/*<TasksTable />*/}
+            Tasks Table
         </div>
     );
 }
