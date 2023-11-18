@@ -17,7 +17,7 @@ import {useFormModalContext} from "@/components/FormModal";
  * Type
  */
 export type EmployeeSelectModalFormProps = {
-  employee: Employee
+  employee?: Employee
   roles: Role[]
   variant?: "invite" | "register" | null
 }

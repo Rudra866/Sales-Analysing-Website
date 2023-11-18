@@ -17,37 +17,37 @@ import DialogCloseButton from "@/components/DialogCloseButton";
 const role_options_config = [
   {
     label: "Read Access",
-    name: "read",
+    name: "ReadPermission",
     description: "Employee can view and read sales ",
     default: true
   },
   {
     label: "Create Access",
-    name: "create",
+    name: "WritePermission",
     description: "Employee can create new sales ",
     default: true
   },
   {
     label: "Modify Own Sales",
-    name: "modifySelf",
+    name: "ModifySelfPermission",
     description: "Employee can modify their own sales ",
     default: true
   },
   {
     label: "Modify All Sales",
-    name: "modifyAll",
+    name: "ModifyAllPermission",
     description: "Employee can modify any sales in the system.",
     default: false
   },
   {
     label: "Employee Management",
-    name: "employees",
+    name: "EmployeePermission",
     description: "Employee can manage employees ",
     default: false
   },
   {
     label: "Full Access",
-    name: "admin",
+    name: "DatabasePermission",
     description: "Employee has full administrative access ",
     default: false
   },
@@ -61,7 +61,7 @@ const role_defaults = Object.fromEntries(
 );
 
 const createRoleModalSchema = z.object({
-  name: z.string()
+  RoleName: z.string()
       .min(1, "Role Name must not be empty")
       .max(255, "Role name exceeds limit"),
   ...roles
@@ -104,7 +104,7 @@ const RoleDialogOption = (
 const DialogFormInputField = ({form}: { form: UseFormReturn<z.infer<typeof createRoleModalSchema>> }) => (
     <FormField
         control={form.control}
-        name="name"
+        name="RoleName"
         render={({ field }) => (
             <FormItem>
               <FormLabel>Role Name</FormLabel>
@@ -125,7 +125,7 @@ export function CreateRoleDialog({}) {
   const form = useForm<z.infer<typeof createRoleModalSchema>>({
     resolver: zodResolver(createRoleModalSchema),
     defaultValues: {
-      name: "",
+      RoleName: "",
       ...role_defaults
     }
   })

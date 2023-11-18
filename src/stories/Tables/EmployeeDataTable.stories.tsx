@@ -1,5 +1,5 @@
-import DataTable, {DataTableProps} from "@/components/DataTable"
-import EmployeeTable from "@/components/EmployeeTable"
+import DataTable, {DataTableProps} from "@/components/tables/DataTable"
+import EmployeeTable from "@/components/tables/EmployeeTable"
 import {Meta, StoryObj} from "@storybook/react";
 import React from "react";
 

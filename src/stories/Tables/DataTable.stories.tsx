@@ -1,4 +1,4 @@
-import DataTable, {DataTableProps} from "@/components/DataTable"
+import DataTable, {DataTableProps} from "@/components/tables/DataTable"
 import {Meta, StoryObj} from "@storybook/react";
 import React, {useState} from "react";
 
