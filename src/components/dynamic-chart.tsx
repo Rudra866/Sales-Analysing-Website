@@ -1,7 +1,6 @@
 "use client"
 
 import {Bar, BarChart, ResponsiveContainer, Tooltip, XAxis, YAxis} from "recharts"
-import {useDashboard} from "@/app/(pages)/dashboard/components/dashboard-provider";
 import React, {useEffect, useState} from "react";
 import {cn, groupSelectionByTimeFrame, numericSales} from "@/lib/utils";
 import {DateRange} from "react-day-picker";
@@ -45,7 +44,7 @@ export function DynamicChart({ title, color, data, date, className }: DynamicCha
     }, [data, date, grouping, selectedCategory]);
 
     useEffect(() => {
-
+        if(!data) return
         // get sales columns that are of numeric type
         const numericColumns = data && Object.keys(data[0]).filter((key) => {
             // @ts-ignore

@@ -1,10 +1,9 @@
 "use client"
 import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs";
 import dynamic from "next/dynamic";
-import Loading from "@/app/(pages)/dashboard/loading";
 
 const SalesTable =
-    dynamic(() => import('@/app/(pages)/sales/components/SalesTable'))
+    dynamic(() => import('@/admin/sales/components/SalesTable'))
 
 const EmployeeTable =
     dynamic(() => import('@/components/EmployeeTable'))

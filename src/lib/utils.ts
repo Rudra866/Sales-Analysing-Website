@@ -1,7 +1,7 @@
 import { type ClassValue, clsx } from "clsx"
 import { twMerge } from "tailwind-merge"
 import {format} from "date-fns";
-import {Sale, Tables} from "@/lib/database";
+import {Employee, Sale, Tables} from "@/lib/database";
 
 /** @ignore */
 export function cn(...inputs: ClassValue[]) {
@@ -9,11 +9,12 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 
-const adminRoles = [2, 3]; // todo how to do viewing privileges?
+export function isAdmin(role: number) {
+    const adminRoles = [1, 2, 3, 4, 5];
+    return adminRoles.includes(role);
+}
 
-// export function isAdmin(role: number) {
-//     return adminRoles.includes(role);
-// }
+
 
 export const numericSales = [
     "ActualCashValue",

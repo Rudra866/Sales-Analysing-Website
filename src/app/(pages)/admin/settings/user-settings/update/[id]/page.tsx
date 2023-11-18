@@ -3,7 +3,7 @@
 import React, {useEffect, useState} from 'react';
 import {useParams, useRouter} from "next/navigation";
 import {Employee, getEmployeeById, getRoleFromEmployee, getSupabaseBrowserClient, Role} from "@/lib/database";
-import {UserForm} from "@/app/(pages)/settings/components/user-form";
+import {UserForm} from "@/admin/settings/components/user-form";
 
 function Page() {
     const params = useParams()

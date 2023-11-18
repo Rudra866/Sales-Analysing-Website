@@ -4,37 +4,46 @@ export type DocsConfig = {
     mainNav: MainNavItem[]
 }
 
-export const docsConfig: DocsConfig = {
+export const docsConfigAdmin: DocsConfig = {
     mainNav: [
         {
             title: "Dashboard",
-            href: "/dashboard",
-        },
-        {
-            title: "Settings",
-            href: "/settings",
-        },
-        {
-            title: "Cards",
-            href: "/examples/cards",
-        },
-        {
-            title: "Tasks",
-            href: "/tasks",
-        },
-        // example for admin panel
-        {
-            title: "Admin",
-            href: "/admin/employees",
+            href: "/admin/dashboard",
         },
         {
             title: "Sales",
-            href: "/sales",
+            href: "/admin/sales",
         },
-        // temp for dev
+        {
+            title: "Tasks",
+            href: "/admin/tasks",
+        },
+        {
+            title: "Settings",
+            href: "/admin/settings",
+        },
         {
             title: "Test",
-            href: "/test/database",
+            href: "/admin/test/database",
+        },
+    ],
+}
+
+
+
+export const docsConfig: DocsConfig = {
+    mainNav: [
+        {
+            title: "Tasks",
+            href: "/employee/tasks",
+        },
+        {
+            title: "Sales",
+            href: "/employee/sales",
+        },
+        {
+            title: "Training",
+            href: "/employee/training",
         },
     ],
 }
