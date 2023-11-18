@@ -10,20 +10,31 @@ import {
     useReactTable
 } from "@tanstack/react-table";
 import React, {useEffect, useState} from "react";
-import {Input} from "@/components/ui/input";
-import {Button} from "@/components/ui/button";
-import {Checkbox} from "@/components/ui/checkbox";
-import {Employee, Tables, Sale, getSupabaseBrowserClient} from "@/lib/database";
+// import {Input} from "@/components/ui/input";
+// import {Button} from "@/components/ui/button";
+// import {Checkbox} from "@/components/ui/checkbox";
+// import {Employee, Tables, Sale, getSupabaseBrowserClient} from "@/lib/database";
 import {ArrowUpDown, Plus} from "lucide-react";
-import {Badge} from "@/components/ui/badge";
+// import {Badge} from "@/components/ui/badge";
 import {DropDownMenu} from "./drop-down-menu";
 import {format} from "date-fns";
-import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger} from "@/components/ui/tooltip";
-import {DbResult} from "@/lib/types";
-import DataTable from "@/components/DataTable";
-import {RowActionDialog} from "./RowActionDialog";
-import FormModal from "@/components/FormModal";
 import {useEmployee} from "@/employee/employee-components/employee-provider";
+import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger} from "@/components/ui/tooltip";
+import {Employee, Tables, Task} from "@/lib/database";
+import {Button} from "@/components/ui/button";
+import {Checkbox} from "@/components/ui/checkbox";
+import tableTooltip from "@/components/table-tooltip";
+import {Badge} from "@/components/ui/badge";
+import DataTable from "@/components/DataTable";
+import {Input} from "@/components/ui/input";
+import FormModal from "@/components/FormModal";
+import {RowActionDialog} from "@/employee/tasks/components/RowActionDialog";
+// import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger} from "@/components/ui/tooltip";
+// import {DbResult} from "@/lib/types";
+// import DataTable from "@/components/DataTable";
+// import {RowActionDialog} from "./RowActionDialog";
+// import FormModal from "@/components/FormModal";
+// import {useEmployee} from "@/employee/employee-components/employee-provider";
 
 // todo align rows and columns
 
@@ -32,12 +43,6 @@ import {useEmployee} from "@/employee/employee-components/employee-provider";
  * @group React Components
  */
 export default function EmployeeTasksTable() {
-    const [loading, setLoading] = useState(true);
-    const [employees, setEmployees] = useState<Employee[]>([]);
-    const [sorting, setSorting] = useState<SortingState>([])
-    const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
-    const [showSaleDialog, setShowSaleDialog] = useState<boolean>(false)
-    const supabase = getSupabaseBrowserClient();
 
     const {
         employee,
@@ -49,22 +54,7 @@ export default function EmployeeTasksTable() {
 
 
 
-    function tooltip(cell:string){
-        return (
-            <TooltipProvider>
-                <Tooltip>
-                    <TooltipTrigger asChild>
-                        <p className={'max-w-[200px] text-sm truncate'}>
-                            {cell}
-                        </p>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                        <p>{cell}</p>
-                    </TooltipContent>
-                </Tooltip>
-            </TooltipProvider>
-        )
-    }
+
 
     async function onSubmit(data:any) {
         console.log('Table onSubmit: ', data)
@@ -96,114 +86,9 @@ export default function EmployeeTasksTable() {
         })
     }
 
-    function SortButton(name: string, column: Column<Tables<'Sales'>>) {
-        // todo does not work for employee names
 
-        return (
-            <Button
-                size="sm"
-                variant={"ghost"}
-                onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-            >
-                {name}
-                <ArrowUpDown className="ml-1 h-3.5 w-3.5 text-muted-foreground/70"/>
-            </Button>
-        )
-    }
 
-    const columns: ColumnDef<Tables<'Sales'>, Employee>[] = [
-        {
-            id: "select",
-            header: ({table}) => (
-                <Checkbox
-                    checked={table.getIsAllPageRowsSelected()}
-                    onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-                    aria-label="Select all"
-                    className="translate-y-[2px]"
-                />
-            ),
-            cell: ({row}) => (
-                <Checkbox
-                    checked={row.getIsSelected()}
-                    onCheckedChange={(value) => row.toggleSelected(!!value)}
-                    aria-label="Select row"
-                    className="translate-y-[2px]"
-                />
-            ),
-            enableSorting: false,
-            enableHiding: false,
-        },
-        {
-            accessorKey: "SaleTime",
-            // header: ({column}) => SortButton("SaleTime", column),
-            header: ({column}) => SortButton("SaleTime", column),
-            cell: ({row}) => {
-                return (
-                    <p className={'text-sm min-w-fit'}>
-                        {/*{new Date(row.original.SaleTime || new Date()).toDateString()}*/}
-                        {/*{format(new Date(row.original.SaleTime || new Date()), 'yyyy-MMM-dd')}*/}
-                        {format(new Date(row.original.SaleTime || new Date()), "LLL dd, y")}
-                    </p>
-                )
-            },
-        },
-        // {
-        //     accessorKey: "EmployeeID",
-        //     header: ({column}) => SortButton("EmployeeID", column)
-        // },
-        {
-            accessorKey: "Name",
-            header: ({column}) => SortButton("Name", column),
-            cell: ({row}) => {
-                // return employees.find((employee) => employee.id === row.original.EmployeeID)?.Name
-                return (
-                    <div className="flex space-x-2 ml-1">
-                        <Badge variant="outline">
-                            <span className="max-w-[200px] truncate font-medium">
-                                {tooltip(employees.find((employee) => employee.id === row.original.EmployeeID)?.Name || 'Employee Name')}
-                            </span>
-                        </Badge>
-                    </div>
-                )
-            },
-        },
-        {
-            accessorKey: "VehicleMake",
-            header: ({column}) => SortButton("VehicleMake", column),
-            cell: ({row}) => {
-                return (tooltip(row.original.VehicleMake))
-            }
-        },
-        {
-            accessorKey: "ActualCashValue",
-            header: ({column}) => SortButton("ActualCashValue", column),
-            cell: ({row}) => `$${row.original.ActualCashValue.toLocaleString()}`,
-        },
-        {
-            accessorKey: "GrossProfit",
-            header: ({column}) => SortButton("GrossProfit", column),
-            cell: ({row}) => `$${row.original.GrossProfit.toLocaleString()}`,
-        },
-        {
-            accessorKey: "FinAndInsurance",
-            header: ({column}) => SortButton("FinAndInsurance", column),
-            cell: ({row}) => `$${row.original.FinAndInsurance.toLocaleString()}`,
-        },
-        {
-            accessorKey: "Holdback",
-            header: ({column}) => SortButton("Holdback", column),
-            cell: ({row}) => {return row.original.Holdback ? `$${row.original.Holdback.toLocaleString()}`: '0'},
-        },
-        {
-            accessorKey: "Total",
-            header: ({column}) => SortButton("Total", column),
-            cell: ({row}) => `$${row.original.Total.toLocaleString()}`,
-        },
-        {
-            id: "actions",
-            cell: ({row}) => DropDownMenu({row, sales, setSales}),
-        },
-    ]
+
 
         const table = useReactTable({
         data: sales,
@@ -229,7 +114,6 @@ export default function EmployeeTasksTable() {
                 placeholder="Filter sales..."
                 value={(table.getColumn("VehicleMake")?.getFilterValue() as string) ?? ""}
                 onChange={(event) => table.getColumn("VehicleMake")?.setFilterValue(event.target.value)}
-                // todo filter by name --> because html need to get value?
                 className="max-w-sm"
             />
             <div className="flex items-center space-x-2 w-full">

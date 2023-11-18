@@ -48,12 +48,6 @@ const saleFormSchema = z.object({
     ...saleFormSchemaCommon,
 })
 
-// todo database calls update
-// todo need customer && trade-in && financiers.
-/**
- * Component used to render adding a new sale on the sales page.
- * @group React Components
- */
 export function RowActionDialog({sale}: SaleSelectModalFormProps) {
 
     const formContext = useFormModalContext();
