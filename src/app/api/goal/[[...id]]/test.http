@@ -1,0 +1,11 @@
+
+###
+POST http://localhost:3000/api/goal
+Content-Type: application/json
+Cookie: {{cookie}}
+
+{
+  "Name": "CREATE_TEST",
+  "Creator": "1cf7cec8-74a0-4bb6-8364-b03f9a02b33a",
+  "TotalGoal": 100000
+}
