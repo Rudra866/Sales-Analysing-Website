@@ -53,7 +53,7 @@ export const TestPost: Story = {
     const modalControls = useTestDialogControls();
     const supabase = getSupabaseBrowserClient();
     async function onSubmit(data:any) {
-      // data["EmployeeID"] = '4ff2a2d7-09a1-4d26-81e1-55fcf9b0f49b'; // replace this with the uuid of current employee
+      data["EmployeeID"] = '4ff2a2d7-09a1-4d26-81e1-55fcf9b0f49b'; // replace this with the uuid of current employee
       data["Total"] = 5;
 
       // @ts-ignore

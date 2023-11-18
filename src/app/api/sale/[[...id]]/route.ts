@@ -8,8 +8,91 @@ import {createClient} from "@supabase/supabase-js";
 import {cookies} from "next/headers";
 
 // handle retrieving a single sale, or all the sales. Protects sales from being read by users with no permission.
-export function GET(request: Request) {
-  return NextResponse.json({error: "Not yet implemented."}, {status: 405})
+export async function GET(request: Request, { params }: {params: {id: string[]}}) {
+  const supabase =
+      getSupabaseRouteHandlerClient(cookies())
+  const {data: {session}} = await supabase.auth.getSession();
+  const employee = await getEmployeeFromAuthUser(supabase, session!.user)
+  const role = await getRoleFromEmployee(supabase, employee);
+
+  if (!role.ReadPermission) {
+    return NextResponse.json({error: "Forbidden"}, {status: 401});
+  }
+
+  const supabaseAdmin =
+      createClient<Database>(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_KEY!)
+
+  if (!params.id) {
+    const dbResult = await supabaseAdmin
+        .from('Sales')
+        .select(`
+                    EmployeeID,
+                    Employees (
+                        Avatar,
+                        Name,
+                        Email,
+                        EmployeeNumber,
+                        Role
+                    ),
+                      ActualCashValue,
+                      CustomerID,
+                      DaysInStock,
+                      DealerCost,
+                      EmployeeID,
+                      FinancingID,
+                      Financing (
+                        Method
+                       ),
+                      FinAndInsurance,
+                      GrossProfit,
+                      LotPack,
+                      NewSale,
+                      ROI,
+                      SaleTime,
+                      StockNumber,
+                      Total,
+                      TradeInID,
+                      VehicleMake
+                `)
+        .order('SaleTime', { ascending: false })
+    return NextResponse.json(dbResult, {status: dbResult.status});
+  } else {
+
+    const dbResult = await supabaseAdmin
+        .from('Sales')
+        .select(`
+                    EmployeeID,
+                    Employees (
+                        Avatar,
+                        Name,
+                        Email,
+                        EmployeeNumber,
+                        Role
+                    ),
+                      ActualCashValue,
+                      CustomerID,
+                      DaysInStock,
+                      DealerCost,
+                      EmployeeID,
+                      FinancingID,
+                      Financing (
+                        Method
+                       ),
+                      FinAndInsurance,
+                      GrossProfit,
+                      LotPack,
+                      NewSale,
+                      ROI,
+                      SaleTime,
+                      StockNumber,
+                      Total,
+                      TradeInID,
+                      VehicleMake
+                `)
+        .in('id', params.id)
+        .order('SaleTime', { ascending: false })
+    return NextResponse.json(dbResult, {status: dbResult.status});
+  }
 }
 
 // handle new sale input to database
