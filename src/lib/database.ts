@@ -602,6 +602,23 @@ export async function getSalesInDateRange(supabase: SupabaseClient, startDate?: 
   return SaleTime;
 }
 
+export async function getSalesForEmployeeInDateRange(supabase: SupabaseClient, employeeID: string, startDate?: Date, endDate?: Date, sort?: "asc" | "dsc"){
+  const { data: SaleTime, error } = await supabase
+        .from('Sales')
+        .select('SaleTime, Total')
+        .order('SaleTime', { ascending: sort != "dsc" })
+        .filter('SaleTime', 'gte', format(startDate || new Date(), 'yyyy-MM-dd'))
+        .filter('SaleTime', 'lte', format(endDate || new Date(), 'yyyy-MM-dd'))
+        .filter('EmployeeID', 'eq', employeeID)
+
+    if (error) throw error;
+    return SaleTime;
+}
+
+
+
+
+
 // leaving this one for now, but we should make our forms use interactive components, and this will let us get the
 // ids from those. EX. see src/app/(pages)/admin/employees/components/EmployeeSelectModalForm.tsx
 // for fields like financiers we could use autofilling form + new financier button or something.

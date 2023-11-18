@@ -11,25 +11,17 @@ import {
 } from "@tanstack/react-table";
 import React, {useEffect, useState} from "react";
 import {Input} from "@/components/ui/input";
-import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table";
-import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 import {Button} from "@/components/ui/button";
-import {
-    ChevronLeftIcon,
-    ChevronRightIcon,
-    DoubleArrowLeftIcon,
-    DoubleArrowRightIcon
-} from "@radix-ui/react-icons";
 import {Checkbox} from "@/components/ui/checkbox";
 import {Employee, Tables, Sale, getSupabaseBrowserClient} from "@/lib/database";
 import {ArrowUpDown, Plus} from "lucide-react";
 import {Badge} from "@/components/ui/badge";
-import {DropDownMenu} from "@/app/(pages)/sales/components/drop-down-menu";
+import {DropDownMenu} from "./drop-down-menu";
 import {format} from "date-fns";
 import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger} from "@/components/ui/tooltip";
 import {DbResult} from "@/lib/types";
 import DataTable from "@/components/DataTable";
-import {AddSalesRowDialog} from "@/app/(pages)/sales/components/AddSalesRowDialog";
+import {RowActionDialog} from "./RowActionDialog";
 import FormModal from "@/components/FormModal";
 
 // todo align rows and columns
@@ -45,9 +37,7 @@ export default function SalesTable() {
     const [sorting, setSorting] = useState<SortingState>([])
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
     const [showSaleDialog, setShowSaleDialog] = useState<boolean>(false)
-
     const supabase = getSupabaseBrowserClient();
-    // const [salesModal, setSalesModal] = useState(false);
 
     useEffect(() => {
         function fetchData() {
@@ -282,7 +272,7 @@ export default function SalesTable() {
                 </Button>
              </div>
             <FormModal title={"Create Sale"} showDialog={showSaleDialog} setShowDialog={setShowSaleDialog} onSubmit={onSubmit}>
-                <AddSalesRowDialog/>
+                <RowActionDialog/>
             </FormModal>
         </DataTable>
 

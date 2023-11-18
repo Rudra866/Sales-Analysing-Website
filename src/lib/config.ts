@@ -12,19 +12,19 @@ export const docsConfigAdmin: DocsConfig = {
         },
         {
             title: "Sales",
-            href: "/sales",
+            href: "/admin/sales",
         },
         {
             title: "Tasks",
-            href: "/tasks",
+            href: "/admin/tasks",
         },
         {
             title: "Settings",
-            href: "/settings",
+            href: "/admin/settings",
         },
         {
             title: "Test",
-            href: "/test/database",
+            href: "/admin/test/database",
         },
     ],
 }
@@ -35,15 +35,15 @@ export const docsConfig: DocsConfig = {
     mainNav: [
         {
             title: "Tasks",
-            href: "/tasks",
+            href: "/employee/tasks",
         },
         {
             title: "Sales",
-            href: "/sales",
+            href: "/employee/sales",
         },
         {
             title: "Training",
-            href: "/Training",
+            href: "/employee/training",
         },
     ],
 }

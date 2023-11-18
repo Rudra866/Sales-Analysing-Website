@@ -1,7 +1,6 @@
 import React from 'react';
 import {FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
 import {Input} from "@/components/ui/input";
-import {useForm} from "react-hook-form";
 import {Checkbox} from "@/components/ui/checkbox";
 
 type FormFieldComponentProps = {
@@ -10,7 +9,6 @@ type FormFieldComponentProps = {
     label?: string
     inputType: "input" | "checkbox" | "inputNumber"
     className?: string
-
 }
 
 

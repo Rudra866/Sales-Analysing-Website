@@ -5,20 +5,13 @@ import {zodResolver} from "@hookform/resolvers/zod";
 import {DialogFooter} from "@/components/ui/dialog";
 import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
 import {DialogBody} from "next/dist/client/components/react-dev-overlay/internal/components/Dialog";
-import {Input} from "@/components/ui/input";
 import {Button} from "@/components/ui/button";
-import {
-    Employee,
-    Sale,
-    getSupabaseBrowserClient,
-    getAllEmployees,
-} from "@/lib/database";
+import {Sale} from "@/lib/database";
 import {DialogClose} from "@radix-ui/react-dialog";
 import {Checkbox} from "@/components/ui/checkbox";
 import {ScrollArea, ScrollBar} from "@/components/ui/scroll-area";
 import {useFormModalContext} from "@/components/FormModal";
-// import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
-import FormFieldComponent from "@/app/(pages)/sales/components/form-field-component";
+import FormFieldComponent from "@/components/form-components/form-field-component";
 import {Separator} from "@/components/ui/separator";
 import useAuth from "@/hooks/use-auth";
 
@@ -61,7 +54,7 @@ const saleFormSchema = z.object({
  * Component used to render adding a new sale on the sales page.
  * @group React Components
  */
-export function AddSalesRowDialog({sale}: SaleSelectModalFormProps) {
+export function RowActionDialog({sale}: SaleSelectModalFormProps) {
 
     const formContext = useFormModalContext();
     const {employee} = useAuth()
@@ -90,6 +83,111 @@ export function AddSalesRowDialog({sale}: SaleSelectModalFormProps) {
             }
 
     )
+    const formFieldComponentsProps = [
+        {
+            name: 'StockNumber',
+            form: form,
+            label: 'Stock Number',
+            className: 'col-span-4',
+            inputType: 'input',
+        },
+        {
+            name: 'VehicleMake',
+            form: form,
+            label: 'Vehicle Make',
+            className: 'col-span-2',
+            inputType: 'input',
+        },
+        {
+            name: 'ActualCashValue',
+            form: form,
+            label: 'Actual Cash Value',
+            className: 'col-span-2',
+            inputType: 'inputNumber',
+        },
+        {
+            name: 'GrossProfit',
+            form: form,
+            label: 'Gross Profit',
+            className: 'col-span-2',
+            inputType: 'inputNumber',
+        },
+        {
+            name: 'FinAndInsurance',
+            form: form,
+            label: 'F&I',
+            className: 'col-span-2',
+            inputType: 'inputNumber',
+        },
+        {
+            name: 'Holdback',
+            form: form,
+            label: 'Hold Back',
+            className: 'col-span-2',
+            inputType: 'inputNumber',
+        },
+    ];
+
+    const formFieldComponentsProps2 = [
+        {
+            name:'CustomerName',
+            form: form,
+            label: 'Customer Name',
+            className: 'col-span-2',
+            inputType: 'input',
+        },
+        {
+            name:'city',
+            form: form,
+            label: 'City',
+            className: 'col-span-2',
+            inputType: 'input',
+        },
+        {
+            name:'TradeIn',
+            form: form,
+            label: 'Trade-in Name',
+            className: 'col-span-2',
+            inputType: 'input',
+        },
+        {
+            name:'FinancingMethod',
+            form: form,
+            label: 'Financing Method',
+            className: 'col-span-2',
+            inputType: 'input',
+        }];
+
+    const formFieldComponentsProps3 = [
+        {
+            name: 'LotPack',
+            form: form,
+            label: 'Lot Pack',
+            className: 'col-span-2',
+            inputType: 'inputNumber',
+        },
+        {
+            name: 'DaysInStock',
+            form: form,
+            label: 'Days In Stock',
+            className: 'col-span-2',
+            inputType: 'inputNumber',
+        },
+        {
+            name: 'DealerCost',
+            form: form,
+            label: 'Dealer Cost',
+            className: 'col-span-2',
+            inputType: 'inputNumber',
+        },
+        {
+            name: 'ROI',
+            form: form,
+            label: 'ROI',
+            className: 'col-span-2',
+            inputType: 'inputNumber',
+        },
+    ]
 
 
     function onSubmit(values: z.infer<typeof saleFormSchema>) {
@@ -101,23 +199,16 @@ export function AddSalesRowDialog({sale}: SaleSelectModalFormProps) {
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)}>
                     <DialogBody className={'grid grid-cols-4 gap-2'}>
-                        <FormFieldComponent
-                            name={'StockNumber'}
-                            form={form}
-                            label={'Stock Number'}
-                            className="col-span-4"
-                            inputType={'input'}
-                        />
-                        <FormFieldComponent name={'VehicleMake'} form={form} label={'Vehicle Make'}
-                                            className="col-span-2" inputType={'input'}/>
-                        <FormFieldComponent name={'ActualCashValue'} form={form} label={'Actual Cash Value'}
-                                            className="col-span-2" inputType='inputNumber'/>
-                        <FormFieldComponent name={'GrossProfit'} form={form} label={'Gross Profit'}
-                                            className="col-span-2" inputType={'inputNumber'}/>
-                        <FormFieldComponent name={'FinAndInsurance'} form={form} label={'F&I'} className="col-span-2"
-                                            inputType={'inputNumber'}/>
-                        <FormFieldComponent name={'Holdback'} form={form} label={'Hold Back'} className="col-span-2"
-                                            inputType='inputNumber'/>
+                        {formFieldComponentsProps.map((props, index) => (
+                            <FormFieldComponent
+                                key={props.name + index}
+                                name={props.name}
+                                form={props.form}
+                                label={props.label}
+                                className={props.className}
+                                inputType={props.inputType as any}
+                            />
+                        ))}
                         <FormField
                             control={form.control}
                             name="NewSale"
@@ -140,23 +231,29 @@ export function AddSalesRowDialog({sale}: SaleSelectModalFormProps) {
                             )}
                         />
                         <Separator className={'col-span-4 my-4'}/>
-                        <FormFieldComponent name={'CustomerName'} form={form} label={'Customer Name'}
-                                            className="col-span-2" inputType={"input"}/>
-                        <FormFieldComponent name={'city'} form={form} label={'City'} className="col-span-2"
-                                            inputType='input'/>
-                        <FormFieldComponent name={'TradeIn'} form={form} label={'Trade-in Name'} className="col-span-2"
-                                            inputType='input'/>
-                        <FormFieldComponent name={'FinancingMethod'} form={form} label={'Financing Method'}
-                                            className="col-span-2" inputType={'input'}/>
+                        {formFieldComponentsProps2.map((props, index) => (
+                                <FormFieldComponent
+                                    key={props.name + index}
+                                    name={props.name}
+                                    form={props.form}
+                                    label={props.label}
+                                    className={props.className}
+                                    inputType={props.inputType as any}
+                                />
+                            ))
+                        }
                         <Separator className={'col-span-4 my-4'}/>
-                        <FormFieldComponent name={'LotPack'} form={form} label={'Lot Pack'} className="col-span-2"
-                                            inputType={'inputNumber'}/>
-                        <FormFieldComponent name={'DaysInStock'} form={form} label={'Days In Stock'}
-                                            className="col-span-2" inputType={'inputNumber'}/>
-                        <FormFieldComponent name={'DealerCost'} form={form} label={'Dealer Cost'} className="col-span-2"
-                                            inputType={'inputNumber'}/>
-                        <FormFieldComponent name={'ROI'} form={form} label={'ROI'} className="col-span-2"
-                                            inputType={'inputNumber'}/>
+                        {formFieldComponentsProps3.map((props, index) => (
+                                <FormFieldComponent
+                                    key={props.name + index}
+                                    name={props.name}
+                                    form={props.form}
+                                    label={props.label}
+                                    className={props.className}
+                                    inputType={props.inputType as any}
+                                />
+                            ))
+                        }
 
                     </DialogBody>
                     <DialogFooter className={'py-4'}>

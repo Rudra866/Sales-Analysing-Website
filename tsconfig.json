@@ -20,6 +20,8 @@
       }
     ],
     "paths": {
+      "@/admin/*": ["./src/app/(pages)/admin/*"],
+      "@/employee/*": ["./src/app/(pages)/employee/*"],
       "@/components/*": ["./src/components/*"],
       "@/registry/new-york/*": ["./src/components/*"],
       "@/*": ["./src/*"]

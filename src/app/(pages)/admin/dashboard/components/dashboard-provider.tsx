@@ -14,7 +14,7 @@ import {
 import {DbResult, SaleWithEmployeeAndFinancingType} from "@/lib/types";
 import useAuth from "@/hooks/use-auth";
 
-export type DashBoardContextProps = {
+type DashBoardContextProps = {
     saleWithEmployeeAndFinancing?: SaleWithEmployeeAndFinancingType[];
     mySales?: SaleWithEmployeeAndFinancingType[];
     data?: Sale[];
