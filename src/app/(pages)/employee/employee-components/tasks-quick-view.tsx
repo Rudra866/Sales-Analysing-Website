@@ -70,11 +70,11 @@ function TasksQuickView({tasks}: TasksQuickViewProps) {
     }
 
     return (
-        <Tabs defaultValue="Sales Overview" className="col-span-3 space-y-4 border rounded-xl p-4">
+        <Tabs defaultValue="Tasks Overview" className="col-span-3 space-y-4 border rounded-xl p-4">
             <TabsList>
-                <TabsTrigger value="Sales Overview">Sales Overview</TabsTrigger>
+                <TabsTrigger value="Tasks Overview">Tasks Overview</TabsTrigger>
             </TabsList>
-            <TabsContent value="Sales Overview" className="space-y-4">
+            <TabsContent value="Tasks Overview" className="space-y-4">
                 <ScrollArea className="h-96">
                     <div className="space-y-2 mr-4">
                         {tasks?.map((task) => (
