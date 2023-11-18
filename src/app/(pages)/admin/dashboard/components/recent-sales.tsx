@@ -1,5 +1,5 @@
 import {useRouter} from "next/navigation";
-import {useDashboard} from "@/app/(pages)/dashboard/components/dashboard-provider";
+import {useDashboard} from "./dashboard-provider";
 import useAuth from "@/hooks/use-auth";
 import EmployeeAvatar from "@/components/EmployeeAvatar";
 import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card";

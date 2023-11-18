@@ -14,7 +14,6 @@ import Navigation from "@/components/menu/navigation";
 export default function NotFoundPage() {
     return (
         <>
-            <Navigation/>
             <div  className={cn("min-h-screen bg-background font-sans antialiased h-screen w-screen flex items-center", fontSans.variable)}>
                 <div className="container flex flex-col md:flex-row items-center justify-center px-5">
                     <div className="max-w-md space-y-4">

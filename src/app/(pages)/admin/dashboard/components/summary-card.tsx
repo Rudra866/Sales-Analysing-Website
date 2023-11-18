@@ -6,7 +6,7 @@ import {Car, DollarSign} from "lucide-react";
 import {cn, numericSales} from "@/lib/utils";
 import {format} from "date-fns";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
-import {useDashboard} from "@/app/(pages)/dashboard/components/dashboard-provider";
+import {useDashboard} from "./dashboard-provider";
 
 
 function counter(arr: string[]) {

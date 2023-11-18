@@ -1,4 +1,4 @@
-import {DashboardProvider} from "@/app/(pages)/dashboard/components/dashboard-provider";
+import {DashboardProvider} from "./components/dashboard-provider";
 
 /**
  * Layout for the Dashboard page. Includes a {@link DashboardProvider} component to pass data to children.

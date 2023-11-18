@@ -14,19 +14,20 @@ import {
 import {DbResult, SaleWithEmployeeAndFinancingType} from "@/lib/types";
 import useAuth from "@/hooks/use-auth";
 
-export type DataContextProps = {
+export type DashBoardContextProps = {
     saleWithEmployeeAndFinancing?: SaleWithEmployeeAndFinancingType[];
     mySales?: SaleWithEmployeeAndFinancingType[];
     data?: Sale[];
+    salesGoal?: SalesGoal[];
     employees?: Employee[];
     date?: DateRange;
     setDate?: React.Dispatch<React.SetStateAction<DateRange | undefined>>;
 }
 
 const supabase = getSupabaseBrowserClient()
-export const DashboardContext = createContext<DataContextProps | undefined>(undefined);
+export const DashboardContext = createContext<DashBoardContextProps | undefined>(undefined);
 
-export function useDashboard(): DataContextProps {
+export function useDashboard(): DashBoardContextProps {
     const context = React.useContext(DashboardContext);
     if (!context) throw new Error('useDashboard must be used within a DashboardProvider');
     return context;
@@ -42,11 +43,7 @@ export const DashboardProvider: React.FC<DashboardProviderProps> = ({children}) 
         to: new Date(),
     })
 
-    const {
-        employee,
-        user,
-        role
-    } = useAuth()
+    const {employee} = useAuth()
     const [data, setData] = useState<Sale[]>();
     const [employees, setEmployees] = useState<Employee[]>();
     const [saleWithEmployeeAndFinancing, setSaleWithEmployeeAndFinancing] = useState<SaleWithEmployeeAndFinancingType[]>();
@@ -129,7 +126,7 @@ export const DashboardProvider: React.FC<DashboardProviderProps> = ({children}) 
     }, [date]); // todo on every date change, it should not pull data form the db, only filter the data that is already in state.
 
     return (
-        <DashboardContext.Provider value={{data, employees, date, saleWithEmployeeAndFinancing, mySales, setDate}}>
+        <DashboardContext.Provider value={{data, salesGoal, employees, date, saleWithEmployeeAndFinancing, mySales, setDate}}>
             {children}
         </DashboardContext.Provider>
     );

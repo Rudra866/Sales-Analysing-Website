@@ -7,10 +7,10 @@ import {getSupabaseMiddlewareClient} from "@/lib/supabase";
  * Add routes here that should be restricted to employees with {@link Role | Role.EmployeePermission}.
  * @group Next.js Middleware
  */
-export const admin_routes:string[] = [
+export const admin_routes:string[] = [ // todo -- Ryan can you do the same thing as you did with admin_api_route?
     "/admin/employees",
     "/admin/sales",
-    "/admin/",
+    "/admin/dashboard",
 ]
 
 /**
