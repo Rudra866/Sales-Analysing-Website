@@ -9,7 +9,7 @@ import {useState} from "react";
 
 
 export default function SettingsProfilePage() {
-    const [showDialog, setShowDialog] = useState(true);
+    // const [showDialog, setShowDialog] = useState(true);
 
   return (
     <div className="space-y-6">
@@ -19,9 +19,8 @@ export default function SettingsProfilePage() {
           This is how others will see you on the site.
         </p>
       </div>
-      <Separator />
+        <Separator />
         <ProfileForm />
-
     </div>
   )
 }

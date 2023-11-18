@@ -24,14 +24,11 @@ function UpdateUserPage() {
     useEffect(() => {
 
         getAllEmployees(supabase).then((res) => {
-            // sort by Role
             res?.sort((a, b) => {
                 return a.Role - b.Role
             })
             setEmployees(res as Employee[])
             return res
-        }).then((res) => {
-            // console.log('employees: ', res)
         }).catch((err) => {
             console.error(err)
         })
@@ -39,8 +36,6 @@ function UpdateUserPage() {
         getAllRoles(supabase).then((res) => {
             setRoles(res as Role[])
             return res
-        }).then((res) => {
-            // console.log('roles: ', res)
         }).catch((err) => {
             console.error(err)
         })
