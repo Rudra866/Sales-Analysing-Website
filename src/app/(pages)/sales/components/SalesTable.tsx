@@ -3,7 +3,7 @@
 import {
     Column,
     ColumnDef,
-    ColumnFiltersState, FilterFn, flexRender,
+    ColumnFiltersState, flexRender,
     getCoreRowModel, getFilteredRowModel,
     getPaginationRowModel, getSortedRowModel,
     SortingState,
@@ -21,19 +21,19 @@ import {
     DoubleArrowRightIcon
 } from "@radix-ui/react-icons";
 import {Checkbox} from "@/components/ui/checkbox";
-import {Employee, Tables, Sale, getSupabaseBrowserClient, postToSales} from "@/lib/database";
+import {Employee, Tables, Sale, getSupabaseBrowserClient} from "@/lib/database";
 import {ArrowUpDown, Plus} from "lucide-react";
 import {Badge} from "@/components/ui/badge";
-import {DropDownMenu} from "./drop-down-menu";
+import {DropDownMenu} from "@/app/(pages)/sales/components/drop-down-menu";
 import {format} from "date-fns";
 import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger} from "@/components/ui/tooltip";
 import {DbResult} from "@/lib/types";
-import useAuth from "@/hooks/use-auth";
+import DataTable from "@/components/DataTable";
+import {AddSalesRowDialog} from "@/app/(pages)/sales/components/AddSalesRowDialog";
 import FormModal from "@/components/FormModal";
-import {AddSalesRowDialog} from "./AddSalesRowDialog"
 
+// todo align rows and columns
 
-const supabase = getSupabaseBrowserClient();
 /**
  * Component used to render sales page table at `/sales`
  * @group React Components
@@ -42,8 +42,12 @@ export default function SalesTable() {
     const [loading, setLoading] = useState(true);
     const [sales, setSales] = useState<Sale[]>([]);
     const [employees, setEmployees] = useState<Employee[]>([]);
-    // const supabase = getSupabaseBrowserClient();
-    const {user, employee } = useAuth();
+    const [sorting, setSorting] = useState<SortingState>([])
+    const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
+    const [showSaleDialog, setShowSaleDialog] = useState<boolean>(false)
+
+    const supabase = getSupabaseBrowserClient();
+    // const [salesModal, setSalesModal] = useState(false);
 
     useEffect(() => {
         function fetchData() {
@@ -59,17 +63,15 @@ export default function SalesTable() {
                 const [salesData, employeeData] = await fetchData();
                 const {data: sales, count: salesCount, error: salesError} = salesData;
                 const {data: employees, count: employeeCount, error: employeeError} = employeeData;
-                // console.log('sales: ', sales)
-                // console.log('employees: ', employees)
+                console.log('sales: ', sales)
+                console.log('employees: ', employees)
 
                 if (salesError || employeeError) {
                     console.error("Supabase error: ", (salesError ?? employeeError));
                     throw new Error("Failed to load sales or employees data.");
                 }
-
                 setSales(sales);
                 setEmployees(employees);
-
             } catch (error) {
                 console.error(error);
             } finally {
@@ -79,6 +81,12 @@ export default function SalesTable() {
         loadData().then(() => setLoading(false));
     }, [supabase]);
 
+    // function updateSales(sale: Sale) {
+    //   const originalSales = [...sales]
+    //   const updatedSales = originalSales
+    //       .map((oldSale) => oldSale.id === sale.id ? sale: oldSale)
+    //   setSales(updatedSales)
+    // }
     function tooltip(cell:string){
         return (
             <TooltipProvider>
@@ -93,10 +101,29 @@ export default function SalesTable() {
                     </TooltipContent>
                 </Tooltip>
             </TooltipProvider>
+
         )
     }
 
+    // todo ts:any
+    async function onSubmit(data:any) {
+        data["EmployeeID"] = '4ff2a2d7-09a1-4d26-81e1-55fcf9b0f49b'; // replace this with the uuid of current employee
+        data["Total"] = 5;
+
+        // @ts-ignore
+        // await supabase.rpc("create_new_sale", {sale: data});
+        await fetch(`http://localhost:3000/api/sale`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
+        })
+    }
+
     function SortButton(name: string, column: Column<Tables<'Sales'>>) {
+        // todo does not work for employee names
+
         return (
             <Button
                 size="sm"
@@ -133,24 +160,32 @@ export default function SalesTable() {
         },
         {
             accessorKey: "SaleTime",
+            // header: ({column}) => SortButton("SaleTime", column),
             header: ({column}) => SortButton("SaleTime", column),
             cell: ({row}) => {
                 return (
                     <p className={'text-sm min-w-fit'}>
+                        {/*{new Date(row.original.SaleTime || new Date()).toDateString()}*/}
+                        {/*{format(new Date(row.original.SaleTime || new Date()), 'yyyy-MMM-dd')}*/}
                         {format(new Date(row.original.SaleTime || new Date()), "LLL dd, y")}
                     </p>
                 )
             },
         },
+        // {
+        //     accessorKey: "EmployeeID",
+        //     header: ({column}) => SortButton("EmployeeID", column)
+        // },
         {
             accessorKey: "Name",
             header: ({column}) => SortButton("Name", column),
             cell: ({row}) => {
+                // return employees.find((employee) => employee.id === row.original.EmployeeID)?.Name
                 return (
                     <div className="flex space-x-2 ml-1">
                         <Badge variant="outline">
                             <span className="max-w-[200px] truncate font-medium">
-                                {tooltip(employees.find((employee) => employee.id === row.original.EmployeeID)?.Name!)}
+                                {tooltip(employees.find((employee) => employee.id === row.original.EmployeeID)?.Name || 'Employee Name')}
                             </span>
                         </Badge>
                     </div>
@@ -195,41 +230,13 @@ export default function SalesTable() {
         },
     ]
 
-    return (
-        <DataTable defaultData={sales} columns={columns} loading={loading}/>
-    )
-}
-
-
-interface DataTableProps<TData, TValue> {
-    columns: ColumnDef<TData, TValue>[]
-    defaultData: TData[]
-    loading?: boolean
-}
-
-function DataTable<TData, TValue>({defaultData, columns, loading}: DataTableProps<TData, TValue>) {
-    const [sorting, setSorting] = useState<SortingState>([])
-    const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
-    const pageSizes = [10, 25, 50, 100]
-    const ref = React.useRef<HTMLTableSectionElement>(null)
-    const [data, setData] = useState( defaultData);
-
-    useEffect(() => {
-        setData(defaultData)
-    }, [defaultData]);
-
-    const table = useReactTable({
-        data,
+        const table = useReactTable({
+        data: sales,
         columns,
-        // filterFns: {
-        //     fuzzy: fuzzyFilter,
-        // },
-        // globalFilterFn: fuzzyFilter,
-        // onGlobalFilterChange: setGlobalFilter,
-        onColumnFiltersChange: setColumnFilters,
         getCoreRowModel: getCoreRowModel(),
         onSortingChange: setSorting,
         getPaginationRowModel: getPaginationRowModel(),
+        onColumnFiltersChange: setColumnFilters,
         getFilteredRowModel: getFilteredRowModel(),
         getSortedRowModel: getSortedRowModel(),
         state: {
@@ -239,17 +246,18 @@ function DataTable<TData, TValue>({defaultData, columns, loading}: DataTableProp
         enableSorting: true,
         enableColumnFilters: true,
     })
+
     const newRow: Sale = {
-        id: data.length + 1,
-        EmployeeID: '55d08fc7-6ca7-43ea-8836-0f232fabd073', // Elissa Tsidilkovsky
+        id: table.getRowModel().rows.length + 1,
+        EmployeeID: '1',
         SaleTime: new Date().toDateString(),
-        VehicleMake: '',
+        VehicleMake: 'VehicleMake',
         ActualCashValue: 0,
         GrossProfit: 0,
         FinAndInsurance: 0,
         Holdback: 0,
         Total: 0,
-        StockNumber: '',
+        StockNumber: '12345',
         CustomerID: 0,
         FinancingID: 0,
         TradeInID: 0,
@@ -259,177 +267,263 @@ function DataTable<TData, TValue>({defaultData, columns, loading}: DataTableProp
         DealerCost: 0,
         ROI: 0,
     };
-    // todo filter multiple columns
-    // https://github.com/TanStack/table/blob/main/examples/react/filters/src/main.tsx#L150
-    // https://tanstack.com/table/v8/docs/examples/react/filters
 
-    const [salesModal, setSalesModal] = useState(false);
 
-    function addSale(sale: Sale) {
-        const setFunc = (old: Sale[]) => [...old, sale];
-        setData(setFunc as DbResult<Sale[]>);
-        table.setSorting([{id: "SaleTime", desc: false,}])
-        console.log("row count: ",table.getRowModel().rows.length,"data count: ", data.length, "new row: ", sale)
-        // postToSales() todo
-    }
 
     return (
-        <div className="space-y-4">
-            <div className="flex items-center">
-                <Input
-                    placeholder="Filter sales..."
-                    value={(table.getColumn("VehicleMake")?.getFilterValue() as string) ?? ""}
-                    onChange={(event) => table.getColumn("VehicleMake")?.setFilterValue(event.target.value)}
-                    className="max-w-sm"
-                />
-                {salesModal &&
-                    <FormModal title={"Sale"} showDialog={salesModal} setShowDialog={setSalesModal} onSubmit={addSale}>
-                        <AddSalesRowDialog sale={newRow} />
-                    </FormModal>
-                }
-                <div className="flex items-center space-x-2 w-full">
-                    <Button
-                        size="sm"
-                        variant="outline"
-                        className="ml-auto hidden h-8 lg:flex"
-                        onClick={() => {
-                            setSalesModal(true)
-                            // addSale(newRow);
-                        }}
-                    >
-                        <Plus className="mr-2 h-4 w-4" />
-                        Add Sale
-                    </Button>
-                    {/* this button is there just in case we need it of not will be removed in the future.*/}
-                    <Button
-                        size="sm"
-                        variant="outline"
-                        className="ml-auto hidden h-8 lg:flex"
-                        onClick={() => {
+        <DataTable table={table} loading={loading}>
+            <Input
+                placeholder="Filter sales..."
+                value={(table.getColumn("Name")?.getFilterValue() as string) ?? ""}
+                onChange={(event) => table.getColumn("Name")?.setFilterValue(event.target.value)}
+                className="max-w-sm"
+            />
+            <div className="flex items-center space-x-2 w-full">
+                <Button
+                     size="sm"
+                     variant="outline"
+                     className="ml-auto hidden h-8 lg:flex"
+                     onClick={() => {
+                         const setFunc = (old: Sale[]) => [...old, newRow];
+                         setSales(setFunc as DbResult<Sale[]>);
+                         table.setSorting([{id: "SaleTime", desc: false,}])
+                     }}
+                    // onClick={() => console.log()}
+                >
+                 <Plus className="mr-2 h-4 w-4" />
+                 Add Row
+                </Button>
+                <Button
+                 size="sm"
+                 variant="outline"
+                 className="ml-auto hidden h-8 lg:flex"
+                 onClick={() => {
+                     // save
+                 }}
+             >
+                     save
+                 </Button>
+             </div>
+            {/* tmp */}
+            <FormModal title={"Create Sale"} showDialog={showSaleDialog} setShowDialog={setShowSaleDialog} onSubmit={onSubmit}>
+                <AddSalesRowDialog/>
+            </FormModal>
+        </DataTable>
 
-                        }}
-                    >
-                        save
-                    </Button>
-                </div>
-            </div>
-            <div className="rounded-md border">
-                <Table>
-                    <TableHeader>
-                        {table.getHeaderGroups().map((headerGroup) => (
-                            <TableRow key={headerGroup.id}>
-                                {headerGroup.headers.map((header) =>
-                                    <TableHead key={header.id}>
-                                        {header.isPlaceholder
-                                            ? null
-                                            : flexRender(
-                                                header.column.columnDef.header,
-                                                header.getContext()
-                                            )}
-                                    </TableHead>
-                                )}
-                            </TableRow>
-                        ))}
-                    </TableHeader>
-                    <TableBody ref={ref}>
-                        {table.getRowModel().rows?.length && !loading ? (
-                            table.getRowModel().rows.map((row) => (
-                                <TableRow
-                                    key={row.id}
-                                    data-state={row.getIsSelected() && "selected"}
-                                >
-                                    {row.getVisibleCells().map((cell) => (
-                                        <TableCell key={cell.id}>
-                                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                        </TableCell>
-                                    ))}
-                                </TableRow>
-                            ))
-                        ) : (
-                            <TableRow>
-                                <TableCell colSpan={columns.length} className="h-24 text-center">
-                                    No result? refresh..?
-                                </TableCell>
-                            </TableRow>
-                        )}
-                    </TableBody>
-                </Table>
-            </div>
-
-            {/* Pagination */}
-            <div className="flex items-center justify-between px-2">
-                <div className="flex-1 text-sm text-muted-foreground">
-                    {table.getFilteredSelectedRowModel().rows.length} of {" "}
-                    {table.getFilteredRowModel().rows.length} item(s) selected.
-                </div>
-                <div className="flex items-center space-x-6 lg:space-x-8">
-                    <div className="flex items-center space-x-2">
-                        <p className="text-sm font-medium">Rows per page</p>
-                        <Select
-                            value={`${table.getState().pagination.pageSize}`}
-                            onValueChange={(value) => {
-                                table.setPageSize(Number(value))
-                            }}
-                        >
-                            <SelectTrigger className="h-8 w-[70px]">
-                                <SelectValue placeholder={table.getState().pagination.pageSize}/>
-                            </SelectTrigger>
-                            <SelectContent>
-                                {pageSizes.map((pageSize) => (
-                                    <SelectItem key={pageSize} value={`${pageSize}`}>
-                                        {pageSize}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                    </div>
-                    <div className="flex w-[100px] items-center justify-center text-sm font-medium">
-                        Page {table.getState().pagination.pageIndex + 1} of{" "}
-                        {table.getPageCount()}
-                    </div>
-                    <div className="flex items-center space-x-2">
-                        <Button
-                            variant="outline"
-                            className="hidden h-8 w-8 p-0 lg:flex"
-                            onClick={() => table.setPageIndex(0)}
-                            disabled={!table.getCanPreviousPage()}
-                        >
-                            <span className="sr-only">Go to first page</span>
-                            <DoubleArrowLeftIcon className="h-4 w-4"/>
-                        </Button>
-                        <Button
-                            variant="outline"
-                            className="h-8 w-8 p-0"
-                            onClick={() => table.previousPage()}
-                            disabled={!table.getCanPreviousPage()}
-                        >
-                            <span className="sr-only">Go to previous page</span>
-                            <ChevronLeftIcon className="h-4 w-4"/>
-                        </Button>
-                        <Button
-                            variant="outline"
-                            className="h-8 w-8 p-0"
-                            onClick={() => table.nextPage()}
-                            disabled={!table.getCanNextPage()}
-                        >
-                            <span className="sr-only">Go to next page</span>
-                            <ChevronRightIcon className="h-4 w-4"/>
-                        </Button>
-                        <Button
-                            variant="outline"
-                            className="hidden h-8 w-8 p-0 lg:flex"
-                            onClick={() => table.setPageIndex(table.getPageCount() - 1)}
-                            disabled={!table.getCanNextPage()}
-                        >
-                            <span className="sr-only">Go to last page</span>
-                            <DoubleArrowRightIcon className="h-4 w-4"/>
-                        </Button>
-                    </div>
-                </div>
-            </div>
-        </div>
     )
 }
+
+
+// interface DataTableProps<TData, TValue> {
+//     columns: ColumnDef<TData, TValue>[]
+//     defaultData: TData[]
+//     loading?: boolean
+// }
+//
+// export function DataTable<TData, TValue>({defaultData, columns, loading}: DataTableProps<TData, TValue>) {
+//     const [sorting, setSorting] = useState<SortingState>([])
+//     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
+//     const pageSizes = [10, 25, 50, 100]
+//     const ref = React.useRef<HTMLTableSectionElement>(null)
+//     const [data, setData] = useState( defaultData);
+//
+//     const table = useReactTable({
+//         data,
+//         columns,
+//         getCoreRowModel: getCoreRowModel(),
+//         onSortingChange: setSorting,
+//         getPaginationRowModel: getPaginationRowModel(),
+//         onColumnFiltersChange: setColumnFilters,
+//         getFilteredRowModel: getFilteredRowModel(),
+//         getSortedRowModel: getSortedRowModel(),
+//         state: {
+//             sorting,
+//             columnFilters
+//         },
+//         enableSorting: true,
+//         enableColumnFilters: true,
+//     })
+//     const newRow: Sale = {
+//         id: table.getRowModel().rows.length + 1,
+//         EmployeeID: '1',
+//         SaleTime: new Date().toDateString(),
+//         VehicleMake: 'VehicleMake',
+//         ActualCashValue: 0,
+//         GrossProfit: 0,
+//         FinAndInsurance: 0,
+//         Holdback: 0,
+//         Total: 0,
+//         StockNumber: '12345',
+//         CustomerID: 0,
+//         FinancingID: 0,
+//         TradeInID: 0,
+//         NewSale: false,
+//         LotPack: 0,
+//         DaysInStock: 0,
+//         DealerCost: 0,
+//         ROI: 0,
+//     };
+//
+//     return (
+//         <div className="space-y-4">
+//             <div className="flex items-center">
+//                 <Input
+//                     placeholder="Filter sales..."
+//                     value={(table.getColumn("Name")?.getFilterValue() as string) ?? ""}
+//                     onChange={(event) => table.getColumn("Name")?.setFilterValue(event.target.value)}
+//                     className="max-w-sm"
+//                 />
+//                 <div className="flex items-center space-x-2 w-full">
+//                     <Button
+//                         size="sm"
+//                         variant="outline"
+//                         className="ml-auto hidden h-8 lg:flex"
+//                         onClick={() => {
+//                             const setFunc = (old: Sale[]) => [...old, newRow];
+//                             setData(setFunc as DbResult<Sale[]>);
+//                             table.setSorting([{id: "SaleTime", desc: false,}])
+//                         }}
+//                     >
+//                         <Plus className="mr-2 h-4 w-4" />
+//                         Add Row
+//                     </Button>
+//                     <Button
+//                         size="sm"
+//                         variant="outline"
+//                         className="ml-auto hidden h-8 lg:flex"
+//                         onClick={() => {
+//                             // save
+//                         }}
+//                     >
+//                         save
+//                     </Button>
+//                 </div>
+//             </div>
+//             <div className="rounded-md border">
+//                 <Table>
+//                     <TableHeader>
+//                         {table.getHeaderGroups().map((headerGroup) => (
+//                             <TableRow key={headerGroup.id}>
+//                                 {headerGroup.headers.map((header) =>
+//                                     <TableHead key={header.id}>
+//                                         {header.isPlaceholder
+//                                             ? null
+//                                             : flexRender(
+//                                                 header.column.columnDef.header,
+//                                                 header.getContext()
+//                                             )}
+//                                     </TableHead>
+//                                 )}
+//                             </TableRow>
+//                         ))}
+//                     </TableHeader>
+//                     <TableBody ref={ref}>
+//                         {table.getRowModel().rows?.length ? (
+//                             table.getRowModel().rows.map((row) => (
+//                                 <TableRow
+//                                     key={row.id}
+//                                     data-state={row.getIsSelected() && "selected"}
+//                                 >
+//                                     {row.getVisibleCells().map((cell) => (
+//                                         <TableCell key={cell.id}>
+//                                             {flexRender(cell.column.columnDef.cell, cell.getContext())}
+//                                         </TableCell>
+//                                     ))}
+//                                 </TableRow>
+//                             ))
+//                         ) : (
+//                             <TableRow>
+//                                 <TableCell colSpan={columns.length} className="h-24 text-center">
+//                                     {/* Todo */}
+//                                     No result? refresh..?
+//                                     {/*<div className="flex items-center justify-center h-24">*/}
+//                                     {/*    <div className="flex items-center space-x-2">*/}
+//                                     {/*        <div className="w-4 h-4 bg-accent rounded-full animate-bounce"/>*/}
+//                                     {/*        <div className="w-4 h-4 bg-accent rounded-full animate-bounce delay-75"/>*/}
+//                                     {/*        <div className="w-4 h-4 bg-accent rounded-full animate-bounce delay-150"/>*/}
+//                                     {/*    </div>*/}
+//                                     {/*</div>*/}
+//                                 </TableCell>
+//                             </TableRow>
+//                         )}
+//                     </TableBody>
+//                 </Table>
+//             </div>
+//
+//             {/* Pagination */}
+//             <div className="flex items-center justify-between px-2">
+//                 <div className="flex-1 text-sm text-muted-foreground">
+//                     {table.getFilteredSelectedRowModel().rows.length} of {" "}
+//                     {table.getFilteredRowModel().rows.length} item(s) selected.
+//                 </div>
+//                 <div className="flex items-center space-x-6 lg:space-x-8">
+//                     <div className="flex items-center space-x-2">
+//                         <p className="text-sm font-medium">Rows per page</p>
+//                         <Select
+//                             value={`${table.getState().pagination.pageSize}`}
+//                             onValueChange={(value) => {
+//                                 table.setPageSize(Number(value))
+//                             }}
+//                         >
+//                             <SelectTrigger className="h-8 w-[70px]">
+//                                 <SelectValue placeholder={table.getState().pagination.pageSize}/>
+//                             </SelectTrigger>
+//                             <SelectContent>
+//                                 {pageSizes.map((pageSize) => (
+//                                     <SelectItem key={pageSize} value={`${pageSize}`}>
+//                                         {pageSize}
+//                                     </SelectItem>
+//                                 ))}
+//                             </SelectContent>
+//                         </Select>
+//                     </div>
+//                     <div className="flex w-[100px] items-center justify-center text-sm font-medium">
+//                         Page {table.getState().pagination.pageIndex + 1} of{" "}
+//                         {table.getPageCount()}
+//                     </div>
+//                     <div className="flex items-center space-x-2">
+//                         <Button
+//                             variant="outline"
+//                             className="hidden h-8 w-8 p-0 lg:flex"
+//                             onClick={() => table.setPageIndex(0)}
+//                             disabled={!table.getCanPreviousPage()}
+//                         >
+//                             <span className="sr-only">Go to first page</span>
+//                             <DoubleArrowLeftIcon className="h-4 w-4"/>
+//                         </Button>
+//                         <Button
+//                             variant="outline"
+//                             className="h-8 w-8 p-0"
+//                             onClick={() => table.previousPage()}
+//                             disabled={!table.getCanPreviousPage()}
+//                         >
+//                             <span className="sr-only">Go to previous page</span>
+//                             <ChevronLeftIcon className="h-4 w-4"/>
+//                         </Button>
+//                         <Button
+//                             variant="outline"
+//                             className="h-8 w-8 p-0"
+//                             onClick={() => table.nextPage()}
+//                             disabled={!table.getCanNextPage()}
+//                         >
+//                             <span className="sr-only">Go to next page</span>
+//                             <ChevronRightIcon className="h-4 w-4"/>
+//                         </Button>
+//                         <Button
+//                             variant="outline"
+//                             className="hidden h-8 w-8 p-0 lg:flex"
+//                             onClick={() => table.setPageIndex(table.getPageCount() - 1)}
+//                             disabled={!table.getCanNextPage()}
+//                         >
+//                             <span className="sr-only">Go to last page</span>
+//                             <DoubleArrowRightIcon className="h-4 w-4"/>
+//                         </Button>
+//                     </div>
+//                 </div>
+//             </div>
+//         </div>
+//     )
+// }
 
 
 

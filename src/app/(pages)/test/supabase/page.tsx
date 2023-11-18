@@ -1,7 +1,6 @@
 "use client"
 import {getSupabaseBrowserClient} from "@/lib/supabase";
-import {ReactElement, useEffect, useState} from "react";
-import {Collapsible, CollapsibleContent, CollapsibleTrigger} from "@/components/ui/collapsible";
+import {useEffect, useState} from "react";
 import {
   Employee,
   getAllEmployees,
@@ -23,8 +22,9 @@ import {
   getAllTradeIns,
   getAllCustomers, getAllFinancingOptions
 } from "@/lib/database";
-import {Button} from "@/components/ui/button";
-import {CaretSortIcon} from "@radix-ui/react-icons";
+import dynamic from "next/dynamic";
+
+const CollapsableRawData = dynamic(() => import("./components/CollapsableRawData"));
 
 
 export default function SupabaseTestPage() {
@@ -68,6 +68,7 @@ export default function SupabaseTestPage() {
 
   return (
     <div className={"mx-4 my-4"}>
+      {errors}
       <CollapsableRawData data={employeeData}><p>Employee</p></CollapsableRawData>
       <CollapsableRawData data={salesData}><p>Sales</p></CollapsableRawData>
       <CollapsableRawData data={monthlySalesData}><p>Monthly Sales</p></CollapsableRawData>
@@ -81,17 +82,3 @@ export default function SupabaseTestPage() {
     </div>)
 }
 
-const CollapsableRawData = ({data, children}: {data: any, children: ReactElement}) => {
-  return (
-    <Collapsible>
-      <CollapsibleTrigger>
-        <Button variant="ghost" size="lg">
-          {children}
-          <CaretSortIcon className="h-4 w-4" />
-          <span className="sr-only">Toggle</span>
-        </Button>
-      </CollapsibleTrigger>
-          <CollapsibleContent >{JSON.stringify(data, null, 2)}</CollapsibleContent>
-    </Collapsible>
-  );
-}

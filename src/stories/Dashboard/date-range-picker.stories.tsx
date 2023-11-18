@@ -4,10 +4,9 @@ import {Meta, StoryObj} from "@storybook/react";
 //   CalendarDateRangePickerProps
 // } from "@/components/dashboard-components/date-range-picker";
 import {useState} from "react";
-import {
+import
     CalendarDateRangePicker,
-    CalendarDateRangePickerProps
-} from "@/app/(pages)/dashboard/components/date-range-picker";
+{ CalendarDateRangePickerProps } from "@/app/(pages)/dashboard/components/date-range-picker";
 
 
 export default {

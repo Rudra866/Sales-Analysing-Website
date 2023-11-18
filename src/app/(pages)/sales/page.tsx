@@ -1,5 +1,9 @@
-import React from 'react';
-import SalesTable from "@/app/(pages)/sales/components/SalesTable";
+"use client"
+import useAuth from "@/hooks/use-auth";
+import dynamic from "next/dynamic";
+import {UserNav} from "@/components/user-nav";
+
+const SalesTable = dynamic(() => import("./components/SalesTable"))
 
 /**
  * Creates the sales viewing page using a {@link SalesTable} component.
@@ -11,6 +15,9 @@ export default function SalesPage() {
             <div className="flex items-center justify-between space-y-2">
                 <div>
                     <h2 className="text-2xl font-bold tracking-tight">Sales Table.</h2>
+                    <p className="text-muted-foreground">
+                        Welcome back Jeff!
+                    </p>
                 </div>
                 <div className="flex items-center space-x-2">
                     {/*<UserNav />*/}

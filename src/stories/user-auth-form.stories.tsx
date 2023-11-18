@@ -1,6 +1,6 @@
 import results from "../../.jest-test-results.json"
 import {Meta, StoryObj} from "@storybook/react";
-import {UserAuthForm} from "@/app/authentication/components/user-auth-form";
+import UserAuthForm from "@/app/authentication/components/user-auth-form";
 import {withTests} from "@storybook/addon-jest";
 
 export default {

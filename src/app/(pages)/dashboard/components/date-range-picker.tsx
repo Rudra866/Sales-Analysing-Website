@@ -23,7 +23,7 @@ export interface CalendarDateRangePickerProps extends React.HTMLAttributes<HTMLD
 }
 
 /** @ignore these for now */
-export function CalendarDateRangePicker({className, date, setDate}: CalendarDateRangePickerProps) {
+export default function CalendarDateRangePicker({className, date, setDate}: CalendarDateRangePickerProps) {
     return (
         <div className={cn("grid gap-2", className)}>
             <Popover>

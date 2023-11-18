@@ -27,28 +27,7 @@ export const numericSales = [
 ];
 
 
-
-// grouping by dynamic time frame
-export function groupByTimeFrame(data: Sale[], grouping: string): { [p: string]: number } {
-    const groupedData: { [key: string]: number } = {};
-
-    data.forEach(item => {
-        const date = new Date(
-            item.SaleTime?.toString() || ''
-        );
-
-        const monthYearKey = format(date, grouping);
-
-        if (!groupedData[monthYearKey]) {
-            groupedData[monthYearKey] = 0;
-        }
-
-        groupedData[monthYearKey] += item.Total;
-    });
-    return groupedData;
-}
-
-export function groupByMonth(data: Sale[]): { [p: string]: number } {
+export function groupByMonth(data: Tables<"Sales">[]): { [p: string]: number } {
     const groupedData: { [key: string]: number } = {};
 
     data.forEach(item => {
@@ -67,6 +46,10 @@ export function groupByMonth(data: Sale[]): { [p: string]: number } {
 
     return groupedData;
 }
+
+// tmp used at testing pages
+export const generateRandomString = (length: number) => [...Array(length)].map(() =>
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"[Math.floor(Math.random() * 62)]).join('');
 
 type SaleWithIndex = Sale & {
     [key: string]: any;

@@ -1,0 +1,66 @@
+GET http://localhost:3000/api/admin/role
+Cookie: {{cookie}}
+
+###
+#@name Invalid creation of role (no name)
+POST http://localhost:3000/api/admin/role
+Content-Type: application/json
+Cookie: {{cookie}}
+
+{
+}
+
+###
+
+#@name Valid creation of role
+POST http://localhost:3000/api/admin/role
+Content-Type: application/json
+Cookie: {{cookie}}
+
+{
+  "RoleName": "_NEW_ROLE_TEST4"
+}
+
+###
+
+#@name Invalid update on a role
+PATCH http://localhost:3000/api/admin/role
+Content-Type: application/json
+Cookie: {{cookie}}
+
+{
+
+}
+
+###
+
+#@name Valid update on a role
+PATCH http://localhost:3000/api/admin/role
+Content-Type: application/json
+Cookie: {{cookie}}
+
+{
+  "id": 15,
+  "RoleName": "_ROLE_CHANGE1"
+}
+
+###
+#@name Invalid role deletion (no ID)
+DELETE http://localhost:3000/api/admin/role
+Content-Type: application/json
+Cookie: {{cookie}}
+
+{
+
+}
+
+###
+
+#@name Valid role deletion
+DELETE http://localhost:3000/api/admin/role
+Content-Type: application/json
+Cookie: {{cookie}}
+
+{
+  "id": 15
+}

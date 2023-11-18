@@ -19,6 +19,7 @@ export default function RootLayout({children,}: { children: ReactNode }) {
       <body className={cn("min-h-screen bg-background font-sans antialiased", fontSans.variable)}>
         <AuthContextProvider>
           <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
+              <Navigation />
               {children}
               <Toaster />
           </ThemeProvider>

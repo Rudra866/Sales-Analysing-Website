@@ -1,7 +1,7 @@
 import React, {PropsWithChildren, useState} from "react";
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table";
 import {flexRender} from "@tanstack/react-table";
-// import {columns} from "@/app/(pages)/examples/tasks/components/columns";
+import {columns} from "@/app/(pages)/tasks/components/columns";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 import {Button} from "@/components/ui/button";
 import {ChevronLeftIcon, ChevronRightIcon, DoubleArrowLeftIcon, DoubleArrowRightIcon} from "@radix-ui/react-icons";
@@ -12,6 +12,9 @@ export interface DataTableProps<TData> {
   loading: boolean
 }
 
+export const tablePageSizes = [10, 25, 50, 100, 250, 1000]
+
+// todo need to refactor the way this works, I don't like it.
 /**
  * Component to create a table for whatever table is passed in.
  * Can pass components as children and render them in the header.
@@ -19,8 +22,6 @@ export interface DataTableProps<TData> {
  */
 export default function DataTable<TData>({table, loading, children}:
                               PropsWithChildren<DataTableProps<TData>>) {
-  const pageSizes = [10, 25, 50, 100]
-
   return (
       <div className="space-y-4">
         <div className="flex items-center">
@@ -61,8 +62,15 @@ export default function DataTable<TData>({table, loading, children}:
                     ))
                 ) : (
                     <TableRow>
-                      <TableCell colSpan={table.getRowModel().rows?.length} className="h-24 text-center">
-                        No result? refresh..?
+                      <TableCell colSpan={columns.length} className="h-24 text-center">
+                        {/* Todo */}
+                        <div className="flex items-center justify-center h-24">
+                          <div className="flex items-center space-x-2">
+                            <div className="w-4 h-4 bg-accent rounded-full animate-bounce"/>
+                            <div className="w-4 h-4 bg-accent rounded-full animate-bounce delay-75"/>
+                            <div className="w-4 h-4 bg-accent rounded-full animate-bounce delay-150"/>
+                          </div>
+                        </div>
                       </TableCell>
                     </TableRow>
                 )}
@@ -87,7 +95,7 @@ export default function DataTable<TData>({table, loading, children}:
                     <SelectValue placeholder={table.getState().pagination.pageSize}/>
                   </SelectTrigger>
                   <SelectContent>
-                    {pageSizes.map((pageSize) => (
+                    {tablePageSizes.map((pageSize) => (
                         <SelectItem key={pageSize} value={`${pageSize}`}>
                           {pageSize}
                         </SelectItem>

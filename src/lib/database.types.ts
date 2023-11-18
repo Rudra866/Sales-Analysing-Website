@@ -38,7 +38,7 @@ export interface Database {
         }
         Insert: {
           Avatar?: string
-          Email?: string
+          Email: string
           EmployeeNumber: string
           id: string
           Name: string
@@ -46,10 +46,10 @@ export interface Database {
         }
         Update: {
           Avatar?: string
-          Email?: string | null
+          Email?: string
           EmployeeNumber?: string
           id?: string
-          Name?: string | null
+          Name?: string
           Role?: number
         }
         Relationships: [
@@ -144,6 +144,24 @@ export interface Database {
           }
         ]
       }
+      ReferencePages: {
+        Row: {
+          id: number
+          pagebody: string
+          pagename: string
+        }
+        Insert: {
+          id?: number
+          pagebody?: string
+          pagename?: string
+        }
+        Update: {
+          id?: number
+          pagebody?: string
+          pagename?: string
+        }
+        Relationships: []
+      }
       Roles: {
         Row: {
           DatabasePermission: boolean
@@ -152,7 +170,7 @@ export interface Database {
           ModifyAllPermission: boolean
           ModifySelfPermission: boolean
           ReadPermission: boolean
-          RoleName: string | null
+          RoleName: string
           WritePermission: boolean
         }
         Insert: {
@@ -162,7 +180,7 @@ export interface Database {
           ModifyAllPermission?: boolean
           ModifySelfPermission?: boolean
           ReadPermission?: boolean
-          RoleName?: string | null
+          RoleName: string
           WritePermission?: boolean
         }
         Update: {
@@ -172,7 +190,7 @@ export interface Database {
           ModifyAllPermission?: boolean
           ModifySelfPermission?: boolean
           ReadPermission?: boolean
-          RoleName?: string | null
+          RoleName?: string
           WritePermission?: boolean
         }
         Relationships: []
@@ -254,7 +272,7 @@ export interface Database {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "sales_financingid_fkey"
+            foreignKeyName: "Sales_FinancingID_fkey"
             columns: ["FinancingID"]
             isOneToOne: false
             referencedRelation: "Financing"
@@ -315,8 +333,8 @@ export interface Database {
           EndDate: string
           id: number
           Name: string
-          PercentageComplete: number | null
           StartDate: string
+          Status: Database["public"]["Enums"]["Task Status"]
         }
         Insert: {
           Assignee?: string | null
@@ -325,8 +343,8 @@ export interface Database {
           EndDate?: string
           id?: number
           Name: string
-          PercentageComplete?: number | null
           StartDate?: string
+          Status?: Database["public"]["Enums"]["Task Status"]
         }
         Update: {
           Assignee?: string | null
@@ -335,8 +353,8 @@ export interface Database {
           EndDate?: string
           id?: number
           Name?: string
-          PercentageComplete?: number | null
           StartDate?: string
+          Status?: Database["public"]["Enums"]["Task Status"]
         }
         Relationships: [
           {
@@ -378,10 +396,20 @@ export interface Database {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      create_new_sale: {
+        Args: {
+          sale: Json
+        }
+        Returns: undefined
+      }
     }
     Enums: {
-      [_ in never]: never
+      "Task Status":
+          | "BACKLOG"
+          | "CANCELLED"
+          | "IN_PROGRESS"
+          | "TODO"
+          | "FINISHED"
     }
     CompositeTypes: {
       [_ in never]: never

@@ -66,6 +66,9 @@ export const forgotPasswordDialogSchema = z.object({
         .email("Only enter a valid email address")
 })
 
+// todo password restrictions?
+export const passwordFieldSchema = z.string().min(6)
+
 
 
 // unused
