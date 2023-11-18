@@ -29,7 +29,7 @@ export const DashboardContext = createContext<DashBoardContextProps | undefined>
 
 export function useDashboard(): DashBoardContextProps {
     const context = React.useContext(DashboardContext);
-    if (!context) throw new Error('useDashboard must be used within a DashboardProvider');
+    if (!context) throw new Error('useDashboard must be used within a DashboardProvider'+ window.location.pathname.toString());
     return context;
 }
 

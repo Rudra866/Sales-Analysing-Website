@@ -1,14 +1,16 @@
+'use client'
+
 import React, {useEffect} from 'react';
 import {
-    getAllTasksByAssignee,
-    getSalesForEmployeeInDateRange,
-    getSalesInDateRange,
+    Employee,
+    getAllTasksByAssignee, getSalesForEmployee,
     getSupabaseBrowserClient,
     Sale,
     Task
 } from "@/lib/database";
 import {DateRange} from "react-day-picker";
 import useAuth from "@/hooks/use-auth";
+import {subDays} from "date-fns";
 
 
 type EmployeeContextProps = {
@@ -16,6 +18,7 @@ type EmployeeContextProps = {
     sales?: Sale[];
     date?: DateRange;
     setDate?: React.Dispatch<React.SetStateAction<DateRange | undefined>>;
+    employee?: Employee | null;
 }
 
 const supabase = getSupabaseBrowserClient()
@@ -34,31 +37,50 @@ interface EmployeeProviderProps {
 
 export const EmployeeProvider: React.FC<EmployeeProviderProps> = ({children}) => {
     const [date, setDate] = React.useState<DateRange | undefined>({
-        from: undefined,
-        to: undefined,
+        from: subDays(new Date(), 120),
+        to: new Date(),
     })
     const [tasks, setTasks] = React.useState<Task[]>();
     const [sales, setSales] = React.useState<Sale[]>();
     const {employee} = useAuth()
 
-
     useEffect(() => {
-        getAllTasksByAssignee(supabase, employee?.id as string)
+        if (!employee) return
+        getAllTasksByAssignee(supabase, employee?.id)
             .then((res) => {
                 setTasks(res as Task[])
+                console.log(res)
             })
-        getSalesForEmployeeInDateRange(supabase, employee?.id as string, date?.from as Date, date?.to as Date)
+        getSalesForEmployee(supabase, employee?.id)
             .then((res) => {
                 setSales(res as Sale[])
             })
+    }, [employee])
 
-
+    useEffect(() => {
+        sales && setSales(filterSalesByDate(sales as Sale[], date) as Sale[])
+        tasks && setTasks(filterTasksByStartDate(tasks as Task[], date) as Task[])
     }, [date])
 
+    function filterSalesByDate(sales: Sale[], date: DateRange | undefined) {
+        return sales.filter((sale) => {
+            const saleDate = new Date(sale?.SaleTime?.toString() || '')
+            if (date?.from === undefined || date?.to === undefined) return false
+            return saleDate >= date?.from && saleDate <= date?.to
+        })
+    }
 
-
+    function filterTasksByStartDate(tasks: Task[], date: DateRange | undefined) {
+        return tasks.filter((task) => {
+            const taskDate = new Date(task?.StartDate?.toString() || '')
+            if (date?.from === undefined || date?.to === undefined) return false
+            return taskDate >= date?.from && taskDate <= date?.to
+        })
+    }
     return (
-        <div></div>
+        <EmployeeContext.Provider value={{tasks, sales, date, setDate, employee}}>
+            {children}
+        </EmployeeContext.Provider>
     );
 }
 

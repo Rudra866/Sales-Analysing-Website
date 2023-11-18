@@ -368,9 +368,7 @@ export async function getAllTasksByAssignee(supabase: SupabaseClient, assigneeID
   const {data: task, error} = await supabase
       .from('Tasks')
       .select('*')
-      .eq('Name', assigneeID)
-      .limit(1)
-      .maybeSingle();
+      .eq('Assignee', assigneeID)
 
   if (error) throw error;
   return task;
@@ -381,8 +379,6 @@ export async function getAllTasksByCreator(supabase: SupabaseClient, creatorID: 
       .from('Tasks')
       .select('*')
       .eq('Creator', creatorID)
-      .limit(1)
-      .maybeSingle();
 
   if (error) throw error;
   return task;
@@ -616,6 +612,18 @@ export async function getSalesForEmployeeInDateRange(supabase: SupabaseClient, e
 }
 
 
+export async function getSalesForEmployee(supabase: SupabaseClient, employeeID: string, sort?: "asc" | "dsc"){
+  const { data: SaleTime, error } = await supabase
+      .from('Sales')
+      .select('SaleTime, Total')
+      .order('SaleTime', { ascending: sort != "dsc" })
+      // .filter('SaleTime', 'gte', format(startDate || new Date(), 'yyyy-MM-dd'))
+      // .filter('SaleTime', 'lte', format(endDate || new Date(), 'yyyy-MM-dd'))
+      .filter('EmployeeID', 'eq', employeeID)
+
+  if (error) throw error;
+  return SaleTime;
+}
 
 
 

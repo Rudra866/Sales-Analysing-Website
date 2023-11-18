@@ -2,6 +2,14 @@ import { Icons } from "@/components/icons"
 import {z} from "zod";
 import { PostgrestError } from '@supabase/supabase-js'
 import {Employee} from "@/lib/database";
+import {
+    ArrowDownIcon, ArrowRightIcon, ArrowUpIcon,
+    CheckCircledIcon,
+    CircleIcon,
+    CrossCircledIcon,
+    QuestionMarkCircledIcon,
+    StopwatchIcon
+} from "@radix-ui/react-icons";
 
 export type DbResult<T> = T extends PromiseLike<infer U> ? U : never
 export type DbResultOk<T> = T extends PromiseLike<{ data: infer U }> ? Exclude<U, null> : never
@@ -104,3 +112,51 @@ export type SaleWithEmployeeAndFinancingType = {
     TradeInID: number | null;
     VehicleMake: string;
 };
+
+
+export const statuses = [
+    {
+        value: "BACKLOG",
+        label: "Backlog",
+        icon: QuestionMarkCircledIcon,
+    },
+    {
+        value: "TODO",
+        label: "Todo",
+        icon: CircleIcon,
+    },
+    {
+        value: "IN_PROGRESS",
+        label: "In Progress",
+        icon: StopwatchIcon,
+    },
+    {
+        value: "DONE",
+        label: "Done",
+        icon: CheckCircledIcon,
+    },
+    {
+        value: "CANCELED",
+        label: "Canceled",
+        icon: CrossCircledIcon,
+    },
+]
+
+export const priorities = [
+    {
+        label: "Low",
+        value: "low",
+        icon: ArrowDownIcon,
+    },
+    {
+        label: "Medium",
+        value: "medium",
+        icon: ArrowRightIcon,
+    },
+    {
+        label: "High",
+        value: "high",
+        icon: ArrowUpIcon,
+    },
+]
+

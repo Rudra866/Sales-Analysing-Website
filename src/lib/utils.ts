@@ -10,7 +10,7 @@ export function cn(...inputs: ClassValue[]) {
 
 
 export function isAdmin(role: number) {
-    const adminRoles = [1, 2, 3, 4];
+    const adminRoles = [1, 2, 3, 4, 5];
     return adminRoles.includes(role);
 }
 
