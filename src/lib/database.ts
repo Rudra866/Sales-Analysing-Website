@@ -868,33 +868,6 @@ export async function postToNotifications(supabase: SupabaseClient, newNotificat
  */
 export async function postToTasks(supabase: SupabaseClient, newTask: TaskInsert): Promise<Task>
 {
-  if (!newTask.Creator) throw new Error("New tasks need a creator!"); // temp until db update
-  const employeeResp = await supabase
-      .from('Employees')
-      .select()
-      .eq('id', newTask.Creator)
-      .limit(1)
-      .maybeSingle();
-
-  // If the response has an error (which is most likely a not found error), throw a new exception
-  if (employeeResp.error || !employeeResp.data)
-  {
-    throw employeeResp.error ?? new Error;
-  }
-
-  const assigneeResp = await supabase
-      .from('Employees')
-      .select()
-      .eq("id", newTask.Assignee)
-      .limit(1)
-      .maybeSingle();
-
-  // If the response has an error (which is most likely a not found error), throw a new exception
-  if (assigneeResp.error || !assigneeResp.data)
-  {
-    throw new EmployeeIDNotFoundError("Employee ID not found", "");
-  }
-
   const post = await supabase
       .from('Tasks')
       .insert(newTask)
