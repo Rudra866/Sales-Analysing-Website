@@ -9,6 +9,8 @@ import {getSupabaseMiddlewareClient} from "@/lib/supabase";
  */
 export const admin_routes:string[] = [
     "/admin/employees",
+    "/admin/sales",
+    "/admin/",
 ]
 
 /**

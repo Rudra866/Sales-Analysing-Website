@@ -22,7 +22,6 @@ function UpdateUserPage() {
     const router = useRouter()
 
     useEffect(() => {
-
         getAllEmployees(supabase).then((res) => {
             res?.sort((a, b) => {
                 return a.Role - b.Role
@@ -39,9 +38,7 @@ function UpdateUserPage() {
         }).catch((err) => {
             console.error(err)
         })
-
     }, []);
-
 
     return (
         <div className="space-y-6">
@@ -50,7 +47,6 @@ function UpdateUserPage() {
                     <h3 className="text-lg font-medium">Update User</h3>
                     <p className="text-sm text-muted-foreground">Click on a user to update.</p>
                 </div>
-                {/*todo implement search*/}
                 <Input placeholder={'Search'}/>
             </div>
             <Separator/>

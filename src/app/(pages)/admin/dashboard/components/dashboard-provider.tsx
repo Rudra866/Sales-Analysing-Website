@@ -68,8 +68,6 @@ export const DashboardProvider: React.FC<DashboardProviderProps> = ({children}) 
             setSalesGoal(res as SalesGoal[])
         })
 
-
-
         async function getEmployeeSales() {
             const { data: sales, error } = await supabase
                 .from('Sales')
@@ -120,7 +118,7 @@ export const DashboardProvider: React.FC<DashboardProviderProps> = ({children}) 
         }
 
         function filterSalesByEmployee(sales: SaleWithEmployeeAndFinancingType[], employee: Employee | undefined) {
-            console.log('employee', employee, 'sales: ', sales)
+            // console.log('employee', employee, 'sales: ', sales)
             return sales.filter((sale) => {
                 return sale.EmployeeID === employee?.id
             })
