@@ -17,7 +17,10 @@ import {DialogClose} from "@radix-ui/react-dialog";
 import {Checkbox} from "@/components/ui/checkbox";
 import {ScrollArea, ScrollBar} from "@/components/ui/scroll-area";
 import {useFormModalContext} from "@/components/FormModal";
-import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
+// import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
+import FormFieldComponent from "@/app/(pages)/sales/components/form-field-component";
+import {Separator} from "@/components/ui/separator";
+import useAuth from "@/hooks/use-auth";
 
 export interface SaleSelectModalFormProps {
     sale?: Sale | null
@@ -25,65 +28,31 @@ export interface SaleSelectModalFormProps {
 
 
 const saleFormSchemaCommon = {
-    StockNumber: z.string().min(1, {
-        message: "StockNumber must not be empty."
-    })
-        .max(255, {
-            message: "StockNumber must be shorter than 255 characters."
-        }),
-    VehicleMake: z.string().min(1, {
-        message: "VehicleMake must not be empty."
-    })
-        .max(255, {
-            message: "VehicleMake must be shorter than 255 characters."
-        }),
+    StockNumber: z.string().min(1, {message: "StockNumber must not be empty."}),
+    VehicleMake: z.string().min(1, {message: "VehicleMake must not be empty."}),
+    // CustomerName: z.string(), // todo
+    // CustomerID: z.number().optional(),
+    ActualCashValue: z.number(),
+    GrossProfit: z.number(),
+    FinAndInsurance: z.number(),
+    // FinancierID: z.number().optional(),
+    TradeInID: z.number().optional(),
+    EmployeeID: z.string(),
+    NewSale: z.boolean(),
+    SaleTime: z.string().optional(),
+    Total: z.number().optional(),
+    FinancingID: z.number().optional(),
+    Holdback: z.number().optional(),
+    LotPack: z.number().optional(),
+    DaysInStock: z.number().optional(),
+    DealerCost: z.number().optional(),
+    ROI: z.number().optional(),
 
-    CustomerName: z.string(), // todo
-
-    ActualCashValue: z.number(), //todo
-
-    GrossProfit: z.number(), //todo
-
-    FinAndInsurance: z.number(), //todo
-
-    FinancingMethod: z.string().optional(), //todo
-
-    UsedSale: z.boolean(), //todo
-
-    TradeIn: z.string().optional(), //todo
-
-    TradeInValue: z.string().optional(), //todo
-
-    EmployeeID: z.string()
 }
-
-
-// todo drop down for financing method not input
 
 
 const saleFormSchema = z.object({
     ...saleFormSchemaCommon,
-    Holdback: z.string()
-        .transform((value) => {
-            const numberValue = parseFloat(value);
-
-            return !isNaN(numberValue) ? numberValue : value;
-        }),
-})
-
-const usedSaleFormSchema = z.object({
-    ...saleFormSchemaCommon,
-
-    LotPack: z.number(),
-    DaysInStock: z.number(),
-    DealerCost: z.number(),
-    ROI: z.number().min(-100, {
-        message: "ROI must not be empty."
-    })
-        .max(100, {
-            message: "ROI must be between -100 and 100 percent"
-        }),
-
 })
 
 // todo database calls update
@@ -93,338 +62,73 @@ const usedSaleFormSchema = z.object({
  * @group React Components
  */
 export function AddSalesRowDialog({sale}: SaleSelectModalFormProps) {
-    const supabase = getSupabaseBrowserClient();
-    const formContext = useFormModalContext();
-    // const [editState, setEditState] = useState(false);
-    const [newSaleSelection, setNewSaleSelection] = useState<boolean>()
-    const [noFinancing, setNoFinancing] = useState<boolean>(!!sale?.FinancingID)
-    const [noTradeIn, setNoTradeIn] = useState<boolean>(!!sale?.TradeInID)
-    const [employees, setEmployees] = useState<Employee[]>([])
 
-    const form = useForm<z.infer<typeof saleFormSchema | typeof usedSaleFormSchema>>(
-        newSaleSelection ?
+    const formContext = useFormModalContext();
+    const {employee} = useAuth()
+
+    const form = useForm<z.infer<typeof saleFormSchema>>(
             {
                 resolver: zodResolver(saleFormSchema),
                 defaultValues: {
-                    StockNumber: sale?.StockNumber ?? "",
-                    VehicleMake: sale?.VehicleMake ?? "",
                     ActualCashValue: sale?.ActualCashValue ?? 0,
-                    GrossProfit: sale?.GrossProfit ?? 0,
-                    FinAndInsurance: sale?.FinAndInsurance ?? 0,
-                    Holdback: sale?.Holdback ?? 0, // new only
-                    UsedSale: !sale?.NewSale ?? false,
-                    EmployeeID: sale?.EmployeeID ?? "",
-                },
-            }
-            :
-            {
-                resolver: zodResolver(usedSaleFormSchema),
-                defaultValues: {
-                    StockNumber: sale?.StockNumber ?? "",
-                    VehicleMake: sale?.VehicleMake ?? "",
-                    ActualCashValue: sale?.ActualCashValue ?? 0,
-                    GrossProfit: sale?.GrossProfit ?? 0,
-                    FinAndInsurance: sale?.FinAndInsurance ?? 0,
-                    UsedSale: !sale?.NewSale ?? false,
-                    LotPack: sale?.LotPack ?? 0,
+                    // CustomerID: sale?.CustomerID ?? 0,
                     DaysInStock: sale?.DaysInStock ?? 0,
                     DealerCost: sale?.DealerCost ?? 0,
-                    ROI: sale?.ROI ? sale.ROI * 100 : 0,
-                    EmployeeID: sale?.EmployeeID ?? "",
+                    EmployeeID: employee?.id ?? "",
+                    // FinancingID: sale?.FinancingID ?? 0,
+                    FinAndInsurance: sale?.FinAndInsurance ?? 0,
+                    GrossProfit: sale?.GrossProfit ?? 0,
+                    Holdback: sale?.Holdback ?? 0,
+                    LotPack: sale?.LotPack ?? 0,
+                    NewSale: sale?.NewSale ?? false,
+                    ROI: sale?.ROI ?? 0,
+                    SaleTime: sale?.SaleTime ?? "",
+                    StockNumber: sale?.StockNumber ?? "",
+                    VehicleMake: sale?.VehicleMake ?? "",
+                    TradeInID: sale?.TradeInID ?? 0,
                 },
             }
+
     )
 
 
-    useEffect(() => {
-        getAllEmployees(supabase).then((employees) => {
-            setEmployees(employees as Employee[])
-        })
-    }, []);
-
-    function getEmployee(): Employee | undefined {
-        return employees.find((employee) => employee.id === form.getValues("EmployeeID"))
-    }
-
-    function onSubmit(values: z.infer<typeof saleFormSchema | typeof usedSaleFormSchema>) {
+    function onSubmit(values: z.infer<typeof saleFormSchema>) {
         formContext?.onSubmit(values)
-        console.log("From Dialog: ", values)
     }
 
     return (
         <ScrollArea className='flex flex-col max-h-[700px] text-foreground pr-4 '>
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)}>
-                    <DialogBody className={'space-y-4'}>
-                        <div className={"flex flex-row"}>
-                            <FormField
-                                control={form.control}
-                                name="StockNumber"
-                                render={({field}) => (
-                                    <FormItem>
-                                        <FormLabel>Stock Number</FormLabel>
-                                        <FormControl>
-                                            <Input
-                                                className={"w-32"}
-                                                placeholder="0"
-                                                {...field}
-
-                                            />
-                                        </FormControl>
-                                        <FormMessage/>
-                                    </FormItem>
-                                )}
-                            />
-                            <div className={"flex-grow pl-2"}>
-                                <FormField
-                                    control={form.control}
-                                    name="VehicleMake"
-                                    render={({field}) => (
-                                        <FormItem className={""}>
-                                            <FormLabel>Vehicle Make</FormLabel>
-                                            <FormControl>
-                                                <Input
-
-                                                    placeholder="VehicleMake"
-                                                    {...field}
-
-                                                />
-                                            </FormControl>
-                                            <FormMessage/>
-                                        </FormItem>
-                                    )}
-                                />
-                            </div>
-                        </div>
-                        <FormField
-                            control={form.control}
-                            name="ActualCashValue"
-                            render={({field}) => (
-                                <FormItem>
-                                    <FormLabel>Actual Cash Value</FormLabel>
-                                    <FormControl>
-                                        <Input
-                                            placeholder="ActualCashValue"
-                                            {...field}
-                                            onChange={event => {
-                                                const value = parseFloat(event.target.value);
-                                                field.onChange(value);
-                                            }}
-
-                                        />
-                                    </FormControl>
-                                    <FormMessage/>
-                                </FormItem>
-                            )}
+                    <DialogBody className={'grid grid-cols-4 gap-2'}>
+                        <FormFieldComponent
+                            name={'StockNumber'}
+                            form={form}
+                            label={'Stock Number'}
+                            className="col-span-4"
+                            inputType={'input'}
                         />
-                        <div className={"flex flex-row gap-2"}>
-                            <FormField
-                                control={form.control}
-                                name="GrossProfit"
-                                render={({field}) => (
-                                    <FormItem>
-                                        <FormLabel>Gross Profit</FormLabel>
-                                        <FormControl>
-                                            <Input
-                                                placeholder="0"
-                                                {...field}
-                                                onChange={event => {
-                                                    const value = parseFloat(event.target.value);
-                                                    field.onChange(value);
-                                                }}
-
-                                            />
-                                        </FormControl>
-                                        <FormMessage/>
-                                    </FormItem>
-                                )}
-                            />
-                            <FormField
-                                control={form.control}
-                                name="FinAndInsurance"
-                                render={({field}) => (
-                                    <FormItem>
-                                        <FormLabel>F&I</FormLabel>
-                                        <FormControl>
-                                            <Input
-                                                placeholder="0"
-                                                {...field}
-                                                onChange={event => {
-                                                    const value = parseFloat(event.target.value);
-                                                    field.onChange(value);
-                                                }}
-
-                                            />
-                                        </FormControl>
-                                        <FormMessage/>
-                                    </FormItem>
-                                )}
-                            />
-                            {newSaleSelection &&
-                                <FormField
-                                    control={form.control}
-                                    name="Holdback"
-                                    render={({field}) => (
-                                        <FormItem>
-                                            <FormLabel>Hold Back</FormLabel>
-                                            <FormControl>
-                                                <Input
-                                                    placeholder={"0"}
-                                                    {...field}
-                                                    onChange={event => {
-                                                        const value = parseFloat(event.target.value);
-                                                        field.onChange(value);
-                                                    }}
-
-                                                />
-                                            </FormControl>
-                                            <FormMessage/>
-                                        </FormItem>
-                                    )}
-                                />
-                            }
-                        </div>
-                        <div className={"flex flex-row gap-2"}>
-                            <FormField
-                                control={form.control}
-                                name="CustomerName"
-                                render={({field}) => (
-                                    <FormItem className={'w-full'}>
-                                        <FormLabel>Customer Name</FormLabel>
-                                        <FormControl>
-                                            <Input
-                                                placeholder="Name"
-                                                {...field}
-
-                                            />
-                                        </FormControl>
-                                        <FormMessage/>
-                                    </FormItem>
-                                )}
-                            />
-                            <FormField
-                                control={form.control}
-                                name="EmployeeID"
-                                render={({field}) => (
-                                    <FormItem className={'w-full'}>
-                                        <FormLabel>Sales Associate</FormLabel>
-                                        <FormControl>
-                                            <Select
-                                                defaultValue={getEmployee()?.Name ?? field.value}
-                                                onValueChange={field.onChange}
-
-                                            >
-                                                <SelectTrigger id="area" >
-                                                    <SelectValue placeholder={getEmployee()?.Name ?? field.value} {...field}/>
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    {employees.map((employee) => (
-                                                        <SelectItem value={employee.id} key={employee.id}>
-                                                            {employee.Name}
-                                                        </SelectItem>
-                                                    ))}
-                                                </SelectContent>
-                                            </Select>
-                                        </FormControl>
-                                        <FormMessage/>
-                                    </FormItem>
-                                )}
-                            />
-                        </div>
-                        <div className={"flex gap-2"}>
-                            <FormField
-                                control={form.control}
-                                name="TradeIn"
-                                render={({field}) => (
-                                    <FormItem>
-                                        <FormLabel>Trade-in Name</FormLabel>
-                                        <FormControl>
-                                            <Input
-                                                placeholder="Vehicle Make"
-                                                {...field}
-                                                // disabled={!editState || noTradeIn}
-                                            />
-                                        </FormControl>
-                                        <FormMessage/>
-                                    </FormItem>
-                                )}
-                            />
-                            <FormField
-                                control={form.control}
-                                name="TradeInValue"
-                                render={({field}) => (
-                                    <FormItem className={"w-28"}>
-                                        <FormLabel>Trade-in Value</FormLabel>
-                                        <FormControl>
-                                            <Input
-                                                placeholder="$0.00"
-                                                {...field}
-                                                onChange={event => {
-                                                    const value = parseFloat(event.target.value);
-                                                    field.onChange(value);
-                                                }}
-                                                // disabled={!editState || noTradeIn}
-                                            />
-                                        </FormControl>
-                                        <FormMessage/>
-                                    </FormItem>
-                                )}
-                            />
-                            <div className={"flex flex-row gap-2 items-center pt-4 pl-2"}>
-                                <Checkbox
-
-                                    checked={noTradeIn}
-                                    onCheckedChange={(event) => {
-                                        if (event != "indeterminate") setNoTradeIn(event)
-                                    }}/>
-                                <FormLabel>No Trade</FormLabel>
-                            </div>
-                        </div>
-                        <div>
-                            <FormField
-                                control={form.control}
-                                name="FinancingMethod"
-                                render={({field}) => (
-                                    <FormItem className={"flex flex-row"}>
-                                        <div className={"grow"}>
-                                            <FormLabel>Financing Method</FormLabel>
-                                            <FormControl>
-                                                <Input
-                                                    placeholder={noFinancing ? "None" : "Financing"}
-                                                    {...field}
-                                                    // disabled={!editState || noFinancing}
-                                                />
-                                            </FormControl>
-                                        </div>
-                                        <FormMessage/>
-                                        <div className={"flex flex-row gap-2 items-center pt-4 pl-2"}>
-                                            <Checkbox
-
-                                                checked={noFinancing}
-                                                onCheckedChange={(event) => {
-                                                    if (event != "indeterminate") setNoFinancing(event)
-                                                }}/>
-                                            <FormLabel>No Financing</FormLabel>
-                                        </div>
-                                    </FormItem>
-
-                                )}
-                            />
-                        </div>
-
+                        <FormFieldComponent name={'VehicleMake'} form={form} label={'Vehicle Make'}
+                                            className="col-span-2" inputType={'input'}/>
+                        <FormFieldComponent name={'ActualCashValue'} form={form} label={'Actual Cash Value'}
+                                            className="col-span-2" inputType='inputNumber'/>
+                        <FormFieldComponent name={'GrossProfit'} form={form} label={'Gross Profit'}
+                                            className="col-span-2" inputType={'inputNumber'}/>
+                        <FormFieldComponent name={'FinAndInsurance'} form={form} label={'F&I'} className="col-span-2"
+                                            inputType={'inputNumber'}/>
+                        <FormFieldComponent name={'Holdback'} form={form} label={'Hold Back'} className="col-span-2"
+                                            inputType='inputNumber'/>
                         <FormField
                             control={form.control}
-                            name="UsedSale"
+                            name="NewSale"
                             render={({field}) => (
-                                <FormItem>
+                                <FormItem className='flex items-center pt-5'>
                                     <FormControl>
                                         <div className={'flex items-center gap-2'}>
                                             <Checkbox
-
                                                 checked={field.value}
                                                 onCheckedChange={(event) => {
                                                     field.onChange(event)
-                                                    setNewSaleSelection(field.value)
                                                 }}
                                             />
                                             <FormLabel>Used Sale</FormLabel>
@@ -435,85 +139,25 @@ export function AddSalesRowDialog({sale}: SaleSelectModalFormProps) {
                                 </FormItem>
                             )}
                         />
-                        {!newSaleSelection &&
-                            <>
-                                <FormField
-                                    control={form.control}
-                                    name="LotPack"
-                                    render={({field}) => (
-                                        <FormItem>
-                                            <FormLabel>Lot Pack</FormLabel>
-                                            <FormControl>
-                                                <Input
-                                                    placeholder="0"
-                                                    {...field}
-                                                    onChange={event => {
-                                                        const value = parseFloat(event.target.value);
-                                                        field.onChange(value);
-                                                    }}
-                                                    />
-                                            </FormControl>
-                                            <FormMessage/>
-                                        </FormItem>
-                                    )}/>
-                                <FormField
-                                    control={form.control}
-                                    name="DaysInStock"
-                                    render={({field}) => (
-                                        <FormItem>
-                                            <FormLabel>Days In Stock</FormLabel>
-                                            <FormControl>
-                                                <Input
-                                                    placeholder="0"
-                                                    {...field}
-                                                    onChange={event => {
-                                                        const value = parseFloat(event.target.value);
-                                                        field.onChange(value);
-                                                    }}
-                                                    />
-                                            </FormControl>
-                                            <FormMessage/>
-                                        </FormItem>
-                                    )}/>
-                                <FormField
-                                    control={form.control}
-                                    name="DealerCost"
-                                    render={({field}) => (
-                                        <FormItem>
-                                            <FormLabel>Dealer Cost</FormLabel>
-                                            <FormControl>
-                                                <Input
-                                                    placeholder="0"
-                                                    {...field}
-                                                    onChange={event => {
-                                                        const value = parseFloat(event.target.value);
-                                                        field.onChange(value);
-                                                    }}
-                                                    />
-                                            </FormControl>
-                                            <FormMessage/>
-                                        </FormItem>
-                                    )}/>
-                                <FormField
-                                    control={form.control}
-                                    name="ROI"
-                                    render={({field}) => (
-                                        <FormItem>
-                                            <FormLabel>ROI</FormLabel>
-                                            <FormControl>
-                                                <Input
-                                                    placeholder="0"
-                                                    {...field}
-                                                    onChange={event => {
-                                                        const value = parseFloat(event.target.value);
-                                                        field.onChange(value);
-                                                    }}
-                                                    />
-                                            </FormControl>
-                                            <FormMessage/>
-                                        </FormItem>
-                                    )}/>
-                            </>}
+                        <Separator className={'col-span-4 my-4'}/>
+                        <FormFieldComponent name={'CustomerName'} form={form} label={'Customer Name'}
+                                            className="col-span-2" inputType={"input"}/>
+                        <FormFieldComponent name={'city'} form={form} label={'City'} className="col-span-2"
+                                            inputType='input'/>
+                        <FormFieldComponent name={'TradeIn'} form={form} label={'Trade-in Name'} className="col-span-2"
+                                            inputType='input'/>
+                        <FormFieldComponent name={'FinancingMethod'} form={form} label={'Financing Method'}
+                                            className="col-span-2" inputType={'input'}/>
+                        <Separator className={'col-span-4 my-4'}/>
+                        <FormFieldComponent name={'LotPack'} form={form} label={'Lot Pack'} className="col-span-2"
+                                            inputType={'inputNumber'}/>
+                        <FormFieldComponent name={'DaysInStock'} form={form} label={'Days In Stock'}
+                                            className="col-span-2" inputType={'inputNumber'}/>
+                        <FormFieldComponent name={'DealerCost'} form={form} label={'Dealer Cost'} className="col-span-2"
+                                            inputType={'inputNumber'}/>
+                        <FormFieldComponent name={'ROI'} form={form} label={'ROI'} className="col-span-2"
+                                            inputType={'inputNumber'}/>
+
                     </DialogBody>
                     <DialogFooter className={'py-4'}>
                         <Button type={"submit"}>Submit</Button>
