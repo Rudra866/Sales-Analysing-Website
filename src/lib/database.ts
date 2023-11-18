@@ -300,6 +300,9 @@ export async function getTask(supabase: SupabaseClient, taskName: string): Promi
   return task;
 }
 
+
+
+
 // is there much point to this one? There may be multiple duplicates, and our sales record holds an id.
 // we probably want to return multiple if we have?
 /**
@@ -359,6 +362,47 @@ export async function getRoleFromEmployee(supabase: SupabaseClient, employee: Em
 
   if (error) throw error;
   return role;
+}
+
+export async function getAllTasksByAssignee(supabase: SupabaseClient, assigneeID: string): Promise<Task[] | null> {
+  const {data: task, error} = await supabase
+      .from('Tasks')
+      .select('*')
+      .eq('Name', assigneeID)
+      .limit(1)
+      .maybeSingle();
+
+  if (error) throw error;
+  return task;
+}
+
+export async function getAllTasksByCreator(supabase: SupabaseClient, creatorID: string): Promise<Task[] | null> {
+  const {data: task, error} = await supabase
+      .from('Tasks')
+      .select('*')
+      .eq('Creator', creatorID)
+      .limit(1)
+      .maybeSingle();
+
+  if (error) throw error;
+  return task;
+}
+
+/**
+ * Get all rows in the tasks table.
+ * @param {SupabaseClient} supabase Any type of Supabase client (client, server, middleware, route).
+ * @returns {Promise<Task[] | null>} A list of all tasks, or null if none exist.
+ * @throws {@link PostgrestError} on database error.
+ * @group Database Functions
+ */
+export async function getAllTasks(supabase: SupabaseClient): Promise<Task[] | null>
+{
+  const {data: tasks, error} = await supabase
+      .from('Tasks')
+      .select('*')
+
+  if (error) throw error;
+  return tasks;
 }
 
 /**
@@ -496,22 +540,7 @@ export async function getAllSalesGoals(supabase: SupabaseClient): Promise<SalesG
   return salesGoals;
 }
 
-/**
- * Get all rows in the tasks table.
- * @param {SupabaseClient} supabase Any type of Supabase client (client, server, middleware, route).
- * @returns {Promise<Task[] | null>} A list of all tasks, or null if none exist.
- * @throws {@link PostgrestError} on database error.
- * @group Database Functions
- */
-export async function getAllTasks(supabase: SupabaseClient): Promise<Task[] | null>
-{
-  const {data: tasks, error} = await supabase
-      .from('Tasks')
-      .select('*')
 
-  if (error) throw error;
-  return tasks;
-}
 
 /**
  * Get all rows in the TradeIns table.
@@ -839,33 +868,6 @@ export async function postToNotifications(supabase: SupabaseClient, newNotificat
  */
 export async function postToTasks(supabase: SupabaseClient, newTask: TaskInsert): Promise<Task>
 {
-  if (!newTask.Creator) throw new Error("New tasks need a creator!"); // temp until db update
-  const employeeResp = await supabase
-      .from('Employees')
-      .select()
-      .eq('id', newTask.Creator)
-      .limit(1)
-      .maybeSingle();
-
-  // If the response has an error (which is most likely a not found error), throw a new exception
-  if (employeeResp.error || !employeeResp.data)
-  {
-    throw employeeResp.error ?? new Error;
-  }
-
-  const assigneeResp = await supabase
-      .from('Employees')
-      .select()
-      .eq("id", newTask.Assignee)
-      .limit(1)
-      .maybeSingle();
-
-  // If the response has an error (which is most likely a not found error), throw a new exception
-  if (assigneeResp.error || !assigneeResp.data)
-  {
-    throw new EmployeeIDNotFoundError("Employee ID not found", "");
-  }
-
   const post = await supabase
       .from('Tasks')
       .insert(newTask)

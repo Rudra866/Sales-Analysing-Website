@@ -1,7 +1,7 @@
 import React, {PropsWithChildren, useState} from "react";
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table";
 import {flexRender} from "@tanstack/react-table";
-import {columns} from "@/app/(pages)/tasks/components/columns";
+// import {columns} from "@/app/(pages)/tasks/components/columns";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 import {Button} from "@/components/ui/button";
 import {ChevronLeftIcon, ChevronRightIcon, DoubleArrowLeftIcon, DoubleArrowRightIcon} from "@radix-ui/react-icons";
@@ -22,6 +22,7 @@ export const tablePageSizes = [10, 25, 50, 100, 250, 1000]
  */
 export default function DataTable<TData>({table, loading, children}:
                               PropsWithChildren<DataTableProps<TData>>) {
+  let columns = table.getAllColumns()
   return (
       <div className="space-y-4">
         <div className="flex items-center">

@@ -12,11 +12,11 @@ export const docsConfig: DocsConfig = {
         },
         {
             title: "Settings",
-            href: "/cards",
+            href: "/settings",
         },
         {
-            title: "Settings2",
-            href: "/forms",
+            title: "Cards",
+            href: "/examples/cards",
         },
         {
             title: "Tasks",

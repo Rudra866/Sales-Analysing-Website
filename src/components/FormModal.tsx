@@ -1,3 +1,5 @@
+'use client'
+
 import {Dialog, DialogContent, DialogHeader, DialogTitle} from "@/components/ui/dialog";
 import React, {createContext, Dispatch, ReactElement, ReactNode, SetStateAction, useContext, useState} from "react";
 

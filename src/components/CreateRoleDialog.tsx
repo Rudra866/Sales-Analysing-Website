@@ -1,4 +1,4 @@
-
+'use client'
 
 
 // todo maybe add hovers so it is clear about what each role does?

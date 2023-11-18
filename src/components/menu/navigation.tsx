@@ -16,10 +16,7 @@ function Navigation() {
                       <Image src={'/icon.png'} alt={'icon'} width={25} height={25} className={'mr-2'}/>
                       <MainNav className="mx-6"/>
                       <div className="ml-auto flex items-center space-x-4">
-                          {/*<Search/>*/}
-                          {/*<TeamSwitcher/>*/}
                           <UserNav/>
-                        {/*<ModeToggle />*/}
                       </div>
                   </div>
                   <div className="container flex h-fit items-center">

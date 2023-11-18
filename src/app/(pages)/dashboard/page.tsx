@@ -1,25 +1,16 @@
 'use client'
 
 import {Button} from "@/components/ui/button"
-import {Tabs, TabsContent, TabsList, TabsTrigger,} from "@/components/ui/tabs"
-// import {CalendarDateRangePicker} from "./components/date-range-picker"
+import {Card, CardContent, CardHeader, CardTitle,} from "@/components/ui/card"
+import CalendarDateRangePicker from "./components/date-range-picker"
+import {Overview} from "./components/overview"
+import {RecentSales} from "./components/recent-sales"
+import * as React from "react";
 import {useDashboard} from "./components/dashboard-provider";
-import useAuth from "@/hooks/use-auth";
-// import Dashboard from "@/app/(pages)/dashboard/components/Dashboard";
-import dynamic from "next/dynamic";
-import Loading from "@/app/(pages)/dashboard/loading";
-// import DashboardSalesTable from "@/app/(pages)/dashboard/components/DashboardSalesTable";
-// import DashboardHeader from "@/app/(pages)/dashboard/components/DashboardHeader";
-
-const Dashboard =
-    dynamic(() => import('./components/Dashboard'), {loading: () => <Loading />})
-
-const DashboardSalesTable =
-    dynamic(() => import('./components/DashboardSalesTable'), {loading: () => <Loading />})
-
-const DashboardHeader =
-    dynamic(() => import('./components/DashboardHeader'), {loading: () => <Loading />})
-
+import {Sale} from "@/lib/database";
+import {DynamicChart} from "@/components/dynamic-chart";
+import SalesLineChart from "@/components/sales-line-chart";
+import SummaryCard, {CountCard} from "./components/summary-card";
 
 
 // TODO maybe we can split this page to some public components? We can also add db method to handle this db request.
@@ -29,31 +20,42 @@ const DashboardHeader =
  * @route `/dashboard`
  */
 export default function DashboardPage() {
+    const {data, date, setDate} = useDashboard()
     return (
         <>
-            <div className="hidden flex-col md:flex">
+            <div className="flex-col md:flex">
                 <div className="flex-1 space-y-4 p-8 pt-6">
-                    <DashboardHeader/>
-                    <Tabs defaultValue="overview" className="space-y-4">
-                        <TabsList>
-                            <TabsTrigger value="overview">Overview</TabsTrigger>
-                            <TabsTrigger value="Sales Table">Sales Table</TabsTrigger>
-                            <TabsTrigger value="reports">Reports</TabsTrigger>
-                            <TabsTrigger value="notifications">Notifications</TabsTrigger>
-                        </TabsList>
-                        <TabsContent value="overview" className="space-y-4">
-                            <Dashboard/>
-                        </TabsContent>
-                        <TabsContent value="Sales Table">
-                            <DashboardSalesTable/>
-                        </TabsContent>
-                        <TabsContent value="reports">
-                            Reports
-                        </TabsContent>
-                        <TabsContent value="notifications">
-                            Notifications
-                        </TabsContent>
-                    </Tabs>
+                    <div className="flex items-center justify-between space-y-2">
+                        <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
+                        <div className="flex items-center space-x-2">
+                            <CalendarDateRangePicker date={date} setDate={setDate}/>
+                            <Button>Download</Button>
+                        </div>
+                    </div>
+                    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                        <SummaryCard defaultCategory={'Total'} />
+                        <SummaryCard defaultCategory={'GrossProfit'} />
+                        <SummaryCard defaultCategory={'DealerCost'} />
+                        <CountCard />
+                    </div>
+                    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
+                        <Card className="col-span-4">
+                            <CardHeader>
+                                <CardTitle>Sales</CardTitle>
+                            </CardHeader>
+                            <CardContent className="pl-2">
+                                <Overview/>
+                            </CardContent>
+                        </Card>
+                        <RecentSales/>
+                        <SalesLineChart data={data as Sale[]} date={date}/>
+                        <DynamicChart
+                            className="col-span-3"
+                            data={data!}
+                            date={date}
+                            title={'Sales'}
+                        />
+                    </div>
                 </div>
             </div>
         </>

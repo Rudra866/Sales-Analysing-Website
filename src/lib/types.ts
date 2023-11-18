@@ -1,6 +1,7 @@
 import { Icons } from "@/components/icons"
 import {z} from "zod";
 import { PostgrestError } from '@supabase/supabase-js'
+import {Employee} from "@/lib/database";
 
 export type DbResult<T> = T extends PromiseLike<infer U> ? U : never
 export type DbResultOk<T> = T extends PromiseLike<{ data: infer U }> ? Exclude<U, null> : never
@@ -83,12 +84,7 @@ export const navigationMenu = [
 
 export type SaleWithEmployeeAndFinancingType = {
     EmployeeID: string;
-    Employees: {
-        Name: string | null;
-        Email: string | null;
-        EmployeeNumber: string;
-        Role: number; // This should reference to the 'Roles' table
-    };
+    Employees: Employee;
     ActualCashValue: number;
     CustomerID: number;
     DaysInStock: number | null;

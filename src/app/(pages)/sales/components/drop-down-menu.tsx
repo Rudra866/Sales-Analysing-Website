@@ -14,6 +14,14 @@ import {MoreHorizontal} from "lucide-react";
 import FormModal from "@/components/FormModal";
 import {getSupabaseBrowserClient, Sale} from "@/lib/database";
 import {AddSalesRowDialog} from "@/app/(pages)/sales/components/AddSalesRowDialog";
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger
+} from "@/components/ui/dialog";
 // import {createClientComponentClient} from "@supabase/auth-helpers-nextjs";
 
 
@@ -26,9 +34,8 @@ type Props = {
 // TODO TS71007: Props must be serializable for components in the "use client" entry file, "setSales" is invalid
 
 export function DropDownMenu({row, sales, setSales}: Props) {
-    const [item, setItem] = useState<Sale>();
-    const [salesModal, setSalesModal] = useState(false);
     const supabase = getSupabaseBrowserClient();
+    const [salesModal, setSalesModal] = useState(false);
 
     function updateSales(sale: Sale) {
         const originalSales = [...sales]
@@ -52,15 +59,11 @@ export function DropDownMenu({row, sales, setSales}: Props) {
                     <DropdownMenuItem onClick={() => navigator.clipboard.writeText(JSON.stringify(row.original))}>
                         Copy
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={
-                        () => {
-                            setItem(row.original)
-                            setSalesModal(true)
-                        }
-                    }>
+                    <DropdownMenuItem onClick={()=>{setSalesModal(true)}}>
                         <span>Edit</span>
                     </DropdownMenuItem>
                     <DropdownMenuSeparator/>
+
                     <DropdownMenuItem onClick={() => {
                         row.original.id && supabase.from('Sales').delete().eq('id', row.original.id).then(() => {
                             const originalSales = [...sales]
@@ -71,13 +74,15 @@ export function DropDownMenu({row, sales, setSales}: Props) {
                         Delete
                         <DropdownMenuShortcut>⌘⌫</DropdownMenuShortcut>
                     </DropdownMenuItem>
+
                 </DropdownMenuContent>
             </DropdownMenu>
-            {/*{row.original &&*/}
-            {/*    <FormModal title={"Sale"} showDialog={salesModal} setShowDialog={setSalesModal}>*/}
-            {/*        <AddSalesRowDialog sale={row.original} updateSale={updateSales} setShowDialog={setSalesModal}/>*/}
-            {/*    </FormModal>*/}
-            {/*}*/}
+            {salesModal &&
+                <FormModal title={"Sale"} showDialog={salesModal} setShowDialog={setSalesModal} onSubmit={updateSales}>
+                    <AddSalesRowDialog sale={row.original} />
+                </FormModal>
+            }
+        {/*    if a user clicks edit but closes modal without saving what happens? memory leak? */}
         </>
     );
 }

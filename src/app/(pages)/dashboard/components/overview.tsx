@@ -3,7 +3,7 @@
 import {Bar, BarChart, ResponsiveContainer, Tooltip, XAxis, YAxis} from "recharts"
 import {useDashboard} from "@/app/(pages)/dashboard/components/dashboard-provider";
 import {useEffect, useState} from "react";
-import {groupByMonth} from "@/lib/utils";
+import {groupByMonth, groupByTimeFrame} from "@/lib/utils";
 
 export function Overview() {
 
@@ -12,14 +12,13 @@ export function Overview() {
 
     useEffect(() => {
         setSalesByMonth(
-            Object.entries(groupByMonth(data || [])).map(([key, value]) => ({
+            Object.entries(groupByTimeFrame(data || [], 'MMM-yy')).map(([key, value]) => ({
                 name: key,
                 total: value,
             })))
     }, [data, date]);
 
     const customToolTip = (props: any) => {
-        // console.log(props)
         try {
             if (props.active && props.payload && props.payload.length) {
                 return (
@@ -29,9 +28,7 @@ export function Overview() {
                     </div>
                 )
             }
-        }  catch (e) {
-            console.log(e)
-        }
+        }  catch (e) {console.log(e)}
         return null
     }
 
@@ -40,19 +37,19 @@ export function Overview() {
             <BarChart data={salesByMonth}>
                 <XAxis
                     dataKey="name"
-                    stroke="#888888"
+                    stroke={"#888888"}
                     fontSize={12}
                     tickLine={false}
                     axisLine={false}
                 />
                 <YAxis
-                    stroke="#888888"
+                    stroke={"#888888"}
                     fontSize={12}
                     tickLine={false}
                     axisLine={false}
                     tickFormatter={(value) => `$${Number(value).toLocaleString()}`}
                 />
-                <Bar dataKey="total" fill="#adfa1d" radius={[4, 4, 0, 0]}/>
+                <Bar dataKey="total" fill={"#adfa1d"} radius={[4, 4, 0, 0]}/>
                 <Tooltip
                     content={customToolTip}
                     cursor={{fill: 'rgba(250,250,250,0.3)', radius: 4
