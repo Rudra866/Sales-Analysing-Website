@@ -36,35 +36,37 @@ export default function SummaryCard({defaultCategory = "Total"}) {
 
     return (
         <div>
-            <Card>
-                <CardHeader className="flex flex-row items-center justify-between pb-2">
-                    <Select defaultValue={selectedCategory} onValueChange={setSelectedCategory}>
-                        <SelectTrigger id="area" className={'border-transparent px-0'}>
-                            <SelectValue placeholder="Select" className={'text-sm font-medium'}/>
-                        </SelectTrigger>
-                        <SelectContent>
-                            {numericSales?.map((cat, index) => {
-                                return (
-                                    <SelectItem key={index} value={cat}>
-                                        {cat}
-                                    </SelectItem>
-                                )
-                            })}
-                        </SelectContent>
-                    </Select>
-                    {/*<DollarSign className="h-4 w-4 text-muted-foreground"/>*/}
-                </CardHeader>
-                <CardContent>
-                    <div className="text-2xl font-bold">{`$${cardData.toLocaleString()}`}</div>
-                    <p className="text-xs text-muted-foreground">
-                        <span className={cn('text-[#adfa1d]')}>+20.1% </span>
-                        from last
-                        <span>
+            {data && (
+                <Card>
+                    <CardHeader className="flex flex-row items-center justify-between pb-2">
+                        <Select defaultValue={selectedCategory} onValueChange={setSelectedCategory}>
+                            <SelectTrigger id="area" className={'border-transparent px-0'}>
+                                <SelectValue placeholder="Select" className={'text-sm font-medium'}/>
+                            </SelectTrigger>
+                            <SelectContent>
+                                {numericSales?.map((cat, index) => {
+                                    return (
+                                        <SelectItem key={index} value={cat}>
+                                            {cat}
+                                        </SelectItem>
+                                    )
+                                })}
+                            </SelectContent>
+                        </Select>
+                        {/*<DollarSign className="h-4 w-4 text-muted-foreground"/>*/}
+                    </CardHeader>
+                    <CardContent>
+                        <div className="text-2xl font-bold">{`$${cardData.toLocaleString()}`}</div>
+                        <p className="text-xs text-muted-foreground">
+                            <span className={cn('text-[#adfa1d]')}>+20.1% </span>
+                            from last
+                            <span>
                             {" "}{format(new Date(date?.from || new Date()), 'yyyy-MM-dd')}
                         </span>
-                    </p>
-                </CardContent>
-            </Card>
+                        </p>
+                    </CardContent>
+                </Card>
+            )}
         </div>
     );
 }
@@ -80,14 +82,10 @@ export function CountCard() {
     }>();
 
     useEffect(() => {
-        const cars = data?.map((item) => {
-            // @ts-ignore
-            return item.VehicleMake
-        })
+        const cars = data?.map((item) => {return item.VehicleMake})
         const carCount = counter(cars ?? [])
         const max = Math.max(...Object.values(carCount))
         const mostSold = Object.keys(carCount).find((key) => {
-            // @ts-ignore
             return carCount[key] === max
         })
         setMostSoldVehicle({

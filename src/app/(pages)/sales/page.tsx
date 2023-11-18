@@ -2,6 +2,7 @@
 import useAuth from "@/hooks/use-auth";
 import dynamic from "next/dynamic";
 import {UserNav} from "@/components/user-nav";
+import {Suspense} from "react";
 
 const SalesTable = dynamic(() => import("./components/SalesTable"))
 
@@ -10,20 +11,21 @@ const SalesTable = dynamic(() => import("./components/SalesTable"))
  * @group Next.js Pages
  */
 export default function SalesPage() {
+    const {employee} = useAuth()
+
     return (
-        <div className="hidden h-full flex-1 flex-col space-y-8 p-8 md:flex">
-            <div className="flex items-center justify-between space-y-2">
-                <div>
-                    <h2 className="text-2xl font-bold tracking-tight">Sales Table.</h2>
-                    <p className="text-muted-foreground">
-                        Welcome back Jeff!
-                    </p>
+        <Suspense fallback={<div>Loading...</div>}>
+            <div className="hidden h-full flex-1 flex-col space-y-8 p-8 md:flex">
+                <div className="flex items-center justify-between space-y-2">
+                    <div>
+                        <h2 className="text-2xl font-bold tracking-tight">Sales Table.</h2>
+                        <p className="text-muted-foreground">
+                            Welcome back, {employee?.Name}
+                        </p>
+                    </div>
                 </div>
-                <div className="flex items-center space-x-2">
-                    {/*<UserNav />*/}
-                </div>
+                <SalesTable />
             </div>
-            <SalesTable />
-        </div>
+        </Suspense>
     );
 }

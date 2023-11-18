@@ -1,17 +1,13 @@
 'use client'
 
 import {Button} from "@/components/ui/button"
-import {Card, CardContent, CardDescription, CardHeader, CardTitle,} from "@/components/ui/card"
-import {Tabs, TabsContent, TabsList, TabsTrigger,} from "@/components/ui/tabs"
+import {Card, CardContent, CardHeader, CardTitle,} from "@/components/ui/card"
 import CalendarDateRangePicker from "./components/date-range-picker"
 import {Overview} from "./components/overview"
 import {RecentSales} from "./components/recent-sales"
-import {useEffect, useState} from "react";
 import * as React from "react";
 import {useDashboard} from "./components/dashboard-provider";
-import {getSupabaseBrowserClient} from "@/lib/supabase";
-import useAuth from "@/hooks/use-auth";
-import {getAllNotifications, MonthlySale, Sale, SalesGoal} from "@/lib/database";
+import {Sale} from "@/lib/database";
 import {DynamicChart} from "@/components/dynamic-chart";
 import SalesLineChart from "@/components/sales-line-chart";
 import SummaryCard, {CountCard} from "./components/summary-card";
@@ -24,24 +20,7 @@ import SummaryCard, {CountCard} from "./components/summary-card";
  * @route `/dashboard`
  */
 export default function DashboardPage() {
-    const supabase = getSupabaseBrowserClient();
     const {data, date, setDate} = useDashboard()
-    const [totalRevenue, setTotalRevenue] = useState<number>(0);
-    const [grossProfit, setGrossProfit] = useState<number>(0);
-    const {employee} = useAuth();
-
-    useEffect(() => {
-        setTotalRevenue(data
-            ?.map((sale) => sale?.Total)
-            .reduce((a, b) => a + b, 0) ?? 0)
-
-        setGrossProfit(data
-            ?.map((sale) => sale?.GrossProfit)
-            .reduce((a, b) => a + b, 0) ?? 0)
-
-    }, [data, date, supabase]);
-
-
     return (
         <>
             <div className="flex-col md:flex">
@@ -57,9 +36,7 @@ export default function DashboardPage() {
                         <SummaryCard defaultCategory={'Total'} />
                         <SummaryCard defaultCategory={'GrossProfit'} />
                         <SummaryCard defaultCategory={'DealerCost'} />
-                        {/*todo sales forecast with actual sales*/}
                         <CountCard />
-                    {/*todo    Forecasted Sale ? */}
                     </div>
                     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
                         <Card className="col-span-4">

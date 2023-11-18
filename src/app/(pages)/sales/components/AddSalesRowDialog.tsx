@@ -95,7 +95,7 @@ const usedSaleFormSchema = z.object({
 export function AddSalesRowDialog({sale}: SaleSelectModalFormProps) {
     const supabase = getSupabaseBrowserClient();
     const formContext = useFormModalContext();
-    const [editState, setEditState] = useState(false);
+    // const [editState, setEditState] = useState(false);
     const [newSaleSelection, setNewSaleSelection] = useState<boolean>()
     const [noFinancing, setNoFinancing] = useState<boolean>(!!sale?.FinancingID)
     const [noTradeIn, setNoTradeIn] = useState<boolean>(!!sale?.TradeInID)
@@ -148,7 +148,7 @@ export function AddSalesRowDialog({sale}: SaleSelectModalFormProps) {
 
     function onSubmit(values: z.infer<typeof saleFormSchema | typeof usedSaleFormSchema>) {
         formContext?.onSubmit(values)
-        console.log(values)
+        console.log("From Dialog: ", values)
     }
 
     return (
@@ -168,7 +168,7 @@ export function AddSalesRowDialog({sale}: SaleSelectModalFormProps) {
                                                 className={"w-32"}
                                                 placeholder="0"
                                                 {...field}
-                                                disabled={!editState}
+
                                             />
                                         </FormControl>
                                         <FormMessage/>
@@ -187,7 +187,7 @@ export function AddSalesRowDialog({sale}: SaleSelectModalFormProps) {
 
                                                     placeholder="VehicleMake"
                                                     {...field}
-                                                    disabled={!editState}
+
                                                 />
                                             </FormControl>
                                             <FormMessage/>
@@ -210,7 +210,7 @@ export function AddSalesRowDialog({sale}: SaleSelectModalFormProps) {
                                                 const value = parseFloat(event.target.value);
                                                 field.onChange(value);
                                             }}
-                                            disabled={!editState}
+
                                         />
                                     </FormControl>
                                     <FormMessage/>
@@ -232,7 +232,7 @@ export function AddSalesRowDialog({sale}: SaleSelectModalFormProps) {
                                                     const value = parseFloat(event.target.value);
                                                     field.onChange(value);
                                                 }}
-                                                disabled={!editState}
+
                                             />
                                         </FormControl>
                                         <FormMessage/>
@@ -253,7 +253,7 @@ export function AddSalesRowDialog({sale}: SaleSelectModalFormProps) {
                                                     const value = parseFloat(event.target.value);
                                                     field.onChange(value);
                                                 }}
-                                                disabled={!editState}
+
                                             />
                                         </FormControl>
                                         <FormMessage/>
@@ -275,7 +275,7 @@ export function AddSalesRowDialog({sale}: SaleSelectModalFormProps) {
                                                         const value = parseFloat(event.target.value);
                                                         field.onChange(value);
                                                     }}
-                                                    disabled={!editState}
+
                                                 />
                                             </FormControl>
                                             <FormMessage/>
@@ -295,7 +295,7 @@ export function AddSalesRowDialog({sale}: SaleSelectModalFormProps) {
                                             <Input
                                                 placeholder="Name"
                                                 {...field}
-                                                disabled={!editState}
+
                                             />
                                         </FormControl>
                                         <FormMessage/>
@@ -312,7 +312,7 @@ export function AddSalesRowDialog({sale}: SaleSelectModalFormProps) {
                                             <Select
                                                 defaultValue={getEmployee()?.Name ?? field.value}
                                                 onValueChange={field.onChange}
-                                                disabled={!editState}
+
                                             >
                                                 <SelectTrigger id="area" >
                                                     <SelectValue placeholder={getEmployee()?.Name ?? field.value} {...field}/>
@@ -342,7 +342,7 @@ export function AddSalesRowDialog({sale}: SaleSelectModalFormProps) {
                                             <Input
                                                 placeholder="Vehicle Make"
                                                 {...field}
-                                                disabled={!editState || noTradeIn}
+                                                // disabled={!editState || noTradeIn}
                                             />
                                         </FormControl>
                                         <FormMessage/>
@@ -363,7 +363,7 @@ export function AddSalesRowDialog({sale}: SaleSelectModalFormProps) {
                                                     const value = parseFloat(event.target.value);
                                                     field.onChange(value);
                                                 }}
-                                                disabled={!editState || noTradeIn}
+                                                // disabled={!editState || noTradeIn}
                                             />
                                         </FormControl>
                                         <FormMessage/>
@@ -372,7 +372,7 @@ export function AddSalesRowDialog({sale}: SaleSelectModalFormProps) {
                             />
                             <div className={"flex flex-row gap-2 items-center pt-4 pl-2"}>
                                 <Checkbox
-                                    disabled={!editState}
+
                                     checked={noTradeIn}
                                     onCheckedChange={(event) => {
                                         if (event != "indeterminate") setNoTradeIn(event)
@@ -392,14 +392,14 @@ export function AddSalesRowDialog({sale}: SaleSelectModalFormProps) {
                                                 <Input
                                                     placeholder={noFinancing ? "None" : "Financing"}
                                                     {...field}
-                                                    disabled={!editState || noFinancing}
+                                                    // disabled={!editState || noFinancing}
                                                 />
                                             </FormControl>
                                         </div>
                                         <FormMessage/>
                                         <div className={"flex flex-row gap-2 items-center pt-4 pl-2"}>
                                             <Checkbox
-                                                disabled={!editState}
+
                                                 checked={noFinancing}
                                                 onCheckedChange={(event) => {
                                                     if (event != "indeterminate") setNoFinancing(event)
@@ -420,7 +420,7 @@ export function AddSalesRowDialog({sale}: SaleSelectModalFormProps) {
                                     <FormControl>
                                         <div className={'flex items-center gap-2'}>
                                             <Checkbox
-                                                disabled={!editState}
+
                                                 checked={field.value}
                                                 onCheckedChange={(event) => {
                                                     field.onChange(event)
@@ -451,7 +451,7 @@ export function AddSalesRowDialog({sale}: SaleSelectModalFormProps) {
                                                         const value = parseFloat(event.target.value);
                                                         field.onChange(value);
                                                     }}
-                                                    disabled={!editState}/>
+                                                    />
                                             </FormControl>
                                             <FormMessage/>
                                         </FormItem>
@@ -470,7 +470,7 @@ export function AddSalesRowDialog({sale}: SaleSelectModalFormProps) {
                                                         const value = parseFloat(event.target.value);
                                                         field.onChange(value);
                                                     }}
-                                                    disabled={!editState}/>
+                                                    />
                                             </FormControl>
                                             <FormMessage/>
                                         </FormItem>
@@ -489,7 +489,7 @@ export function AddSalesRowDialog({sale}: SaleSelectModalFormProps) {
                                                         const value = parseFloat(event.target.value);
                                                         field.onChange(value);
                                                     }}
-                                                    disabled={!editState}/>
+                                                    />
                                             </FormControl>
                                             <FormMessage/>
                                         </FormItem>
@@ -508,7 +508,7 @@ export function AddSalesRowDialog({sale}: SaleSelectModalFormProps) {
                                                         const value = parseFloat(event.target.value);
                                                         field.onChange(value);
                                                     }}
-                                                    disabled={!editState}/>
+                                                    />
                                             </FormControl>
                                             <FormMessage/>
                                         </FormItem>
@@ -516,25 +516,9 @@ export function AddSalesRowDialog({sale}: SaleSelectModalFormProps) {
                             </>}
                     </DialogBody>
                     <DialogFooter className={'py-4'}>
-                        {editState ? (
-                            <Button type={"submit"}>Submit</Button>
-                        ) : (
-                            <Button
-                                variant="destructive"
-                                type="button"
-                                onClick={() =>
-                                    setTimeout(() => {
-                                        setEditState(true);
-                                    }, 10)
-                                }
-                            >
-                                Edit
-                            </Button>
-                        )}
+                        <Button type={"submit"}>Submit</Button>
                         <DialogClose asChild>
-                            <Button type="button" variant="secondary">
-                                Close
-                            </Button>
+                            <Button type="button" variant="secondary">Close</Button>
                         </DialogClose>
                     </DialogFooter>
                 </form>
