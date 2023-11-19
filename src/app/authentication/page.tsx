@@ -10,8 +10,8 @@ import {Label} from "@/components/ui/label";
 import {Input} from "@/components/ui/input";
 import {Button} from "@/components/ui/button";
 import {Icons} from "@/components/icons";
-import FormModal from "@/components/FormModal";
-import ForgotPasswordDialog from "@/components/ForgotPasswordDialog";
+import FormModal from "@/components/dialogs/FormModal";
+import ForgotPasswordDialog from "@/components/dialogs/ForgotPasswordDialog";
 
 const UserAuthForm = dynamic(() => import('./components/user-auth-form'))
 

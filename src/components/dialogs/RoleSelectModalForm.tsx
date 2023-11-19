@@ -9,7 +9,7 @@ import {Button} from "@/components/ui/button";
 import {DialogClose} from "@radix-ui/react-dialog";
 import React, {useEffect} from "react";
 import {Employee, Role, getSupabaseBrowserClient} from "@/lib/database";
-import {useFormModalContext} from "@/components/FormModal";
+import {useFormModalContext} from "@/components/dialogs/FormModal";
 
 export type RoleSelectModalFormProps = {
   employee: Employee;

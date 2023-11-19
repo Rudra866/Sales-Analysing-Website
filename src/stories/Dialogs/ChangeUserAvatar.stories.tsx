@@ -1,4 +1,4 @@
-import FormModal, {FormModalProps, useFormModalContext} from "@/components/FormModal";
+import FormModal, {FormModalProps, useFormModalContext} from "@/components/dialogs/FormModal";
 import {Meta, StoryObj} from "@storybook/react";
 import {useArgs} from "@storybook/preview-api";
 import {Dispatch, SetStateAction, useEffect, useState} from "react";
@@ -12,7 +12,7 @@ import {useForm, useFormContext} from "react-hook-form";
 import {z} from "zod";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {Input} from "@/components/ui/input";
-import DialogCloseButton from "@/components/DialogCloseButton";
+import DialogCloseButton from "@/components/dialogs/DialogCloseButton";
 import ChangeUserAvatarDialog from "@/components/ChangeUserAvatarDialog";
 
 // TODO still unfinished.

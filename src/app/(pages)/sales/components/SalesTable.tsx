@@ -24,13 +24,14 @@ import {Checkbox} from "@/components/ui/checkbox";
 import {Employee, Tables, Sale, getSupabaseBrowserClient} from "@/lib/database";
 import {ArrowUpDown, Plus} from "lucide-react";
 import {Badge} from "@/components/ui/badge";
-import {DropDownMenu} from "@/app/(pages)/sales/components/drop-down-menu";
+
 import {format} from "date-fns";
 import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger} from "@/components/ui/tooltip";
 import {DbResult} from "@/lib/types";
-import DataTable from "@/components/DataTable";
-import {AddSalesRowDialog} from "@/app/(pages)/sales/components/AddSalesRowDialog";
-import FormModal from "@/components/FormModal";
+import DataTable from "@/components/tables/DataTable";
+
+import FormModal from "@/components/dialogs/FormModal";
+import {DropDownMenu} from "@/admin/sales/components/drop-down-menu";
 
 // todo align rows and columns
 
@@ -305,9 +306,9 @@ export default function SalesTable() {
                  </Button>
              </div>
             {/* tmp */}
-            <FormModal title={"Create Sale"} showDialog={showSaleDialog} setShowDialog={setShowSaleDialog} onSubmit={onSubmit}>
-                <AddSalesRowDialog/>
-            </FormModal>
+            {/*<FormModal title={"Create Sale"} showDialog={showSaleDialog} setShowDialog={setShowSaleDialog} onSubmit={onSubmit}>*/}
+            {/*    <AddSalesRowDialog/>*/}
+            {/*</FormModal>*/}
         </DataTable>
 
     )

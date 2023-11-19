@@ -11,7 +11,7 @@ import {Button} from "@/components/ui/button";
 import {Employee, Role} from "@/lib/database";
 import {DialogClose} from "@radix-ui/react-dialog";
 import {existingEmployeeFormSchema} from "@/lib/types";
-import {useFormModalContext} from "@/components/FormModal";
+import {useFormModalContext} from "@/components/dialogs/FormModal";
 
 /**
  * Type

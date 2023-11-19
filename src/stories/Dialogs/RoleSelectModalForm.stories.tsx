@@ -1,8 +1,8 @@
 import {
   RoleSelectModalForm,
   RoleSelectModalFormProps
-} from "@/app/(pages)/admin/employees/components/RoleSelectModalForm";
-import FormModal, {FormModalProps} from "@/components/FormModal";
+} from "@/components/dialogs/RoleSelectModalForm";
+import FormModal, {FormModalProps} from "@/components/dialogs/FormModal";
 import {test_employee_set, test_roles_set} from "@/stories/test_data";
 import {Meta, StoryObj} from "@storybook/react";
 import {Dispatch, SetStateAction} from "react";

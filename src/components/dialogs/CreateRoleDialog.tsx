@@ -8,11 +8,11 @@ import {Button} from "@/components/ui/button";
 import {useForm, UseFormReturn} from "react-hook-form";
 import {z} from "zod";
 import {Input} from "@/components/ui/input";
-import {useFormModalContext} from "@/components/FormModal";
+import {useFormModalContext} from "@/components/dialogs/FormModal";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {DialogBody} from "next/dist/client/components/react-dev-overlay/internal/components/Dialog";
 import {DialogFooter} from "@/components/ui/dialog";
-import DialogCloseButton from "@/components/DialogCloseButton";
+import DialogCloseButton from "@/components/dialogs/DialogCloseButton";
 
 const role_options_config = [
   {

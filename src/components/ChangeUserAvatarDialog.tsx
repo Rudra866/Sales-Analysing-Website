@@ -1,13 +1,13 @@
 import {z} from "zod";
 import {Dispatch, SetStateAction, useState} from "react";
 import {Avatar, AvatarImage} from "@/components/ui/avatar";
-import {useFormModalContext} from "@/components/FormModal";
+import {useFormModalContext} from "@/components/dialogs/FormModal";
 import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {Form} from "@/components/ui/form";
 import {DialogBody} from "next/dist/client/components/react-dev-overlay/internal/components/Dialog";
 import {DialogFooter} from "@/components/ui/dialog";
-import DialogCloseButton from "@/components/DialogCloseButton";
+import DialogCloseButton from "@/components/dialogs/DialogCloseButton";
 import {Button} from "@/components/ui/button";
 
 

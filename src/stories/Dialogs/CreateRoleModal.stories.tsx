@@ -1,9 +1,9 @@
-import FormModal, {FormModalProps, useFormModalContext} from "@/components/FormModal";
+import FormModal, {FormModalProps, useFormModalContext} from "@/components/dialogs/FormModal";
 import {Meta, StoryObj} from "@storybook/react";
 import {useArgs} from "@storybook/preview-api";
 import React, {Dispatch, SetStateAction} from "react";
 import {Button} from "@/components/ui/button";
-import {CreateRoleDialog} from "@/components/CreateRoleDialog";
+import {CreateRoleDialog} from "@/components/dialogs/CreateRoleDialog";
 import {fireEvent, screen, userEvent, within} from "@storybook/testing-library";
 import {useTestDialogControls} from "@/stories/Dialogs/useDialogArgs";
 

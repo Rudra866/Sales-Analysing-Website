@@ -364,7 +364,7 @@ export async function getRoleFromEmployee(supabase: SupabaseClient, employee: Em
   return role;
 }
 
-export async function getAllTasksByAssignee(supabase: SupabaseClient, assigneeID: string): Promise<Task[] | null> {
+export async function getAllTasksByAssignee(supabase: SupabaseClient, assigneeID: string): Promise<Task[]> {
   const {data: task, error} = await supabase
       .from('Tasks')
       .select('*')
@@ -374,7 +374,7 @@ export async function getAllTasksByAssignee(supabase: SupabaseClient, assigneeID
   return task;
 }
 
-export async function getAllTasksByCreator(supabase: SupabaseClient, creatorID: string): Promise<Task[] | null> {
+export async function getAllTasksByCreator(supabase: SupabaseClient, creatorID: string): Promise<Task[]> {
   const {data: task, error} = await supabase
       .from('Tasks')
       .select('*')
@@ -391,11 +391,15 @@ export async function getAllTasksByCreator(supabase: SupabaseClient, creatorID: 
  * @throws {@link PostgrestError} on database error.
  * @group Database Functions
  */
-export async function getAllTasks(supabase: SupabaseClient): Promise<Task[] | null>
+export async function getAllTasks(supabase: SupabaseClient): Promise<Task[]>
 {
   const {data: tasks, error} = await supabase
       .from('Tasks')
-      .select('*')
+      .select(`
+        Creator (
+          Name
+        ), *
+      `)
 
   if (error) throw error;
   return tasks;
@@ -425,7 +429,7 @@ export async function getAllCustomers(supabase: SupabaseClient): Promise<Custome
  * @throws {@link PostgrestError} on database error.
  * @group Database Functions
  */
-export async function getAllEmployees(supabase: SupabaseClient): Promise<Employee[] | null>
+export async function getAllEmployees(supabase: SupabaseClient): Promise<Employee[]>
 // todo this function might be a bad idea because it's returning all employee passwords?
 {
   const {data: employees, error} = await supabase

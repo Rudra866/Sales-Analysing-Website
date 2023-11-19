@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import FormModal from "@/components/FormModal";
+import FormModal from "@/components/dialogs/FormModal";
 
 describe('Base Form Dialog Component', () => {
   test('renders with passed in title prop', () => {

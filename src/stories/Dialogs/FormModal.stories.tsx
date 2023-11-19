@@ -1,4 +1,4 @@
-import FormModal, {FormModalProps} from "@/components/FormModal";
+import FormModal, {FormModalProps} from "@/components/dialogs/FormModal";
 import {Meta, StoryObj} from "@storybook/react";
 import {useArgs} from "@storybook/preview-api";
 import {Dispatch, SetStateAction} from "react";

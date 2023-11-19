@@ -8,7 +8,7 @@ import Link from "next/link";
  * @group React Layouts
  */
 export default async function TestsLayout({children}: { children: React.ReactNode }) {
-  const dir = "src/app/(pages)/test"
+  const dir = "src/app/(pages)/admin/test"
   const filesAndDirs = await fs.readdir(dir);
   const directories = [];
 

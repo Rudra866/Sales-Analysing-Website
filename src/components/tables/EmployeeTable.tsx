@@ -26,14 +26,13 @@ import {
   DropdownMenuLabel, DropdownMenuSeparator,
   DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
-import FormModal from "@/components/FormModal";
+import FormModal from "@/components/dialogs/FormModal";
 import {EmployeeSelectModalForm} from "@/components/dialogs/EmployeeSelectModalForm";
 import {RoleSelectModalForm} from "@/components/dialogs/RoleSelectModalForm";
-import TableSortButton from "@/components/TableSortButton";
+import TableSortButton from "@/components/tables/TableSortButton";
 import DataTable, {TableFilter} from "@/components/tables/DataTable";
-import {RowActionDialog} from "@/employee/sales/components/RowActionDialog";
 import useAuth from "@/hooks/use-auth";
-import {CreateRoleDialog} from "@/components/CreateRoleDialog";
+import {CreateRoleDialog} from "@/components/dialogs/CreateRoleDialog";
 import {toast} from "@/components/ui/use-toast";
 
 /**
@@ -147,25 +146,6 @@ export default function EmployeeTable() {
   }
 
   const columns: ColumnDef<Employee, any>[] = [
-    {
-      id: "select",
-      header: ({ table }) => (
-          <Checkbox
-              checked={table.getIsAllPageRowsSelected()}
-              onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-              aria-label="Select all"
-          />
-      ),
-      cell: ({ row }) => (
-          <Checkbox
-              checked={row.getIsSelected()}
-              onCheckedChange={(value) => row.toggleSelected(!!value)}
-              aria-label="Select row"
-          />
-      ),
-      enableSorting: false,
-      enableHiding: false,
-    },
     {
       accessorKey: "EmployeeNumber",
       header: ({column}) => <TableSortButton column={column}/>,

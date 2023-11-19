@@ -13,7 +13,7 @@ import {
   useReactTable
 } from "@tanstack/react-table";
 import {Employee} from "@/lib/database";
-import TableSortButton from "@/components/TableSortButton";
+import TableSortButton from "@/components/tables/TableSortButton";
 
 const columns: ColumnDef<Employee, any>[] = [
   {

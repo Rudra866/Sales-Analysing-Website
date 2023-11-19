@@ -10,7 +10,7 @@ import {Sale} from "@/lib/database";
 import {DialogClose} from "@radix-ui/react-dialog";
 import {Checkbox} from "@/components/ui/checkbox";
 import {ScrollArea, ScrollBar} from "@/components/ui/scroll-area";
-import {useFormModalContext} from "@/components/FormModal";
+import {useFormModalContext} from "@/components/dialogs/FormModal";
 import FormFieldComponent from "@/components/form-components/form-field-component";
 import {Separator} from "@/components/ui/separator";
 import useAuth from "@/hooks/use-auth";
