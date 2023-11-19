@@ -44,13 +44,13 @@ export function DynamicChart({ title, color, data, date, className }: DynamicCha
     }, [data, date, grouping, selectedCategory]);
 
     useEffect(() => {
-        if(!data) return
+        if(!data || data.length < 1) return
         // get sales columns that are of numeric type
-        const numericColumns = data && Object.keys(data[0]).filter((key) => {
+        const numericColumns = data.length > 0 && Object.keys(data[0]).filter((key) => {
             // @ts-ignore
             return typeof data[0][key] === "number" && key !== "id" // todo: fix this
         });
-        setCategories(numericColumns)
+        numericColumns && setCategories(numericColumns)
     }, [data]);
 
     const customToolTip = (props: any) => {

@@ -12,7 +12,7 @@ import {isAdmin} from "@/lib/utils";
 export default function RootPage() {
     const {role} = useAuth()
     if (role && isAdmin(role.id)) redirect('/admin/dashboard')
-    else redirect('/tasks')
+    else redirect('/employee')
 
     return (
         <>

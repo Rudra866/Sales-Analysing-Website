@@ -49,7 +49,7 @@ export const EmployeeProvider: React.FC<EmployeeProviderProps> = ({children}) =>
         getAllTasksByAssignee(supabase, employee?.id)
             .then((res) => {
                 setTasks(res as Task[])
-                console.log(res)
+                // console.log(res)
             })
         getSalesForEmployee(supabase, employee?.id)
             .then((res) => {

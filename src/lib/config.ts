@@ -23,6 +23,10 @@ export const docsConfigAdmin: DocsConfig = {
             href: "/admin/settings",
         },
         {
+            title: "Training",
+            href: "/training",
+        },
+        {
             title: "Test",
             href: "/admin/test/database",
         },
@@ -43,7 +47,7 @@ export const docsConfig: DocsConfig = {
         },
         {
             title: "Training",
-            href: "/employee/training",
+            href: "/training",
         },
     ],
 }

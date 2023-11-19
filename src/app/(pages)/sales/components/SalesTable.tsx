@@ -82,12 +82,6 @@ export default function SalesTable() {
         loadData().then(() => setLoading(false));
     }, [supabase]);
 
-    // function updateSales(sale: Sale) {
-    //   const originalSales = [...sales]
-    //   const updatedSales = originalSales
-    //       .map((oldSale) => oldSale.id === sale.id ? sale: oldSale)
-    //   setSales(updatedSales)
-    // }
     function tooltip(cell:string){
         return (
             <TooltipProvider>
@@ -102,7 +96,6 @@ export default function SalesTable() {
                     </TooltipContent>
                 </Tooltip>
             </TooltipProvider>
-
         )
     }
 
