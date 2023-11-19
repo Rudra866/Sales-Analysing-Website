@@ -55,7 +55,7 @@ export function TaskCreateDialog({employees}: { employees: Employee[] }) {
     data["Creator"] = employee?.id;
     data["Assignee"] = employees.find((employee) => employee.Name.toLowerCase() === employeeValue)?.id // todo @bill better way to do this with keys?
     data["StartDate"] = startDate;
-    data["EndDate"] = startDate;
+    data["EndDate"] = endDate;
 
     formContext!.onSubmit(data)
   }
