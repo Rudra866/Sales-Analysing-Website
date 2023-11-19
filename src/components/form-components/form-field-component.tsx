@@ -2,12 +2,13 @@ import React from 'react';
 import {FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
 import {Input} from "@/components/ui/input";
 import {Checkbox} from "@/components/ui/checkbox";
+import {Textarea} from "@/components/ui/textarea";
 
 type FormFieldComponentProps = {
     name: string
     form: any
     label?: string
-    inputType: "input" | "checkbox" | "inputNumber"
+    inputType: "input" | "checkbox" | "inputNumber" | "textarea"
     className?: string
 }
 
@@ -43,7 +44,17 @@ export default function FormFieldComponent({name, form, label, inputType, classN
                                         field.onChange(event)
                                     }}
                                 />
-                            ) : null
+                            ) : inputType === "textarea" ? (
+                                <Textarea
+                                    placeholder={label}
+                                    {...field}
+                                />
+                            ) : (
+                                <Input
+                                    placeholder={label}
+                                    {...field}
+                                />
+                            )
 
                             }
 
