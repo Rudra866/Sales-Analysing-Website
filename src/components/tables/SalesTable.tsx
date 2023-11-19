@@ -3,30 +3,25 @@
 import {
     Column,
     ColumnDef,
-    ColumnFiltersState, flexRender,
+    ColumnFiltersState,
     getCoreRowModel, getFilteredRowModel,
     getPaginationRowModel, getSortedRowModel,
     SortingState,
     useReactTable
 } from "@tanstack/react-table";
 import React, {useEffect, useState} from "react";
-import {Input} from "@/components/ui/input";
 import {Button} from "@/components/ui/button";
-import {Checkbox} from "@/components/ui/checkbox";
-import {Employee, Tables, Sale, getSupabaseBrowserClient} from "@/lib/database";
+import {Employee, Tables, Sale, getSupabaseBrowserClient, SaleInsert} from "@/lib/database";
 import {ArrowUpDown, Plus} from "lucide-react";
 import {Badge} from "@/components/ui/badge";
 import {DropDownMenu} from "@/employee/sales/components/drop-down-menu";
 import {format} from "date-fns";
 import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger} from "@/components/ui/tooltip";
-import {DbResult} from "@/lib/types";
 import DataTable, {TableFilter} from "@/components/tables/DataTable";
 import {RowActionDialog} from "@/employee/sales/components/RowActionDialog";
 import FormModal from "@/components/dialogs/FormModal";
 import useAuth from "@/hooks/use-auth";
 import TableSortButton from "@/components/tables/TableSortButton";
-
-// todo align rows and columns
 
 /**
  * Component used to render sales page table at `/sales`
@@ -43,21 +38,22 @@ export default function SalesTable() {
 
     const {employee} = useAuth();
     useEffect(() => {
-        function fetchData() {
-            return Promise.all([
-                supabase.from('Sales').select(),
-                supabase.from('Employees').select(),
-            ]);
+        function fetchEmployees() {
+            return supabase.from('Employees').select()
+        }
+
+        async function fetchSales() {
+            const res = await fetch(`/api/sale`, {
+                method: "GET"
+            })
+            return res.json();
         }
 
         async function loadData() {
             try {
                 setLoading(true);
-                const [salesData, employeeData] = await fetchData();
-                const {data: sales, count: salesCount, error: salesError} = salesData;
-                const {data: employees, count: employeeCount, error: employeeError} = employeeData;
-                console.log('sales: ', sales)
-                console.log('employees: ', employees)
+                const {data: employees, error: employeeError} = await fetchEmployees();
+                const {data: sales, error: salesError} = await fetchSales();
 
                 if (salesError || employeeError) {
                     console.error("Supabase error: ", (salesError ?? employeeError));
@@ -92,33 +88,21 @@ export default function SalesTable() {
         )
     }
 
-    async function onSubmit(data:any) {
-        console.log('Table onSubmit: ', data)
-        // data["TradeInID"] = 12312
-        data["Total"] = 5;
-        const fake = {
-                "StockNumber": "ew",
-                "VehicleMake": "43",
-                "CustomerName": "4343",
-                "ActualCashValue": 0,
-                "GrossProfit": 0,
-                "FinAndInsurance": 0,
-                "UsedSale": true,
-                "EmployeeID": employee?.id,
-                "LotPack": 0,
-                "DaysInStock": 0,
-                "DealerCost": 0,
-                "ROI": 0,
-                "Total": 5,
-                "CustomerCity": "Regina"
-            }
-        console.log('fake: ', fake)
+    async function onSubmit(data: SaleInsert) {
+        data["EmployeeID"] = employee!.id;      // set current user to be the seller
+        data["Total"] =                         // set total based on fields input
+            (data.GrossProfit)     +
+            (data.FinAndInsurance) +
+            (data.Holdback || 0);
+        if (data.ROI) {
+            data.ROI = data.ROI / 100           // convert ROI to decimal.
+        }
         await fetch(`http://localhost:3000/api/sale`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify(fake),
+            body: JSON.stringify(data),
         })
     }
 
@@ -236,14 +220,11 @@ export default function SalesTable() {
                      variant="outline"
                      className="ml-auto hidden h-8 lg:flex"
                      onClick={() => {
-                         // const setFunc = (old: Sale[]) => [...old, newRow];
-                         // setSales(setFunc as DbResult<Sale[]>);
-                         // table.setSorting([{id: "SaleTime", desc: false,}])
                          setShowSaleDialog(true)
                      }}
                 >
                  <Plus className="mr-2 h-4 w-4" />
-                 Add Row
+                 Add Sale
                 </Button>
             </div>
             <FormModal title={"Create Sale"} showDialog={showSaleDialog} setShowDialog={setShowSaleDialog} onSubmit={onSubmit}>

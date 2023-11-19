@@ -13,6 +13,7 @@ import {
 } from "@/lib/database";
 import {DbResult, SaleWithEmployeeAndFinancingType} from "@/lib/types";
 import useAuth from "@/hooks/use-auth";
+import {PostgrestError} from "@supabase/supabase-js";
 
 type DashBoardContextProps = {
     saleWithEmployeeAndFinancing?: SaleWithEmployeeAndFinancingType[];
@@ -69,41 +70,13 @@ export const DashboardProvider: React.FC<DashboardProviderProps> = ({children}) 
         })
 
         async function getEmployeeSales() {
-            const { data: sales, error } = await supabase
-                .from('Sales')
-                .select(`
-                    EmployeeID,
-                    Employees (
-                        Avatar,
-                        Name,
-                        Email,
-                        EmployeeNumber,
-                        Role
-                    ),
-                      ActualCashValue,
-                      CustomerID,
-                      DaysInStock,
-                      DealerCost,
-                      EmployeeID,
-                      FinancingID,
-                      Financing (
-                        Method
-                       ),
-                      FinAndInsurance,
-                      GrossProfit,
-                      LotPack,
-                      NewSale,
-                      ROI,
-                      SaleTime,
-                      StockNumber,
-                      Total,
-                      TradeInID,
-                      VehicleMake
-                `)
-                .order('SaleTime', { ascending: false })
-                // .range(0, 100)
-                setSaleWithEmployeeAndFinancing(sales as DbResult<typeof sales>[])
-                setMySales(filterSalesByEmployee(sales as DbResult<typeof sales>[], employee as Employee) as DbResult<typeof sales>[])
+            const salesRequest = await fetch(`/api/sale?type=formatted`, {
+                method: "GET"
+            })
+
+            const {data: sales, error}: {data: Sale[], error: PostgrestError} = await salesRequest.json()
+            setSaleWithEmployeeAndFinancing(sales as DbResult<typeof sales>[])
+            setMySales(filterSalesByEmployee(sales as DbResult<typeof sales>[], employee as Employee) as DbResult<typeof sales>[])
 
             if (error) throw error;
             return sales;

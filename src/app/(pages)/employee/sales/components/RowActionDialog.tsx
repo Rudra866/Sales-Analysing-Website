@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useState} from "react";
 import {useForm} from "react-hook-form";
 import * as z from "zod";
 import {zodResolver} from "@hookform/resolvers/zod";
@@ -13,7 +13,6 @@ import {ScrollArea, ScrollBar} from "@/components/ui/scroll-area";
 import {useFormModalContext} from "@/components/dialogs/FormModal";
 import FormFieldComponent from "@/components/form-components/form-field-component";
 import {Separator} from "@/components/ui/separator";
-import useAuth from "@/hooks/use-auth";
 
 export interface SaleSelectModalFormProps {
     sale?: Sale | null
@@ -23,16 +22,13 @@ export interface SaleSelectModalFormProps {
 const saleFormSchemaCommon = {
     StockNumber: z.string().min(1, {message: "StockNumber must not be empty."}),
     VehicleMake: z.string().min(1, {message: "VehicleMake must not be empty."}),
-    // CustomerName: z.string(), // todo
-    // CustomerID: z.number().optional(),
+    CustomerName: z.string().nonempty("Customer Name must not be empty."),
+    CustomerCity: z.string().nonempty("Customer City must not be empty."),
     ActualCashValue: z.number(),
     GrossProfit: z.number(),
     FinAndInsurance: z.number(),
-    // FinancierID: z.number().optional(),
     TradeInID: z.number().optional(),
-    EmployeeID: z.string(),
     NewSale: z.boolean(),
-    SaleTime: z.string().optional(),
     Total: z.number().optional(),
     FinancingID: z.number().optional(),
     Holdback: z.number().optional(),
@@ -40,7 +36,6 @@ const saleFormSchemaCommon = {
     DaysInStock: z.number().optional(),
     DealerCost: z.number().optional(),
     ROI: z.number().optional(),
-
 }
 
 
@@ -55,27 +50,24 @@ const saleFormSchema = z.object({
  * @group React Components
  */
 export function RowActionDialog({sale}: SaleSelectModalFormProps) {
-
     const formContext = useFormModalContext();
-    const {employee} = useAuth()
-
+    const [newSalesCheck, setNewSalesCheck] = useState<boolean>(sale?.NewSale || false)
     const form = useForm<z.infer<typeof saleFormSchema>>(
             {
                 resolver: zodResolver(saleFormSchema),
                 defaultValues: {
                     ActualCashValue: sale?.ActualCashValue ?? 0,
-                    // CustomerID: sale?.CustomerID ?? 0,
                     DaysInStock: sale?.DaysInStock ?? 0,
                     DealerCost: sale?.DealerCost ?? 0,
-                    EmployeeID: employee?.id ?? "",
-                    // FinancingID: sale?.FinancingID ?? 0,
+
+
                     FinAndInsurance: sale?.FinAndInsurance ?? 0,
                     GrossProfit: sale?.GrossProfit ?? 0,
                     Holdback: sale?.Holdback ?? 0,
                     LotPack: sale?.LotPack ?? 0,
                     NewSale: sale?.NewSale ?? false,
+
                     ROI: sale?.ROI ?? 0,
-                    SaleTime: sale?.SaleTime ?? "",
                     StockNumber: sale?.StockNumber ?? "",
                     VehicleMake: sale?.VehicleMake ?? "",
                     TradeInID: sale?.TradeInID ?? 0,
@@ -83,7 +75,17 @@ export function RowActionDialog({sale}: SaleSelectModalFormProps) {
             }
 
     )
-    const formFieldComponentsProps = [
+    type formFieldComponentsPropType =
+        {
+            name: string,
+            form: typeof form,
+            label: string,
+            className: string,
+            inputType: "input" | "inputNumber" | "textarea" | "checkbox",
+            hidden?: boolean
+        }[]
+
+    const formFieldComponentsProps: formFieldComponentsPropType = [
         {
             name: 'StockNumber',
             form: form,
@@ -125,10 +127,11 @@ export function RowActionDialog({sale}: SaleSelectModalFormProps) {
             label: 'Hold Back',
             className: 'col-span-2',
             inputType: 'inputNumber',
+            hidden: newSalesCheck
         },
     ];
 
-    const formFieldComponentsProps2 = [
+    const formFieldComponentsProps2: formFieldComponentsPropType = [
         {
             name:'CustomerName',
             form: form,
@@ -137,7 +140,7 @@ export function RowActionDialog({sale}: SaleSelectModalFormProps) {
             inputType: 'input',
         },
         {
-            name:'city',
+            name:'CustomerCity',
             form: form,
             label: 'City',
             className: 'col-span-2',
@@ -158,7 +161,7 @@ export function RowActionDialog({sale}: SaleSelectModalFormProps) {
             inputType: 'input',
         }];
 
-    const formFieldComponentsProps3 = [
+    const formFieldComponentsProps3: formFieldComponentsPropType = [
         {
             name: 'LotPack',
             form: form,
@@ -189,24 +192,20 @@ export function RowActionDialog({sale}: SaleSelectModalFormProps) {
         },
     ]
 
-
-    function onSubmit(values: z.infer<typeof saleFormSchema>) {
-        formContext?.onSubmit(values)
-    }
-
     return (
         <ScrollArea className='flex flex-col max-h-[700px] text-foreground pr-4 '>
             <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)}>
+                <form onSubmit={form.handleSubmit((data) =>
+                    formContext?.onSubmit(data))}>
                     <DialogBody className={'grid grid-cols-4 gap-2'}>
                         {formFieldComponentsProps.map((props, index) => (
-                            <FormFieldComponent
+                            !props.hidden && <FormFieldComponent
                                 key={props.name + index}
                                 name={props.name}
                                 form={props.form}
                                 label={props.label}
                                 className={props.className}
-                                inputType={props.inputType as any}
+                                inputType={props.inputType}
                             />
                         ))}
                         <FormField
@@ -219,6 +218,10 @@ export function RowActionDialog({sale}: SaleSelectModalFormProps) {
                                             <Checkbox
                                                 checked={field.value}
                                                 onCheckedChange={(event) => {
+                                                    const checkValue = event.valueOf();
+                                                    if (typeof checkValue === "boolean") {
+                                                        setNewSalesCheck(checkValue)
+                                                    }
                                                     field.onChange(event)
                                                 }}
                                             />
@@ -238,22 +241,27 @@ export function RowActionDialog({sale}: SaleSelectModalFormProps) {
                                     form={props.form}
                                     label={props.label}
                                     className={props.className}
-                                    inputType={props.inputType as any}
+                                    inputType={props.inputType}
                                 />
                             ))
                         }
-                        <Separator className={'col-span-4 my-4'}/>
-                        {formFieldComponentsProps3.map((props, index) => (
-                                <FormFieldComponent
-                                    key={props.name + index}
-                                    name={props.name}
-                                    form={props.form}
-                                    label={props.label}
-                                    className={props.className}
-                                    inputType={props.inputType as any}
-                                />
-                            ))
-                        }
+
+                        {newSalesCheck && (
+                            <>
+                                <Separator className={'col-span-4 my-4'} />
+                                {formFieldComponentsProps3.map((props, index) => (
+                                    <FormFieldComponent
+                                        key={props.name + index}
+                                        name={props.name}
+                                        form={props.form}
+                                        label={props.label}
+                                        className={props.className}
+                                        inputType={props.inputType}
+                                    />
+                                ))}
+                            </>
+                        )}
+
 
                     </DialogBody>
                     <DialogFooter className={'py-4'}>

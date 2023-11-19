@@ -7,9 +7,42 @@ import {Database, getEmployeeFromAuthUser, getRoleFromEmployee, getSupabaseRoute
 import {createClient} from "@supabase/supabase-js";
 import {cookies} from "next/headers";
 
+
+const formatted_query_string =
+    `
+      EmployeeID,
+      Employees (
+          Avatar,
+          Name,
+          Email,
+          EmployeeNumber,
+          Role
+      ),
+        ActualCashValue,
+        CustomerID,
+        DaysInStock,
+        DealerCost,
+        EmployeeID,
+        FinancingID,
+        Financing (
+          Method
+         ),
+        FinAndInsurance,
+        GrossProfit,
+        LotPack,
+        NewSale,
+        ROI,
+        SaleTime,
+        StockNumber,
+        Total,
+        TradeInID,
+        VehicleMake
+    `
+
 // handle retrieving a single sale, or all the sales. Protects sales from being read by users with no permission.
 // TODO need to update monthlySales too or remove them and use queries!!
-export async function GET(request: Request, { params }: {params: {id: string[]}}) {
+export async function GET(request: NextRequest, { params }: {params: {id: string[]}}) {
+  const searchParams = request.nextUrl.searchParams
   const supabase =
       getSupabaseRouteHandlerClient(cookies())
   const {data: {session}} = await supabase.auth.getSession();
@@ -23,77 +56,38 @@ export async function GET(request: Request, { params }: {params: {id: string[]}}
   const supabaseAdmin =
       createClient<Database>(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_KEY!)
 
-  if (!params.id) {
-    const dbResult = await supabaseAdmin
-        .from('Sales')
-        .select(`
-                    EmployeeID,
-                    Employees (
-                        Avatar,
-                        Name,
-                        Email,
-                        EmployeeNumber,
-                        Role
-                    ),
-                      ActualCashValue,
-                      CustomerID,
-                      DaysInStock,
-                      DealerCost,
-                      EmployeeID,
-                      FinancingID,
-                      Financing (
-                        Method
-                       ),
-                      FinAndInsurance,
-                      GrossProfit,
-                      LotPack,
-                      NewSale,
-                      ROI,
-                      SaleTime,
-                      StockNumber,
-                      Total,
-                      TradeInID,
-                      VehicleMake
-                `)
-        .order('SaleTime', { ascending: false })
-    return NextResponse.json(dbResult, {status: dbResult.status});
-  } else {
-
-    const dbResult = await supabaseAdmin
-        .from('Sales')
-        .select(`
-                    EmployeeID,
-                    Employees (
-                        Avatar,
-                        Name,
-                        Email,
-                        EmployeeNumber,
-                        Role
-                    ),
-                      ActualCashValue,
-                      CustomerID,
-                      DaysInStock,
-                      DealerCost,
-                      EmployeeID,
-                      FinancingID,
-                      Financing (
-                        Method
-                       ),
-                      FinAndInsurance,
-                      GrossProfit,
-                      LotPack,
-                      NewSale,
-                      ROI,
-                      SaleTime,
-                      StockNumber,
-                      Total,
-                      TradeInID,
-                      VehicleMake
-                `)
-        .in('id', params.id)
-        .order('SaleTime', { ascending: false })
-    return NextResponse.json(dbResult, {status: dbResult.status});
+  if (searchParams.get("type") === "formatted") { /* formatted -- for database-provider */
+    if (!params.id) {
+      const dbResult = await supabaseAdmin
+          .from('Sales')
+          .select(formatted_query_string)
+          .order('SaleTime', { ascending: false })
+      return NextResponse.json(dbResult);
+    } else {
+      const dbResult = await supabaseAdmin
+          .from('Sales')
+          .select(formatted_query_string)
+          .in('id', params.id)
+          .order('SaleTime', { ascending: false })
+      return NextResponse.json(dbResult);
+    }
+  } else { /* default -- direct from table */
+    if (!params.id) {
+      const dbResult = await supabaseAdmin
+          .from('Sales')
+          .select()
+          .order('SaleTime', { ascending: false })
+      return NextResponse.json(dbResult);
+    } else {
+      const dbResult = await supabaseAdmin
+          .from('Sales')
+          .select()
+          .in('id', params.id)
+          .order('SaleTime', { ascending: false })
+      return NextResponse.json(dbResult);
+    }
   }
+
 }
 
 // handle new sale input to database
@@ -112,7 +106,7 @@ export async function POST(request: NextRequest) {
   const supabaseAdmin =
       createClient<Database>(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_KEY!)
 
-  // TODO need to make this return a better status, maybe returning the item as well.
+  // TODO need to make this return a better status, maybe returning the item as well. Needs to be done on supabase RPC side.
   const res = await supabaseAdmin.rpc("create_new_sale", {sale: await request.json()});
   return new Response(null, {
     status: res.status,
