@@ -49,16 +49,19 @@ export const DashboardProvider: React.FC<DashboardProviderProps> = ({children}) 
     const [saleWithEmployeeAndFinancing, setSaleWithEmployeeAndFinancing] = useState<SaleWithEmployeeAndFinancingType[]>();
     const [salesGoal, setSalesGoal] = useState<SalesGoal[]>();
     const [mySales, setMySales] = useState<SaleWithEmployeeAndFinancingType[]>();
+    
+
+    useEffect(() => {
+        getAllEmployees(supabase).then((res) => {
+            setEmployees(res as Employee[])
+        })
+    }, []);
 
     useEffect(() => {
 
         getAllSales(supabase).then((res) => {
             const sales = res && res.length > 0 ? res : []
             setData(filterSalesByDate(sales, date) as Sale[])
-        })
-
-        getAllEmployees(supabase).then((res) => {
-            setEmployees(res as Employee[])
         })
 
         getAllSalesGoals(supabase).then((res) => {
@@ -120,10 +123,7 @@ export const DashboardProvider: React.FC<DashboardProviderProps> = ({children}) 
                 return sale.EmployeeID === employee?.id
             })
         }
-
-
-
-    }, [date]); // todo on every date change, it should not pull data form the db, only filter the data that is already in state.
+    }, [date, employee]); // todo on every date change, it should not pull data form the db, only filter the data that is already in state.
 
     return (
         <DashboardContext.Provider value={{data, salesGoal, employees, date, saleWithEmployeeAndFinancing, mySales, setDate}}>

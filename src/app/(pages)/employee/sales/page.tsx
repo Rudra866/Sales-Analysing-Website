@@ -4,7 +4,7 @@ import dynamic from "next/dynamic";
 import {UserNav} from "@/components/user-nav";
 import {Suspense} from "react";
 
-const SalesTable = dynamic(() => import("./components/SalesTable"))
+const SalesTable = dynamic(() => import("@/components/tables/SalesTable"))
 
 /**
  * Creates the sales viewing page using a {@link SalesTable} component.

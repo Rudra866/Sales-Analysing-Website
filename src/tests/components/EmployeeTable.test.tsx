@@ -1,4 +1,4 @@
-import EmployeeTable from "@/components/EmployeeTable";
+import EmployeeTable from "@/components/tables/EmployeeTable";
 import {render, screen} from "@testing-library/react";
 
 describe("Employee Table Component", () => {

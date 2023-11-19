@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import {Button} from "@/components/ui/button";
 import {MoreHorizontal} from "lucide-react";
-import FormModal from "@/components/FormModal";
+import FormModal from "@/components/dialogs/FormModal";
 import {getSupabaseBrowserClient, Sale} from "@/lib/database";
 import {RowActionDialog} from "./RowActionDialog";
 type Props = {

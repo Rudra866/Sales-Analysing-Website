@@ -1,17 +1,17 @@
 import {StoryObj} from "@storybook/react";
-import {AddSalesRowDialog, SaleSelectModalFormProps} from "@/app/(pages)/sales/components/AddSalesRowDialog";
-import FormModal, {FormModalProps} from "@/components/FormModal";
+import FormModal, {FormModalProps} from "@/components/dialogs/FormModal";
 import {test_sales_set} from "@/stories/test_data";
 import {Button} from "@/components/ui/button";
 import {useTestDialogControls} from "@/stories/Dialogs/useDialogArgs";
 import {getSupabaseBrowserClient} from "@/lib/database";
 import {z} from "zod";
+import {RowActionDialog, SaleSelectModalFormProps} from "@/admin/sales/components/RowActionDialog";
 type TestProps = SaleSelectModalFormProps & FormModalProps
 type Story = StoryObj<TestProps>
 
 const meta = {
   title: 'Dialogs/Sale Form',
-  component: AddSalesRowDialog,
+  component: RowActionDialog,
   parameters: {
     layout: "centered",
   },
@@ -26,7 +26,7 @@ const meta = {
         <>
           <Button onClick={() => modalControls.setShowDialog(true)}>Trigger</Button>
           <FormModal {...modalControls} {...args}>
-            <AddSalesRowDialog sale={args.sale}/>
+            <RowActionDialog sale={args.sale}/>
           </FormModal>
         </>
     )
@@ -69,7 +69,7 @@ export const TestPost: Story = {
         <>
           <Button onClick={() => modalControls.setShowDialog(true)}>Trigger</Button>
           <FormModal {...modalControls} {...args} onSubmit={onSubmit}>
-            <AddSalesRowDialog sale={args.sale}/>
+            <RowActionDialog sale={args.sale}/>
           </FormModal>
         </>
     )

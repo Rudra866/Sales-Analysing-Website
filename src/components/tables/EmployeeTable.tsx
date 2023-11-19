@@ -16,9 +16,9 @@ import {
   Database,
   SupabaseClient,
   getAllEmployees,
-  getAllRoles
+  getAllRoles, RoleInsert
 } from "@/lib/database";
-import {MoreHorizontal} from "lucide-react";
+import {MoreHorizontal, Plus} from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -26,11 +26,14 @@ import {
   DropdownMenuLabel, DropdownMenuSeparator,
   DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
-import FormModal from "@/components/FormModal";
-import {EmployeeSelectModalForm} from "@/app/(pages)/admin/employees/components/EmployeeSelectModalForm";
-import {RoleSelectModalForm} from "@/app/(pages)/admin/employees/components/RoleSelectModalForm";
-import TableSortButton from "@/components/TableSortButton";
-import DataTable, {TableFilter} from "@/components/DataTable";
+import FormModal from "@/components/dialogs/FormModal";
+import {EmployeeSelectModalForm} from "@/components/dialogs/EmployeeSelectModalForm";
+import {RoleSelectModalForm} from "@/components/dialogs/RoleSelectModalForm";
+import TableSortButton from "@/components/tables/TableSortButton";
+import DataTable, {TableFilter} from "@/components/tables/DataTable";
+import useAuth from "@/hooks/use-auth";
+import {CreateRoleDialog} from "@/components/dialogs/CreateRoleDialog";
+import {toast} from "@/components/ui/use-toast";
 
 /**
  * Component to create a table to render all employees in the database.
@@ -43,6 +46,11 @@ export default function EmployeeTable() {
   const supabase: SupabaseClient<Database> = getSupabaseBrowserClient();
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
+
+  const [showEmployeeModal, setShowEmployeeModal] = useState(false);
+  const [showRoleModal, setShowRoleModal] = useState(false);
+
+  const {employee, role} = useAuth();
 
   useEffect(() => {
     async function loadData() {
@@ -74,8 +82,6 @@ export default function EmployeeTable() {
     roles: Role[],
   }
   function DropDownMenu({row, roles}: DropDownMenuProps) {
-    const [showEmployeeModal, setShowEmployeeModal] = useState(false);
-    const [showRoleModal, setShowRoleModal] = useState(false);
     const employee = row.original;
     return (
         <>
@@ -89,15 +95,20 @@ export default function EmployeeTable() {
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
               <DropdownMenuSeparator/>
-              <DropdownMenuItem onClick={() => navigator.clipboard.writeText(employee.EmployeeNumber)}>
-                Copy Employee Number
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setShowEmployeeModal(true)}>
-                <span>Show Employee</span>
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={()=> setShowRoleModal(true)}>
-                <span>Change Role</span>
-              </DropdownMenuItem>
+
+                  <DropdownMenuItem onClick={() => navigator.clipboard.writeText(employee.EmployeeNumber)}>
+                    Copy Employee Number
+                  </DropdownMenuItem>
+              {role?.EmployeePermission &&
+                <>
+                  <DropdownMenuItem onClick={() => setShowEmployeeModal(true)}>
+                    <span>Show Employee</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={()=> setShowRoleModal(true)}>
+                    <span>Change Role</span>
+                  </DropdownMenuItem>
+                </>
+            }
             </DropdownMenuContent>
           </DropdownMenu>
           {/* add onUpdate functionality */}
@@ -111,26 +122,30 @@ export default function EmployeeTable() {
     );
   }
 
+  async function submitEmployeeInvite(data: any) {
+    await fetch('/api/admin/employee/invite', {
+      method: "POST",
+      body: JSON.stringify(data),
+    })
+  }
+
+  async function submitNewRole(data: RoleInsert) {
+    const res = await fetch('/api/admin/role/', {
+      method: "POST",
+      body: JSON.stringify(data),
+    })
+    if (res.status == 201) {
+      setShowRoleModal(false);
+    } else {
+      toast({
+        title: "Error!",
+        description: "Role was not created.",
+        variant: "destructive"
+      });
+    }
+  }
+
   const columns: ColumnDef<Employee, any>[] = [
-    {
-      id: "select",
-      header: ({ table }) => (
-          <Checkbox
-              checked={table.getIsAllPageRowsSelected()}
-              onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-              aria-label="Select all"
-          />
-      ),
-      cell: ({ row }) => (
-          <Checkbox
-              checked={row.getIsSelected()}
-              onCheckedChange={(value) => row.toggleSelected(!!value)}
-              aria-label="Select row"
-          />
-      ),
-      enableSorting: false,
-      enableHiding: false,
-    },
     {
       accessorKey: "EmployeeNumber",
       header: ({column}) => <TableSortButton column={column}/>,
@@ -174,6 +189,42 @@ export default function EmployeeTable() {
       // maybe can use provider here to pass less components around?
     <DataTable table={table} loading={loading}>
       <TableFilter table={table} initial={"Name"} placeholder={"Filter employees..."}/>
+      {role?.EmployeePermission &&
+          <>
+            <div className="flex items-center space-x-2 w-full">
+                <Button
+                    size="sm"
+                    variant="outline"
+                    className="ml-auto hidden h-8 lg:flex"
+                    onClick={() => setShowRoleModal(true)}
+                >
+                    <Plus className="mr-2 h-4 w-4" />
+                    Add Role
+                </Button>
+              <Button
+                  size="sm"
+                  variant="outline"
+                  className="ml-auto hidden h-8 lg:flex"
+                  onClick={() => setShowEmployeeModal(true)}
+              >
+                <Plus className="mr-2 h-4 w-4" />
+                Add Employee
+              </Button>
+            </div>
+            <FormModal title={"Register Employee"}
+                       showDialog={showEmployeeModal}
+                       setShowDialog={setShowEmployeeModal}
+                       onSubmit={submitEmployeeInvite}>
+              <EmployeeSelectModalForm roles={roles} variant={"invite"}/>
+            </FormModal>
+            <FormModal title={"Create Role"}
+                       showDialog={showRoleModal}
+                       setShowDialog={setShowRoleModal}
+                       onSubmit={submitNewRole}>
+              <CreateRoleDialog/>
+            </FormModal>
+          </>
+    }
     </DataTable>
   )
 }

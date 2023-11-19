@@ -1,10 +1,10 @@
 import {
   EmployeeSelectModalForm,
   EmployeeSelectModalFormProps
-} from "@/app/(pages)/admin/employees/components/EmployeeSelectModalForm";
+} from "@/components/dialogs/EmployeeSelectModalForm";
 import {test_employee_set, test_roles_set} from "@/stories/test_data";
 import {Meta, StoryObj} from "@storybook/react";
-import FormModal, {FormModalProps} from "@/components/FormModal";
+import FormModal, {FormModalProps} from "@/components/dialogs/FormModal";
 import {useArgs} from "@storybook/preview-api";
 import {Dispatch, SetStateAction} from "react";
 import {fireEvent, userEvent, within} from "@storybook/testing-library";

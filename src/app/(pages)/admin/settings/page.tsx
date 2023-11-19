@@ -1,8 +1,8 @@
 'use client'
 import { Separator } from "@/components/ui/separator"
 import { ProfileForm } from "./profile-form"
-import {CreateRoleDialog} from "@/components/CreateRoleDialog";
-import FormModal from "@/components/FormModal";
+import {CreateRoleDialog} from "@/components/dialogs/CreateRoleDialog";
+import FormModal from "@/components/dialogs/FormModal";
 import {useState} from "react";
 
 

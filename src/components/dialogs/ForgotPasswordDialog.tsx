@@ -1,5 +1,5 @@
 import {z} from "zod";
-import {useFormModalContext} from "@/components/FormModal";
+import {useFormModalContext} from "@/components/dialogs/FormModal";
 import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
@@ -7,7 +7,7 @@ import {DialogBody} from "next/dist/client/components/react-dev-overlay/internal
 import {Input} from "@/components/ui/input";
 import {Alert, AlertDescription, AlertTitle} from "@/components/ui/alert";
 import {DialogFooter} from "@/components/ui/dialog";
-import DialogCloseButton from "@/components/DialogCloseButton";
+import DialogCloseButton from "@/components/dialogs/DialogCloseButton";
 import {Button} from "@/components/ui/button";
 import React, {Dispatch, SetStateAction, useState} from "react";
 import {forgotPasswordDialogSchema} from "@/lib/types";

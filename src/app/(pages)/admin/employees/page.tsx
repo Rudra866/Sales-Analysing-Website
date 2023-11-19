@@ -4,7 +4,7 @@ import React from "react";
 import useAuth from "@/hooks/use-auth";
 import dynamic from "next/dynamic";
 
-const EmployeeTable = dynamic(() => import("@/components/EmployeeTable"))
+const EmployeeTable = dynamic(() => import("@/components/tables/EmployeeTable"))
 
 /**
  * Dashboard page that displays an EmployeeTable component.

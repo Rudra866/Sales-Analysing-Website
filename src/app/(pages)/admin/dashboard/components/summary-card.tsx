@@ -31,7 +31,7 @@ export default function SummaryCard({defaultCategory = "Total"}) {
         }, 0)
         setCardData(sum ?? 0)
 
-    }, [date, selectedCategory]);
+    }, [data, date, selectedCategory]);
 
 
     return (
@@ -88,6 +88,7 @@ export function CountCard() {
         const mostSold = Object.keys(carCount).find((key) => {
             return carCount[key] === max
         })
+        console.log(carCount);
         setMostSoldVehicle({
             vehicle: mostSold ?? "",
             count: max

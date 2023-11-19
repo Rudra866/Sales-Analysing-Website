@@ -1,4 +1,4 @@
-import DataTable, {DataTableProps} from "@/components/DataTable"
+import DataTable, {DataTableProps} from "@/components/tables/DataTable"
 import {Meta, StoryObj} from "@storybook/react";
 import React, {useState} from "react";
 
@@ -13,7 +13,7 @@ import {
   useReactTable
 } from "@tanstack/react-table";
 import {Employee} from "@/lib/database";
-import TableSortButton from "@/components/TableSortButton";
+import TableSortButton from "@/components/tables/TableSortButton";
 
 const columns: ColumnDef<Employee, any>[] = [
   {

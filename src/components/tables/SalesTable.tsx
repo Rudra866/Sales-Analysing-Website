@@ -16,13 +16,15 @@ import {Checkbox} from "@/components/ui/checkbox";
 import {Employee, Tables, Sale, getSupabaseBrowserClient} from "@/lib/database";
 import {ArrowUpDown, Plus} from "lucide-react";
 import {Badge} from "@/components/ui/badge";
-import {DropDownMenu} from "./drop-down-menu";
+import {DropDownMenu} from "@/employee/sales/components/drop-down-menu";
 import {format} from "date-fns";
 import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger} from "@/components/ui/tooltip";
 import {DbResult} from "@/lib/types";
-import DataTable from "@/components/DataTable";
-import {RowActionDialog} from "./RowActionDialog";
-import FormModal from "@/components/FormModal";
+import DataTable, {TableFilter} from "@/components/tables/DataTable";
+import {RowActionDialog} from "@/employee/sales/components/RowActionDialog";
+import FormModal from "@/components/dialogs/FormModal";
+import useAuth from "@/hooks/use-auth";
+import TableSortButton from "@/components/tables/TableSortButton";
 
 // todo align rows and columns
 
@@ -39,6 +41,7 @@ export default function SalesTable() {
     const [showSaleDialog, setShowSaleDialog] = useState<boolean>(false)
     const supabase = getSupabaseBrowserClient();
 
+    const {employee} = useAuth();
     useEffect(() => {
         function fetchData() {
             return Promise.all([
@@ -101,7 +104,7 @@ export default function SalesTable() {
                 "GrossProfit": 0,
                 "FinAndInsurance": 0,
                 "UsedSale": true,
-                "EmployeeID": "4ff2a2d7-09a1-4d26-81e1-55fcf9b0f49b",
+                "EmployeeID": employee?.id,
                 "LotPack": 0,
                 "DaysInStock": 0,
                 "DealerCost": 0,
@@ -121,7 +124,6 @@ export default function SalesTable() {
 
     function SortButton(name: string, column: Column<Tables<'Sales'>>) {
         // todo does not work for employee names
-
         return (
             <Button
                 size="sm"
@@ -135,27 +137,6 @@ export default function SalesTable() {
     }
 
     const columns: ColumnDef<Tables<'Sales'>, Employee>[] = [
-        {
-            id: "select",
-            header: ({table}) => (
-                <Checkbox
-                    checked={table.getIsAllPageRowsSelected()}
-                    onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-                    aria-label="Select all"
-                    className="translate-y-[2px]"
-                />
-            ),
-            cell: ({row}) => (
-                <Checkbox
-                    checked={row.getIsSelected()}
-                    onCheckedChange={(value) => row.toggleSelected(!!value)}
-                    aria-label="Select row"
-                    className="translate-y-[2px]"
-                />
-            ),
-            enableSorting: false,
-            enableHiding: false,
-        },
         {
             accessorKey: "SaleTime",
             // header: ({column}) => SortButton("SaleTime", column),
@@ -192,34 +173,34 @@ export default function SalesTable() {
         },
         {
             accessorKey: "VehicleMake",
-            header: ({column}) => SortButton("VehicleMake", column),
+            header: ({column}) => <TableSortButton column={column}/>,
             cell: ({row}) => {
                 return (tooltip(row.original.VehicleMake))
             }
         },
         {
             accessorKey: "ActualCashValue",
-            header: ({column}) => SortButton("ActualCashValue", column),
+            header: ({column}) => <TableSortButton column={column}/>,
             cell: ({row}) => `$${row.original.ActualCashValue.toLocaleString()}`,
         },
         {
             accessorKey: "GrossProfit",
-            header: ({column}) => SortButton("GrossProfit", column),
+            header: ({column}) => <TableSortButton column={column}/>,
             cell: ({row}) => `$${row.original.GrossProfit.toLocaleString()}`,
         },
         {
             accessorKey: "FinAndInsurance",
-            header: ({column}) => SortButton("FinAndInsurance", column),
+            header: ({column}) => <TableSortButton column={column}/>,
             cell: ({row}) => `$${row.original.FinAndInsurance.toLocaleString()}`,
         },
         {
             accessorKey: "Holdback",
-            header: ({column}) => SortButton("Holdback", column),
+            header: ({column}) => <TableSortButton column={column}/>,
             cell: ({row}) => {return row.original.Holdback ? `$${row.original.Holdback.toLocaleString()}`: '0'},
         },
         {
             accessorKey: "Total",
-            header: ({column}) => SortButton("Total", column),
+            header: ({column}) => <TableSortButton column={column}/>,
             cell: ({row}) => `$${row.original.Total.toLocaleString()}`,
         },
         {
@@ -248,13 +229,7 @@ export default function SalesTable() {
 
     return (
         <DataTable table={table} loading={loading}>
-            <Input
-                placeholder="Filter sales..."
-                value={(table.getColumn("VehicleMake")?.getFilterValue() as string) ?? ""}
-                onChange={(event) => table.getColumn("VehicleMake")?.setFilterValue(event.target.value)}
-                // todo filter by name --> because html need to get value?
-                className="max-w-sm"
-            />
+            <TableFilter table={table} initial={"Name"} placeholder={"Filter sales..."}/>
             <div className="flex items-center space-x-2 w-full">
                 <Button
                      size="sm"
@@ -270,7 +245,7 @@ export default function SalesTable() {
                  <Plus className="mr-2 h-4 w-4" />
                  Add Row
                 </Button>
-             </div>
+            </div>
             <FormModal title={"Create Sale"} showDialog={showSaleDialog} setShowDialog={setShowSaleDialog} onSubmit={onSubmit}>
                 <RowActionDialog/>
             </FormModal>

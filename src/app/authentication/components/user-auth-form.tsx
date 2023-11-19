@@ -9,8 +9,8 @@ import useAuth from "@/hooks/use-auth";
 import React, { useState, ChangeEvent, FormEvent } from 'react';
 import { z } from 'zod';
 import {getSupabaseBrowserClient} from "@/lib/database";
-import FormModal from "@/components/FormModal";
-import ForgotPasswordDialog from "@/components/ForgotPasswordDialog";
+import FormModal from "@/components/dialogs/FormModal";
+import ForgotPasswordDialog from "@/components/dialogs/ForgotPasswordDialog";
 import {forgotPasswordDialogSchema, passwordFieldSchema} from "@/lib/types";
 
 export type UserAuthFormProps = React.HTMLAttributes<HTMLDivElement>;

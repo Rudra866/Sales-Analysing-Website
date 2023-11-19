@@ -1,10 +1,10 @@
-import FormModal, {FormModalProps, useFormModalContext} from "@/components/FormModal";
+import FormModal, {FormModalProps, useFormModalContext} from "@/components/dialogs/FormModal";
 import {Meta, StoryObj} from "@storybook/react";
 import {useArgs} from "@storybook/preview-api";
 import React, {Dispatch, SetStateAction, useEffect, useState} from "react";
 import {Button} from "@/components/ui/button";
 
-import ForgotPasswordDialog, {ForgotPasswordDialogProps} from "@/components/ForgotPasswordDialog";
+import ForgotPasswordDialog, {ForgotPasswordDialogProps} from "@/components/dialogs/ForgotPasswordDialog";
 import {screen, userEvent} from "@storybook/testing-library";
 import {withTests} from "@storybook/addon-jest";
 import results from "../../../.jest-test-results.json";
