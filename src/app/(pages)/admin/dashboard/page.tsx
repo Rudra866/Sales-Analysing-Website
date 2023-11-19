@@ -11,7 +11,48 @@ import {Sale} from "@/lib/database";
 import {DynamicChart} from "@/components/dynamic-chart";
 import SalesLineChart from "@/components/sales-line-chart";
 import SummaryCard, {CountCard} from "./components/summary-card";
+import {toast} from "@/components/ui/use-toast";
 
+
+async function getSalesCSV() {
+    try {
+        const response = await fetch(`/api/csv`, {
+            method: "GET"
+        })
+
+        const responseBody = await response.json();
+        if (!response.ok) throw responseBody.error;
+        const url = window.URL.createObjectURL(
+            new Blob([responseBody.data], {
+                type: "text/plain"
+            })
+        );
+
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute(
+            'download',
+            `Sales.csv`,
+        );
+
+        // Append to html link element page
+        document.body.appendChild(link);
+
+        // Start download
+        link.click();
+
+        // Clean up and remove the link
+        link.parentNode?.removeChild(link);
+
+
+    } catch (err) {
+        toast({
+            title: "Error!",
+            description: "File could not be downloaded."
+        })
+        console.log(err)
+    }
+}
 
 // TODO maybe we can split this page to some public components? We can also add db method to handle this db request.
 /**
@@ -29,7 +70,7 @@ export default function DashboardPage() {
                         <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
                         <div className="flex items-center space-x-2">
                             <CalendarDateRangePicker date={date} setDate={setDate}/>
-                            <Button>Download</Button>
+                            <Button onClick={() => getSalesCSV()}>Download</Button>
                         </div>
                     </div>
                     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
