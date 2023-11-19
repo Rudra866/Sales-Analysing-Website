@@ -23,35 +23,36 @@ export async function GET() {
   const dbResult = await supabaseAdmin
       .from('Sales')
       .select(`
-                    EmployeeID,
-                    Employees (
-                        Avatar,
-                        Name,
-                        Email,
-                        EmployeeNumber,
-                        Role
-                    ),
-                      ActualCashValue,
-                      CustomerID,
-                      DaysInStock,
-                      DealerCost,
-                      FinancingID,
-                      Financing (
-                        Method
-                       ),
-                      FinAndInsurance,
-                      GrossProfit,
-                      LotPack,
-                      NewSale,
-                      ROI,
-                      SaleTime,
-                      StockNumber,
-                      Total,
-                      TradeInID,
-                      VehicleMake
-                `)
+          StockNumber,
+          ...Employees (
+              Sales Rep: Name
+          ),
+          ...Financing (
+              FinanceMethod: Method 
+          ),
+          ...Customers (
+              CustomerName: Name,
+              City
+          ),
+          VehicleMake,
+          ...TradeIns (
+              Trade,
+              TradeInValue: ActualCashValue
+          ),
+          Actual Cash Value: ActualCashValue,
+          Gross Profit: GrossProfit,
+          FinAndInsurance,
+          Holdback,
+          Total,
+          SaleTime,
+          DaysInStock,
+          DealerCost,
+          LotPack,
+          NewSale,
+          ROI
+      `)
       .order('SaleTime', { ascending: false })
       .csv();
-
+  console.log(dbResult)
   return NextResponse.json(dbResult)
 }
