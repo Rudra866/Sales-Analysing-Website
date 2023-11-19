@@ -49,7 +49,8 @@ export function RoleSelectModalForm({ employee, roles }: RoleSelectModalFormProp
   }, [employee, form])
 
   // todo add functionality by calling the backend, probably from higher up the tree.
-  async function onSubmit(values: z.infer<typeof roleSelectFormSchema>) {
+  async function onSubmit(values: any) {
+    values["id"] = employee.id;
     formContext?.setShowDialog(false);
     formContext?.onSubmit(values) // submit formData
   }

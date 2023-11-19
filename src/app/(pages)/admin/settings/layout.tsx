@@ -9,15 +9,15 @@ import ContainerLayout from "@/components/container-layout";
 const sidebarNavItems = [
   {
     title: "Profile",
-    href: "/settings",
+    href: "/admin/settings",
   },
   {
     title: "Add User",
-    href: "/settings/user-settings",
+    href: "/admin/settings/user-settings",
   },
   {
     title: "Update User",
-    href: "/settings/user-settings/update",
+    href: "/admin/settings/user-settings/update",
   },
 ]
 

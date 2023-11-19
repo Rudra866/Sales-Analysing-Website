@@ -19,7 +19,7 @@ import {useFormModalContext} from "@/components/dialogs/FormModal";
 export type EmployeeSelectModalFormProps = {
   employee?: Employee
   roles: Role[]
-  variant?: "invite" | "register" | null
+  variant?: "invite" | null
 }
 
 /**
@@ -30,7 +30,7 @@ export type EmployeeSelectModalFormProps = {
  */
 export function EmployeeSelectModalForm({ employee, roles, variant }: EmployeeSelectModalFormProps) {
   const formContext = useFormModalContext()
-  const [editState, setEditState] = useState(!!variant);
+  const [editState, setEditState] = useState(true);
   const form = useForm<z.infer<typeof existingEmployeeFormSchema>>({
     resolver: zodResolver(existingEmployeeFormSchema),
     defaultValues: {
@@ -38,7 +38,6 @@ export function EmployeeSelectModalForm({ employee, roles, variant }: EmployeeSe
       Name: "",
       Role: employee?.Role.toString() ?? `${roles[0].id}`,
       email: "",
-      // ...(!variant || variant === "register" ? {password: ""} : {})
     },
   })
 
@@ -49,19 +48,15 @@ export function EmployeeSelectModalForm({ employee, roles, variant }: EmployeeSe
       form.setValue('Name', employee.Name);
       form.setValue('Role', employee.Role.toString());
       form.setValue('email', employee.Email);
-      // if (!variant || variant === 'register') {
-      //   form.setValue('password', ''); // Set password as needed
-      // }
     }
   }, [employee, form, variant]);
 
   // todo - have this call the backend, probably from a higher component
   async function onClick(values: z.infer<typeof existingEmployeeFormSchema>) {
-    console.log("OK")
     const output = {
       ...values,
       Role: parseInt(values.Role),
-      ...(employee ? { Employee: employee } : {})
+      ...(employee ? {id: employee.id}  : {})
     }
     formContext?.onSubmit(output);
     formContext?.setShowDialog(false);

@@ -38,7 +38,7 @@ function UpdateUserPage() {
         }).catch((err) => {
             console.error(err)
         })
-    }, []);
+    }, [supabase]);
 
     return (
         <div className="space-y-6">
@@ -56,7 +56,7 @@ function UpdateUserPage() {
                         <div key={employee.id}
                              className="flex items-center border-b justify-between space-x-4 p-3 shadow-sm cursor-pointer hover:bg-accent mr-4 my-2"
                              onClick={() => {
-                                 router.push(`/settings/user-settings/update/${employee.id}`)
+                                 router.push(`/admin/settings/user-settings/update/${employee.id}`)
                              }}
                         >
                                 <div className="flex items-center space-x-4 w-full">

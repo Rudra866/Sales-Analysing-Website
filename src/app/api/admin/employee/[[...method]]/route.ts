@@ -87,8 +87,6 @@ export async function POST(request: NextRequest, { params }: { params: { method:
       break;
   }
 
-  // probably clean up some of the error messages sent back before sending to user
-
   if (result?.error) {
     return NextResponse.json({error: result?.error.message}, {status: result?.error.status})
   }
@@ -116,15 +114,13 @@ export async function GET(
 
 
 // modify an employee
-// need to figure out if we can transact statements? what if one operation fails and one succeeds?
 export async function PATCH(request: Request) {
-  const supabaseAdmin =
-      createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_KEY!)
-
-  // get id/email as key for the update transaction from query strings
-
+  const cookieStore = cookies()
+  const supabase: SupabaseClient<Database> =
+      getSupabaseRouteHandlerClient(cookieStore, process.env.SUPABASE_SERVICE_KEY!);
 
   type ExpectedJSON = {
+    id: string,
     email?: string,
     password?: string,
     Name?: string,
@@ -134,39 +130,44 @@ export async function PATCH(request: Request) {
 
   const requestJson: ExpectedJSON = await request.json();
 
-  // handle Auth table attributes first.
+  const result = await supabase.auth.admin.updateUserById(requestJson.id, {
+    email: requestJson.email,
+    password: requestJson.password,
+    user_metadata: { // Pass Employee attributes to database so trigger can create an employee.
+      Name: requestJson.Name,
+      EmployeeNumber: requestJson.EmployeeNumber,
+      Role: requestJson.Role,
+    },
+    email_confirm: true
+  });
 
-  /* hold off for now, should set up a postgres function to handle employee changes directly (write protected) */
-  /* as of right now, if we do both it could break an employee if the database fails for some reason */
-
-  // we can add a route shortly to reset the password of an employee.
-  // if (requestJson["email"] || requestJson["password"]) {
-  //   await supabase.auth.admin.updateUserById(params.id, {
-  //     email: requestJson["email"],
-  //     password: requestJson["password"]
-  //   })
-  // }
-
-
-  // handle Employee table attributes
-  const employee: EmployeeUpdate = {
-    Email: requestJson.email,
-    Name: requestJson.Name,
-    EmployeeNumber: requestJson.EmployeeNumber,
-    Role: requestJson.Role,
+  if (result?.error) {
+    return NextResponse.json({error: result?.error.message}, {status: result?.error.status})
   }
 
-  // const {error, data, status, statusText} = await supabaseAdmin
-  //     .from("Employees")
-  //     .update(employee)
-  //     .eq("id", params.id)
-  //     .select()
-  //     .maybeSingle();
+  return NextResponse.json({data: result?.data.user})
+}
 
-  // if (error) {
-  //   return NextResponse.json({ error }, {status, statusText})
-  // }
-  //
-  // return NextResponse.json({ data: data})
-  return NextResponse.json({error: "Not yet implemented."})
+
+export async function DELETE(request: Request) {
+  const cookieStore = cookies()
+  const supabase: SupabaseClient<Database> =
+      getSupabaseRouteHandlerClient(cookieStore, process.env.SUPABASE_SERVICE_KEY!);
+  type ExpectedJSON = {
+    id: string,
+    email?: string,
+    password?: string,
+    Name?: string,
+    EmployeeNumber?: string
+    Role?: number,
+  }
+  const requestJson: ExpectedJSON = await request.json();
+
+  const result = await supabase.auth.admin.deleteUser(requestJson.id);
+
+  if (result?.error) {
+    return NextResponse.json({error: result?.error.message}, {status: result?.error.status})
+  }
+
+  return NextResponse.json({data: result?.data.user})
 }

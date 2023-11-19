@@ -10,7 +10,6 @@ function Page() {
     const supabase = getSupabaseBrowserClient();
     const [employee, setEmployee] = useState<Employee>()
     const [role, setRole] = useState<Role>()
-    console.log(params)
 
 
     useEffect(() => {
@@ -36,7 +35,6 @@ function Page() {
                     name={employee.Name}
                     number={employee.EmployeeNumber}
                     email={employee.Email}
-                    password={employee.Email}// todo: check if current auth user is admin, if so reset password
                     employee={employee}
                     role={role}
                     remove={true}

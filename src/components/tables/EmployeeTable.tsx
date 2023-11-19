@@ -48,6 +48,8 @@ export default function EmployeeTable() {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
 
   const [showEmployeeModal, setShowEmployeeModal] = useState(false);
+  const [showEmployeeRoleModal, setShowEmployeeRoleModal] = useState(false);
+  const [showEmployeeEditModal, setShowEmployeeEditModal] = useState(false); // this is a bit lazy, someone else can fix it if we have time
   const [showRoleModal, setShowRoleModal] = useState(false);
 
   const {employee, role} = useAuth();
@@ -95,29 +97,31 @@ export default function EmployeeTable() {
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
               <DropdownMenuSeparator/>
-
-                  <DropdownMenuItem onClick={() => navigator.clipboard.writeText(employee.EmployeeNumber)}>
-                    Copy Employee Number
-                  </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => navigator.clipboard.writeText(employee?.EmployeeNumber ?? "")}>
+                  Copy Employee Number
+                </DropdownMenuItem>
               {role?.EmployeePermission &&
                 <>
-                  <DropdownMenuItem onClick={() => setShowEmployeeModal(true)}>
+                  <DropdownMenuItem onClick={() => setShowEmployeeEditModal(true)}>
                     <span>Show Employee</span>
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={()=> setShowRoleModal(true)}>
+                  <DropdownMenuItem onClick={()=> setShowEmployeeRoleModal(true)}>
                     <span>Change Role</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={()=> submitEmployeeDeletion({id: employee?.id})}>
+                      <span>Delete Employee</span>
                   </DropdownMenuItem>
                 </>
             }
             </DropdownMenuContent>
-          </DropdownMenu>
-          {/* add onUpdate functionality */}
-          <FormModal title={"Employee"} onSubmit={(data:any) => {return}} showDialog={showEmployeeModal} setShowDialog={setShowEmployeeModal}>
-            <EmployeeSelectModalForm employee={row.original} roles={roles}/>
+
+          <FormModal title={"Employee"} onSubmit={submitEmployeeUpdate} showDialog={showEmployeeEditModal} setShowDialog={setShowEmployeeEditModal}>
+            <EmployeeSelectModalForm employee={employee}  roles={roles}/>
           </FormModal>
-          <FormModal title={"Employee"} onSubmit={(data:any) => {return}} showDialog={showRoleModal} setShowDialog={setShowRoleModal}>
-            <RoleSelectModalForm employee={row.original} roles={roles}/>
+          <FormModal title={"Employee"} onSubmit={submitEmployeeUpdate} showDialog={showEmployeeRoleModal} setShowDialog={setShowEmployeeRoleModal}>
+            <RoleSelectModalForm employee={employee} roles={roles}/>
           </FormModal>
+  </DropdownMenu>
         </>
     );
   }
@@ -125,6 +129,20 @@ export default function EmployeeTable() {
   async function submitEmployeeInvite(data: any) {
     await fetch('/api/admin/employee/invite', {
       method: "POST",
+      body: JSON.stringify(data),
+    })
+  }
+
+  async function submitEmployeeUpdate(data: any) {
+    await fetch('/api/admin/employee', {
+      method: "PATCH",
+      body: JSON.stringify(data),
+    })
+  }
+
+  async function submitEmployeeDeletion(data: any) {
+    await fetch('/api/admin/employee', {
+      method: "DELETE",
       body: JSON.stringify(data),
     })
   }
@@ -161,7 +179,8 @@ export default function EmployeeTable() {
     {
       accessorKey: "Role",
       header: ({column}) => <TableSortButton column={column}/>,
-      cell: ({row}) => roles.find((role) => role.id === row.original.Role)?.RoleName
+      cell: ({row}) => roles.find((role) =>
+          role.id === row.original.Role)?.RoleName
 
     },
     {

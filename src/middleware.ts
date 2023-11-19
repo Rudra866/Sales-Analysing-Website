@@ -1,22 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server'
-import {getEmployeeFromAuthUser, getRoleFromEmployee} from "@/lib/database";
-import {getSupabaseMiddlewareClient} from "@/lib/supabase";
-
+import {getEmployeeFromAuthUser, getRoleFromEmployee} from "./lib/database";
+import {getSupabaseMiddlewareClient} from "./lib/supabase";
 
 /**
- * Add routes here that should be restricted to employees with {@link Role | Role.EmployeePermission}.
- * @group Next.js Middleware
+ * ALL routes under `/admin` are automatically protected
  */
-export const admin_routes:string[] = [ // todo -- Ryan can you do the same thing as you did with admin_api_route?
-    "/admin/employees",
-    "/admin/sales",
-    "/admin/dashboard",
-]
+export const admin_page_routes = /^\/admin\/.*$/;
 
 /**
  * ALL routes under `/api/admin` are automatically protected.
  */
-export const admin_api_route = /^\/api\/admin\/.*$/
+export const admin_api_routes = /^\/api\/admin\/.*$/;
 
 /**
  * Add routes here that should be restricted to employees with {@link Role | Role.DatabasePermission}.
@@ -66,7 +60,7 @@ export async function middleware(req: NextRequest) {
             return NextResponse.redirect(new URL("/dashboard", req.url))
         }
 
-        if ((admin_routes.includes(req.nextUrl.pathname) || admin_api_route.test(req.nextUrl.pathname))
+        if ((admin_page_routes.test(req.nextUrl.pathname) || admin_api_routes.test(req.nextUrl.pathname))
             && !role.EmployeePermission) {
             return NextResponse.rewrite(
                 `${req.nextUrl.protocol}//${req.nextUrl.host}/401`,
