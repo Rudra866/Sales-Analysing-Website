@@ -87,7 +87,6 @@ export const InviteEmployee: Story = {
 export const SimulateEdit: Story = {
   ...Template,
   args: {
-    variant: null,
     employee: test_employee_set[1],
   },
   play: async ({ canvasElement }) => {

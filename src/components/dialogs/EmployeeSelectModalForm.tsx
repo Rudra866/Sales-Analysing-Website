@@ -30,7 +30,7 @@ export type EmployeeSelectModalFormProps = {
  */
 export function EmployeeSelectModalForm({ employee, roles, variant }: EmployeeSelectModalFormProps) {
   const formContext = useFormModalContext()
-  const [editState, setEditState] = useState(true);
+  const [editState, setEditState] = useState(!employee);
   const form = useForm<z.infer<typeof existingEmployeeFormSchema>>({
     resolver: zodResolver(existingEmployeeFormSchema),
     defaultValues: {
