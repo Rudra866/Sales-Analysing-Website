@@ -113,10 +113,34 @@ export async function POST(request: NextRequest) {
   })
 }
 
+// TODO -- need RPC call
 export function PATCH(request: Request) {
   return NextResponse.json({error: "Not yet implemented."}, {status: 405})
 }
 
-export function DELETE(request: Request) {
-  return NextResponse.json({error: "Not yet implemented."}, {status: 405})
+
+// TODO -- this doesn't manage the other tables, skip for now, if time permits add RPC to delete entries if not in use.
+export async function DELETE(request: Request, { params }: {params: {id: string[]}}) {
+  const supabase = getSupabaseRouteHandlerClient(cookies());
+  const {data: {session}} = await supabase.auth.getSession();
+  const employee = await getEmployeeFromAuthUser(supabase, session!.user)
+  const role = await getRoleFromEmployee(supabase, employee);
+
+
+  if (!role.EmployeePermission) {
+    return NextResponse.json({error: "Forbidden"}, {status: 401});
+  }
+
+  if (!params.id) {
+    return NextResponse.json({error: "Invalid request. Missing id."}, {status: 400});
+  }
+
+  const supabaseAdmin =
+      createClient<Database>(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_KEY!)
+  const result = await supabaseAdmin
+      .from("Sales")
+      .delete()
+      .in("id", params.id)
+
+  return NextResponse.json(result)
 }

@@ -12,6 +12,7 @@ import {MoreHorizontal} from "lucide-react";
 import FormModal from "@/components/dialogs/FormModal";
 import {getSupabaseBrowserClient, Sale} from "@/lib/database";
 import {RowActionDialog} from "./RowActionDialog";
+import {toast} from "@/components/ui/use-toast";
 type Props = {
     row: Row<Sale>
     sales: Sale[]
@@ -20,7 +21,6 @@ type Props = {
 
 
 export function DropDownMenu({row, sales, setSales}: Props) {
-    const supabase = getSupabaseBrowserClient();
     const [salesModal, setSalesModal] = useState(false);
 
     function updateSales(sale: Sale) {
@@ -50,12 +50,17 @@ export function DropDownMenu({row, sales, setSales}: Props) {
                     </DropdownMenuItem>
                     <DropdownMenuSeparator/>
 
-                    <DropdownMenuItem onClick={() => {
-                        row.original.id && supabase.from('Sales').delete().eq('id', row.original.id).then(() => {
-                            const originalSales = [...sales]
-                            const updatedSales = originalSales.filter((oldSale) => oldSale.id !== row.original.id)
-                            setSales(updatedSales)
+                    <DropdownMenuItem onClick={async () => {
+                        const result = await fetch(`/api/sale/${row.original.id}`, {
+                            method: "DELETE",
                         })
+                        const resultBody = await result.json();
+                        if (resultBody.error) {
+                            toast({
+                                title: "Error",
+                                description: resultBody.error
+                            })
+                        }
                     }}>
                         Delete
                         <DropdownMenuShortcut>⌘⌫</DropdownMenuShortcut>

@@ -1,7 +1,6 @@
 'use client'
 
 import {
-    Column,
     ColumnDef,
     ColumnFiltersState,
     getCoreRowModel, getFilteredRowModel,
@@ -12,7 +11,7 @@ import {
 import React, {useEffect, useState} from "react";
 import {Button} from "@/components/ui/button";
 import {Employee, Tables, Sale, getSupabaseBrowserClient, SaleInsert} from "@/lib/database";
-import {ArrowUpDown, Plus} from "lucide-react";
+import {Plus} from "lucide-react";
 import {Badge} from "@/components/ui/badge";
 import {DropDownMenu} from "@/employee/sales/components/drop-down-menu";
 import {format} from "date-fns";
@@ -88,6 +87,7 @@ export default function SalesTable() {
         )
     }
 
+
     async function onSubmit(data: SaleInsert) {
         data["EmployeeID"] = employee!.id;      // set current user to be the seller
         data["Total"] =                         // set total based on fields input
@@ -106,25 +106,11 @@ export default function SalesTable() {
         })
     }
 
-    function SortButton(name: string, column: Column<Tables<'Sales'>>) {
-        // todo does not work for employee names
-        return (
-            <Button
-                size="sm"
-                variant={"ghost"}
-                onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-            >
-                {name}
-                <ArrowUpDown className="ml-1 h-3.5 w-3.5 text-muted-foreground/70"/>
-            </Button>
-        )
-    }
-
     const columns: ColumnDef<Tables<'Sales'>, Employee>[] = [
         {
             accessorKey: "SaleTime",
             // header: ({column}) => SortButton("SaleTime", column),
-            header: ({column}) => SortButton("SaleTime", column),
+            header: ({column}) => <TableSortButton column={column}/>,
             cell: ({row}) => {
                 return (
                     <p className={'text-sm min-w-fit'}>
@@ -141,7 +127,7 @@ export default function SalesTable() {
         // },
         {
             accessorKey: "Name",
-            header: ({column}) => SortButton("Name", column),
+            header: ({column}) => <TableSortButton column={column}/>,
             cell: ({row}) => {
                 // return employees.find((employee) => employee.id === row.original.EmployeeID)?.Name
                 return (
