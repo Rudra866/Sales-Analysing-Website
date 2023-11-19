@@ -1,5 +1,16 @@
 
+
 ###
+# @name Get all tasks
+GET http://localhost:3000/api/task
+Cookie: {{cookie}}
+
+###
+# @name Get a single task
+GET http://localhost:3000/api/task/1
+Cookie: {{cookie}}
+###
+# @name Create a single task
 POST http://localhost:3000/api/task
 Content-Type: application/json
 Cookie: {{cookie}}
