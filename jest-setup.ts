@@ -47,3 +47,20 @@ export const test_admin_info: user_info_type = {
   role: "2",
   roleText: "Administrator",
 }
+
+export function getCookie(name: string): string | null {
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) {
+    const cookieValue = parts.pop()?.split(';').shift();
+    if (cookieValue) {
+      return cookieValue;
+    }
+  }
+  return null;
+}
+
+// implement -- strip url, add "-auth-token"
+export function getCookieName() {
+  return "sb-ciguaogfmmnxjxfqpwhp-auth-token"
+}
