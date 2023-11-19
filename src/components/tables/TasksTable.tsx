@@ -194,7 +194,7 @@ export default function TasksTable() {
 
   return (
       <DataTable table={table} loading={loading}>
-        <TableFilter table={table} initial={"Name"} placeholder={"Filter sales..."}/>
+        <TableFilter table={table} initial={"Name"} placeholder={"Filter tasks..."}/>
         <div className="flex items-center space-x-2 w-full">
           <Button
               size="sm"

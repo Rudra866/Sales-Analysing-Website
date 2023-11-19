@@ -24,7 +24,6 @@ function Page() {
     return (
         <div className={'container'}>
             <TasksTable />
-            Tasks Table
         </div>
     );
 }
