@@ -13,7 +13,6 @@ export const passwordChangeFormSchema = z.object({
 
 export default function ChangePasswordForm({ onSubmit }: {onSubmit: (values: z.infer<typeof passwordChangeFormSchema>) => void}) {
 
-
   const form = useForm<z.infer<typeof passwordChangeFormSchema>>({
     resolver: zodResolver(passwordChangeFormSchema),
     defaultValues: {

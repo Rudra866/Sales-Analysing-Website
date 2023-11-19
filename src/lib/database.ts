@@ -120,6 +120,30 @@ export async function getEmployee(supabase: SupabaseClient, employeeNumber: stri
   return employee;
 }
 
+export async function getReferencePages(supabase: SupabaseClient){
+  let { data: ReferencePages, error } = await supabase
+      .from('ReferencePages')
+      .select('*')
+
+  if (error) throw error;
+    return ReferencePages;
+}
+
+
+
+export async function getReferencePagesById(supabase: SupabaseClient, id: string){
+  let { data: ReferencePages, error } = await supabase
+      .from('ReferencePages')
+      .select('*')
+      .eq('id', id)
+      .maybeSingle();
+
+  if (error) throw error;
+  return ReferencePages;
+}
+
+
+
 export async function getEmployeeById(supabase: SupabaseClient, employeeID: string): Promise<Employee| null> {
   const {data: employee, error} = await supabase
       .from('Employees')
@@ -990,6 +1014,8 @@ export type Task =                 Tables<"Tasks">;
  *  @category Database Row */
 export type TradeIn =              Tables<"TradeIns">;
 
+export type ReferencePages = Tables<"ReferencePages">;
+
 // todo the rest::
 /** Represents a partial employee row in the database with all required fields. If you need an incomplete
  *  type instead, consider using {@link TradeInInsert} or {@link TradeInUpdate}.
@@ -1054,3 +1080,5 @@ export type TaskUpdate =           UpdateTables<"Tasks">;
 /** @interface
  *  @category Database Update */
 export type TradeInUpdate =        UpdateTables<"TradeIns">;
+
+

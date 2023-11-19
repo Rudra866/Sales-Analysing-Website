@@ -46,7 +46,8 @@ export default function FormFieldComponent({name, form, label, inputType, classN
                                 />
                             ) : inputType === "textarea" ? (
                                 <Textarea
-                                    placeholder={label}
+                                    className='h-64'
+                                    placeholder={'Enter text here...'}
                                     {...field}
                                 />
                             ) : (
@@ -55,9 +56,7 @@ export default function FormFieldComponent({name, form, label, inputType, classN
                                     {...field}
                                 />
                             )
-
                             }
-
                         </FormControl>
                         <FormMessage/>
                     </FormItem>

@@ -64,11 +64,9 @@ export function RowActionDialog({sale}: SaleSelectModalFormProps) {
                 resolver: zodResolver(saleFormSchema),
                 defaultValues: {
                     ActualCashValue: sale?.ActualCashValue ?? 0,
-                    // CustomerID: sale?.CustomerID ?? 0,
                     DaysInStock: sale?.DaysInStock ?? 0,
                     DealerCost: sale?.DealerCost ?? 0,
                     EmployeeID: employee?.id ?? "",
-                    // FinancingID: sale?.FinancingID ?? 0,
                     FinAndInsurance: sale?.FinAndInsurance ?? 0,
                     GrossProfit: sale?.GrossProfit ?? 0,
                     Holdback: sale?.Holdback ?? 0,
