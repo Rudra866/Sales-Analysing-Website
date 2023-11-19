@@ -21,7 +21,7 @@ import {
   Task,
   getAllTasks,
   TaskInsert,
-  getAllEmployees
+  getAllEmployees, SalesGoal, SalesGoalInsert, MonthlySale, getAllMonthlySales
 } from "@/lib/database";
 import {ArrowUpDown, Plus} from "lucide-react";
 import {Badge} from "@/components/ui/badge";
@@ -47,49 +47,22 @@ import {TaskCreateDialog} from "@/components/dialogs/TaskCreateDialog";
 // todo align rows and columns
 
 /**
- * Component used to render sales page table at `/sales`
+ * Component used to render sales goals at /admin/goals
  * @group React Components
  */
 export default function TasksTable() {
   const [loading, setLoading] = useState(true);
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
-  const [tasks, setTasks] = useState<Task[]>([])
+  const [goals, setGoals] = useState<SalesGoal[]>([])
   const supabase = getSupabaseBrowserClient();
   const [showTaskCreateModal, setShowTaskCreateModal] = useState<boolean>(false)
 
-  const {employee} = useAuth();
   const [employees, setEmployees] = useState<Employee[]>([])
-  const statuses = [
-    {
-      value: "BACKLOG",
-      label: "Backlog",
-      icon: QuestionMarkCircledIcon,
-    },
-    {
-      value: "TODO",
-      label: "Todo",
-      icon: CircleIcon,
-    },
-    {
-      value: "IN_PROGRESS",
-      label: "In Progress",
-      icon: StopwatchIcon,
-    },
-    {
-      value: "FINISHED",
-      label: "Done",
-      icon: CheckCircledIcon,
-    },
-    {
-      value: "CANCELLED",
-      label: "Canceled",
-      icon: CrossCircledIcon,
-    },
-  ]
+  const [monthlySales, setMonthlySales] = useState<MonthlySale[]>([])
 
-  async function createNewTask(data: TaskInsert) {
-    await fetch(`/api/task`, {
+  async function createNewSaleGoal(data: SalesGoalInsert) {
+    await fetch(`/api/goal`, {
       method: "POST",
       body: JSON.stringify(data)
     })
@@ -97,12 +70,14 @@ export default function TasksTable() {
 
 
   useEffect(() => {
-    async function getTasks() {
+    async function getSalesGoals() {
       try {
-        const taskResponse = await fetch("/api/task", {method: "GET"})
-        const tasks = (await taskResponse.json()).data;
+        const response = await fetch("/api/goal", {method: "GET"})
+        const goals = (await response.json()).data;
         const employees = await getAllEmployees(supabase);
-        setTasks(tasks);
+        const monthlySales = await getAllMonthlySales(supabase);
+        setMonthlySales(monthlySales);
+        setGoals(goals);
         setEmployees(employees);
         setLoading(false);
       } catch (e) {
@@ -112,19 +87,15 @@ export default function TasksTable() {
         })
       }
     }
-    getTasks()
+    getSalesGoals()
   }, [supabase]);
 
-  const columns: ColumnDef<Task>[] = [
+  const columns: ColumnDef<SalesGoal>[] = [
     {
       accessorKey: "Creator",
       header: ({column}) => <TableSortButton column={column}/>,
-      cell: ({row}) => employees.find((employee) => row.original.Creator === employee.id )?.Name,
-    },
-    {
-      accessorKey: "Assignee",
-      header: ({column}) => <TableSortButton column={column}/>,
-      cell: ({row}) => employees.find((employee) => row.original.Assignee === employee.id )?.Name,
+      cell: ({row}) => employees.find((employee) =>
+          row.original.Creator === employee.id )?.Name,
     },
     {
       accessorKey: "Name",
@@ -135,46 +106,27 @@ export default function TasksTable() {
       header: ({column}) => <TableSortButton column={column}/>,
     },
     {
-      accessorKey: "Status",
-      header: ({column}) => (
-          <TableSortButton column={column}/>
-      ),
-      cell: ({row}) => {
-        const status = statuses.find(
-            (status) => status.value === row.getValue("Status")
-        )
-
-        if (!status) {
-          return null
-        }
-
-        return (
-            <div className="flex w-[100px] items-center">
-              {status.icon && (
-                  <status.icon className="mr-2 h-4 w-4 text-muted-foreground"/>
-              )}
-              <span>{status.label}</span>
-            </div>
-        )
-      },
-      filterFn: (row, id, value) => {
-        return value.includes(row.getValue(id))
-      }
-    },
-    {
       accessorKey: "StartDate",
       header: ({column}) => <TableSortButton column={column}/>,
-      cell: ({row}) => (new Date(row.getValue("StartDate")).toLocaleDateString())
+      cell: ({row}) =>
+          (new Date(row.getValue("StartDate"))
+              .toLocaleString('en-US', { month: 'long', year: 'numeric' }))
     },
     {
-      accessorKey: "EndDate",
+      accessorKey: "TotalGoal",
       header: ({column}) => <TableSortButton column={column}/>,
-      cell: ({row}) => (new Date(row.getValue("EndDate")).toLocaleDateString())
+    },
+    {
+      accessorKey: "ActualSales",
+      header: ({column}) => <TableSortButton column={column}/>,
+      cell: ({row}) =>
+          monthlySales.find((monthly) =>
+              monthly.TimePeriod === row.original.StartDate)?.Total
     },
   ]
 
   const table = useReactTable({
-    data: tasks,
+    data: goals,
     columns,
     getCoreRowModel: getCoreRowModel(),
     onSortingChange: setSorting,
@@ -193,24 +145,18 @@ export default function TasksTable() {
 
   return (
       <DataTable table={table} loading={loading}>
-        <TableFilter table={table} initial={"Name"} placeholder={"Filter tasks..."}/>
+        <TableFilter table={table} initial={"Name"} placeholder={"Filter goals..."}/>
         <div className="flex items-center space-x-2 w-full">
-          <Button
-              size="sm"
-              variant="outline"
-              className="ml-auto hidden h-8 lg:flex"
-              onClick={() => setShowTaskCreateModal(true)} // todo post
-          >
-            <Plus className="mr-2 h-4 w-4" />
-            Create Task
-          </Button>
+          {/*<Button*/}
+          {/*    size="sm"*/}
+          {/*    variant="outline"*/}
+          {/*    className="ml-auto hidden h-8 lg:flex"*/}
+          {/*    onClick={() => setShowTaskCreateModal(true)} // todo post*/}
+          {/*>*/}
+          {/*  <Plus className="mr-2 h-4 w-4" />*/}
+          {/*  Create Task*/}
+          {/*</Button>*/}
         </div>
-        <FormModal title={"Create Task"}
-                   showDialog={showTaskCreateModal}
-                   setShowDialog={setShowTaskCreateModal}
-                   onSubmit={createNewTask}>
-          <TaskCreateDialog employees={employees}/>
-        </FormModal>
       </DataTable>
 
   )

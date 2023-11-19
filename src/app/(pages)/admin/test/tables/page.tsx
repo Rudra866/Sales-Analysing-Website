@@ -11,6 +11,9 @@ const EmployeeTable =
 const TasksTable =
     dynamic(() => import('@/components/tables/TasksTable'))
 
+const SalesGoalsTable =
+    dynamic(() => import('@/components/tables/SalesGoalsTable'))
+
 export default function TestTables() {
   return (
         <Tabs className={"mx-3 my-3"} defaultValue="sales" >
@@ -18,6 +21,7 @@ export default function TestTables() {
             <TabsTrigger value="sales">Sales Table</TabsTrigger>
             <TabsTrigger value="employee">Employee Table</TabsTrigger>
             <TabsTrigger value="tasks">Tasks Table</TabsTrigger>
+            <TabsTrigger value="saleGoals">Sale Goals Table</TabsTrigger>
             <TabsTrigger value="other">Other</TabsTrigger>
           </TabsList>
           <TabsContent value="sales" className="p-2 overflow-clip rounded-[0.5rem] border bg-background shadow">
@@ -28,6 +32,9 @@ export default function TestTables() {
           </TabsContent>
           <TabsContent value="tasks" className="p-2 overflow-clip rounded-[0.5rem] border bg-background shadow">
             <TasksTable/>
+          </TabsContent>
+          <TabsContent value="saleGoals" className="p-2 overflow-clip rounded-[0.5rem] border bg-background shadow">
+            <SalesGoalsTable/>
           </TabsContent>
           <TabsContent value="other">
             <p>Nothing here yet.. how about you go make one?</p>

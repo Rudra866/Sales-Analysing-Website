@@ -464,7 +464,7 @@ export async function getAllFinancingOptions(supabase: SupabaseClient): Promise<
  * @throws {@link PostgrestError} on database error.
  * @group Database Functions
  */
-export async function getAllMonthlySales(supabase: SupabaseClient): Promise<MonthlySale[] | null>
+export async function getAllMonthlySales(supabase: SupabaseClient): Promise<MonthlySale[]>
 {
   const {data: monthlySales, error} = await supabase
       .from('MonthlySales')

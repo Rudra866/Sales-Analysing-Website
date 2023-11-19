@@ -8,6 +8,7 @@ import {createClient} from "@supabase/supabase-js";
 import {cookies} from "next/headers";
 
 // handle retrieving a single sale, or all the sales. Protects sales from being read by users with no permission.
+// TODO need to update monthlySales too or remove them and use queries!!
 export async function GET(request: Request, { params }: {params: {id: string[]}}) {
   const supabase =
       getSupabaseRouteHandlerClient(cookies())
