@@ -7,7 +7,7 @@ import {Button} from "@/components/ui/button";
 import {DynamicChart} from "@/components/dynamic-chart";
 import TasksQuickView from "@/employee/employee-components/tasks-quick-view";
 
-function Page() {
+export default function EmployeePage() {
     const {
         employee,
         tasks,
@@ -50,5 +50,3 @@ function Page() {
         </Suspense>
     );
 }
-
-export default Page;

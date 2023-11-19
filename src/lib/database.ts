@@ -1014,6 +1014,8 @@ export type Task =                 Tables<"Tasks">;
  *  @category Database Row */
 export type TradeIn =              Tables<"TradeIns">;
 
+export type ReferencePage  =  Tables<"ReferencePages">;
+
 // todo the rest::
 /** Represents a partial employee row in the database with all required fields. If you need an incomplete
  *  type instead, consider using {@link TradeInInsert} or {@link TradeInUpdate}.
@@ -1048,6 +1050,7 @@ export type TaskInsert =           InsertTables<"Tasks">;
  *  @category Database Insert */
 export type TradeInInsert =        InsertTables<"TradeIns">;
 
+export type ReferencePageInsert  =  InsertTables<"ReferencePages">;
 /** @interface
  *  @category Database Update */
 export type EmployeeUpdate =       UpdateTables<"Employees">;

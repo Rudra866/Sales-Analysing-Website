@@ -1,7 +1,7 @@
 'use client'
 
 import React, {useEffect} from 'react';
-import {getReferencePagesById, getSupabaseBrowserClient, ReferencePages} from "@/lib/database";
+import {getReferencePagesById, getSupabaseBrowserClient, ReferencePage} from "@/lib/database";
 import {DbResult} from "@/lib/types";
 import {Separator} from "@/components/ui/separator";
 
@@ -9,14 +9,16 @@ const supabase = getSupabaseBrowserClient();
 
 function Page(props: any) {
     const id = props.params.id;
-    const [page, setPage] = React.useState<ReferencePages>();
+    const [page, setPage] = React.useState<ReferencePage>();
 
+
+    // todo -- error prone calls..
     useEffect(() => {
         getReferencePagesById(supabase, id)
             .then((res) => {
                 setPage(res as DbResult<typeof page>)
             })
-    }, []);
+    }, [id]);
 
     return (
         <div className="space-y-6">

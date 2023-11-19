@@ -5,7 +5,7 @@ import Image from "next/image";
 import {Button} from "@/components/ui/button";
 import {cn} from "@/lib/utils";
 import {fontSans} from "@/lib/fonts";
-import Navigation from "@/components/menu/navigation";
+import Link from "next/link";
 
 /**
  * Page shown to a user who's been sent a 404 HTTP response.
@@ -20,10 +20,9 @@ export default function NotFoundPage() {
                         <div className="text-5xl font-dark font-bold">404</div>
                         <p className={'text-muted-foreground'}>Sorry we couldn&apos;t find this page. </p>
                         <p className="mb-8 text-muted-foreground">But dont worry, you can find plenty of other things on our homepage.</p>
-                        <Button
-                            variant={'outline'}
-                            onClick={() => {window.location.href = '/';}}
-                        >back to homepage</Button>
+                        <Link href={"/"}>
+                            <Button variant={'outline'}>back to homepage</Button>
+                        </Link>
                     </div>
                     <div className="max-w-lg">
                         <Image
