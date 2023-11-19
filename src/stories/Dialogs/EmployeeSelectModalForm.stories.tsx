@@ -5,13 +5,10 @@ import {
 import {test_employee_set, test_roles_set} from "@/stories/test_data";
 import {Meta, StoryObj} from "@storybook/react";
 import FormModal, {FormModalProps} from "@/components/dialogs/FormModal";
-import {useArgs} from "@storybook/preview-api";
-import {Dispatch, SetStateAction} from "react";
 import {fireEvent, userEvent, within} from "@storybook/testing-library";
 import {Button} from "@/components/ui/button";
 import { screen } from '@storybook/testing-library';
 import {useTestDialogControls} from "@/stories/Dialogs/useDialogArgs";
-// eslint-disable-next-line storybook/story-exports
 
 const delay = 100
 type EmployeeSelectModalCustomArgs = EmployeeSelectModalFormProps & FormModalProps
@@ -84,13 +81,6 @@ export const InviteEmployee: Story = {
   ...Template,
   args: {
     variant: "invite"
-  }
-}
-
-export const RegisterEmployee: Story = {
-  ...Template,
-  args: {
-    variant: "register"
   }
 }
 
