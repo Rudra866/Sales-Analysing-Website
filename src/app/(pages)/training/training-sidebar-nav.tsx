@@ -3,8 +3,9 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 
-import { cn } from "@/lib/utils"
+import {cn, isAdmin} from "@/lib/utils"
 import { buttonVariants } from "@/components/ui/button"
+import useAuth from "@/hooks/use-auth";
 
 interface SidebarNavProps extends React.HTMLAttributes<HTMLElement> {
   items: {
@@ -15,6 +16,7 @@ interface SidebarNavProps extends React.HTMLAttributes<HTMLElement> {
 
 export function TrainingSidebarNav({ className, items, ...props }: SidebarNavProps) {
   const pathname = usePathname()
+  const {employee} = useAuth();
 
   return (
     <nav
@@ -24,7 +26,20 @@ export function TrainingSidebarNav({ className, items, ...props }: SidebarNavPro
       )}
       {...props}
     >
-      <>
+      <div>
+        {isAdmin(employee?.Role!) &&
+            <Link
+                href={'/training/create-new'}
+                className={cn(
+                    buttonVariants({ variant: "ghost" }),
+                    pathname === '/training/create-new'
+                        ? "bg-muted hover:bg-muted"
+                        : "hover:bg-transparent hover:underline",
+                    "justify-start", "truncate")}
+            >
+              Create Page
+            </Link>
+        }
         {items.map((item) => (
             <Link
                 key={item.href}
@@ -34,14 +49,13 @@ export function TrainingSidebarNav({ className, items, ...props }: SidebarNavPro
                     pathname === item.href
                         ? "bg-muted hover:bg-muted"
                         : "hover:bg-transparent hover:underline",
-                    "justify-start"
-                    , "truncate")}
+                    "justify-start", "truncate")}
             >
               {item.title}
             </Link>
         ))}
 
-      </>
+      </div>
     </nav>
   )
 }

@@ -63,7 +63,7 @@ export async function middleware(req: NextRequest) {
 
         // don't allow logged-in users back to the sign-in page
         if (req.nextUrl.pathname === "/authentication") {
-            return NextResponse.redirect(new URL("/dashboard", req.url))
+            return NextResponse.redirect(new URL("/admin/dashboard", req.url)) // todo redirect to admin dashboard. employee?
         }
 
         if ((admin_routes.includes(req.nextUrl.pathname) || admin_api_route.test(req.nextUrl.pathname))
