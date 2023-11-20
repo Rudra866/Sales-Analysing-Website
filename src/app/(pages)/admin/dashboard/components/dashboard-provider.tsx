@@ -35,7 +35,6 @@ export function useDashboard(): DashBoardContextProps {
     return context;
 }
 export const DashboardProvider: React.FC<PropsWithChildren> = ({children}) => {
-    const {employee} = useAuth()
     const [filteredSales, setFilteredSales] = useState<Sale[]>();
     const [employees, setEmployees] = useState<Employee[]>();
     const [sales, setSales] = useState<Sale[]>([])
@@ -43,11 +42,11 @@ export const DashboardProvider: React.FC<PropsWithChildren> = ({children}) => {
     const [salesGoal, setSalesGoal] = useState<SalesGoal[]>();
     const [mySales, setMySales] = useState<SaleWithEmployeeAndFinancingType[]>();
     const [referencePage, setReferencePage] = useState<ReferencePage[]>();
-
     const [date, setDate] = React.useState<DateRange | undefined>({
         from: subDays(new Date(), 120),
         to: new Date(),
     })
+    const {employee} = useAuth()
 
     // get all employees && reference pages on page load
     useEffect(() => {
@@ -58,7 +57,7 @@ export const DashboardProvider: React.FC<PropsWithChildren> = ({children}) => {
                 title: "Error",
                 description: "Failed to load employees."
             })
-            console.log(err);
+            console.error(err);
         })
         getReferencePages(supabase)
             .then((res) => {
@@ -68,7 +67,7 @@ export const DashboardProvider: React.FC<PropsWithChildren> = ({children}) => {
                     title: "Error",
                     description: "Failed to load reference pages."
                 })
-            console.log(err);
+            console.error(err);
         })
     }, []);
 
@@ -118,7 +117,16 @@ export const DashboardProvider: React.FC<PropsWithChildren> = ({children}) => {
     }, [employee]);
 
     return (
-        <DashboardContext.Provider value={{data:filteredSales, salesGoal, employees, date, saleWithEmployeeAndFinancing, mySales, setDate, referencePage}}>
+        <DashboardContext.Provider
+            value={{data:filteredSales,
+                salesGoal,
+                employees,
+                date,
+                saleWithEmployeeAndFinancing,
+                mySales,
+                setDate,
+                referencePage
+                }}>
             {children}
         </DashboardContext.Provider>
     );

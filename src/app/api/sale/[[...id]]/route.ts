@@ -40,7 +40,8 @@ const formatted_query_string =
     `
 
 // handle retrieving a single sale, or all the sales. Protects sales from being read by users with no permission.
-// TODO need to update monthlySales too or remove them and use queries!!
+
+// TODO this is really messy!!! someone should clean it up...
 export async function GET(request: NextRequest, { params }: {params: {id: string[]}}) {
   const searchParams = request.nextUrl.searchParams
   const supabase =
@@ -58,11 +59,20 @@ export async function GET(request: NextRequest, { params }: {params: {id: string
 
   if (searchParams.get("type") === "formatted") { /* formatted -- for database-provider */
     if (!params.id) {
-      const dbResult = await supabaseAdmin
-          .from('Sales')
-          .select(formatted_query_string)
-          .order('SaleTime', { ascending: false })
-      return NextResponse.json(dbResult);
+      if (role.EmployeePermission) {
+        const dbResult = await supabaseAdmin
+            .from('Sales')
+            .select(formatted_query_string)
+            .order('SaleTime', { ascending: false })
+        return NextResponse.json(dbResult);
+      } else {
+        const dbResult = await supabaseAdmin
+            .from('Sales')
+            .select(formatted_query_string)
+            .order('SaleTime', { ascending: false })
+            .eq('EmployeeID', employee.id);
+        return NextResponse.json(dbResult);
+      }
     } else {
       const dbResult = await supabaseAdmin
           .from('Sales')
@@ -71,13 +81,25 @@ export async function GET(request: NextRequest, { params }: {params: {id: string
           .order('SaleTime', { ascending: false })
       return NextResponse.json(dbResult);
     }
-  } else { /* default -- direct from table */
+  }
+
+  else { /* default -- direct from table */
     if (!params.id) {
-      const dbResult = await supabaseAdmin
-          .from('Sales')
-          .select()
-          .order('SaleTime', { ascending: true })
-      return NextResponse.json(dbResult);
+      if (role.EmployeePermission) {
+        const dbResult = await supabaseAdmin
+            .from('Sales')
+            .select()
+            .order('SaleTime', { ascending: true })
+        return NextResponse.json(dbResult);
+      } else {
+        const dbResult = await supabaseAdmin
+            .from('Sales')
+            .select()
+            .order('SaleTime', { ascending: true })
+            .eq('EmployeeID', employee.id);
+        return NextResponse.json(dbResult);
+      }
+
     } else {
       const dbResult = await supabaseAdmin
           .from('Sales')

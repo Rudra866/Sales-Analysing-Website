@@ -3,15 +3,17 @@
 import React, {useEffect, useState} from 'react';
 import {
     Employee,
-    getAllTasksByAssignee, getReferencePages, getSalesForEmployee,
-    getSupabaseBrowserClient, ReferencePage,
+    ReferencePage,
     Sale,
-    Task
+    Task,
+    getReferencePages,
+    getSupabaseBrowserClient,
 } from "@/lib/database";
 import {DateRange} from "react-day-picker";
 import useAuth from "@/hooks/use-auth";
 import {subDays} from "date-fns";
 import {filterSalesByDate, filterTasksByStartDate} from "@/lib/utils";
+import {errorToast} from "@/lib/toasts";
 
 
 type EmployeeContextProps = {
@@ -47,21 +49,50 @@ export const EmployeeProvider: React.FC<EmployeeProviderProps> = ({children}) =>
     const [referencePage, setReferencePage] = useState<ReferencePage[]>()
     const {employee} = useAuth()
 
+    // when called from a user access level, only returns sales for that user.
+    async function getSales(): Promise<Sale[]> {
+        const response = await fetch(`/api/sale`, { method: "GET" })
+        const responseBody = await response.json()
+
+        if (responseBody.error) throw responseBody.error;
+        return responseBody.data;
+    }
+
+    // when called from a user access level, only returns tasks for that user.
+    async function getTasks(): Promise<Task[]> {
+        const response = await fetch(`/api/task`, { method: "GET" })
+        const responseBody = await response.json()
+
+        if (responseBody.error) throw responseBody.error;
+        return responseBody.data;
+    }
+
     useEffect(() => {
-        if (!employee) return
-        getAllTasksByAssignee(supabase, employee?.id)
+        if (!employee) return // if there's no employee, the page is broken already anyway.
+        getTasks()
             .then((res) => {
                 setTasks(res as Task[])
             })
-        getSalesForEmployee(supabase, employee?.id)
+            .catch(e => {
+                errorToast("Failed to load tasks.")
+                console.error(e);
+            })
+        getSales()
             .then((res) => {
-                setSales(res as Sale[])
+                setSales(res)
+            })
+            .catch(e => {
+                errorToast("Failed to load sales.")
+                console.error(e);
             })
         getReferencePages(supabase)
             .then((res) => {
-            setReferencePage(res as ReferencePage[])
-        })
-
+                setReferencePage(res)
+            })
+            .catch(e => {
+                errorToast("Failed to load sales.")
+                console.error(e);
+            })
     }, [employee])
 
     useEffect(() => {

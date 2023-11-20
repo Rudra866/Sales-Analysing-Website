@@ -120,13 +120,13 @@ export async function getEmployee(supabase: SupabaseClient, employeeNumber: stri
   return employee;
 }
 
-export async function getReferencePages(supabase: SupabaseClient){
+export async function getReferencePages(supabase: SupabaseClient): Promise<ReferencePage[]>{
   let { data: ReferencePages, error } = await supabase
       .from('ReferencePages')
       .select('*')
 
   if (error) throw error;
-    return ReferencePages;
+  return ReferencePages ?? [];
 }
 
 

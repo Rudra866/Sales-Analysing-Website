@@ -31,7 +31,6 @@ export function DynamicChart({ title, color, data, date, className }: DynamicCha
     const [grouping, setGrouping] = useState("MMM-yy");
 
     useEffect(() => {
-        console.log(selectedCategory, data)
         if (selectedCategory) {
             setKeyValues(
                 Object.entries(groupSelectionByTimeFrame(data, grouping)).map(([key, value]) => ({
@@ -42,13 +41,14 @@ export function DynamicChart({ title, color, data, date, className }: DynamicCha
         }
     }, [data, date, grouping, selectedCategory, categories]);
 
-    useEffect(() => {
-        const numericColumns = data.length > 0 && Object.keys(data[0]).filter((key) => {
-            // @ts-ignore
-            return typeof data[0][key] === "number" && key !== "id"
-        });
-        numericColumns && setCategories(numericColumns)
-    }, [data]);
+    // todo what's this for? no comments and broken when !data
+    // useEffect(() => {
+    //     const numericColumns = data.length > 0 && Object.keys(data[0]).filter((key) => {
+    //         // @ts-ignore
+    //         return typeof data[0][key] === "number" && key !== "id"
+    //     });
+    //     numericColumns && setCategories(numericColumns)
+    // }, [data]);
 
     const customToolTip = (props: any) => {
         try {
