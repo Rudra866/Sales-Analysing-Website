@@ -2,7 +2,7 @@
 
 import React, {useEffect, useState} from 'react';
 import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
-import {Car, DollarSign} from "lucide-react";
+import {Car} from "lucide-react";
 import {cn, numericSales} from "@/lib/utils";
 import {format} from "date-fns";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
@@ -29,7 +29,8 @@ export default function SummaryCard({defaultCategory = "Total"}) {
             // @ts-ignore
             return acc + curr[selectedCategory]
         }, 0)
-        setCardData(sum ?? 0)
+        if (selectedCategory === "ROI") setCardData((sum ?? 0)/(data?.length ?? 1) * 100)
+        else setCardData(sum ?? 0)
 
     }, [data, date, selectedCategory]);
 
@@ -56,7 +57,13 @@ export default function SummaryCard({defaultCategory = "Total"}) {
                         {/*<DollarSign className="h-4 w-4 text-muted-foreground"/>*/}
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">{`$${cardData.toLocaleString()}`}</div>
+                        {selectedCategory === "ROI" &&
+                            <div className="text-2xl font-bold">{`${cardData.toLocaleString()} %`}</div>
+                        }
+                        {selectedCategory !== "ROI" &&
+                            <div className="text-2xl font-bold">{`$${cardData.toLocaleString()}`}</div>
+                        }
+
                         <p className="text-xs text-muted-foreground">
                             <span className={cn('text-[#adfa1d]')}>+20.1% </span>
                             from last
@@ -84,15 +91,18 @@ export function CountCard() {
     useEffect(() => {
         const cars = data?.map((item) => {return item.VehicleMake})
         const carCount = counter(cars ?? [])
-        const max = Math.max(...Object.values(carCount))
+
+        // Check if carCount is not empty before finding the maximum value
+        const max = Object.values(carCount).length > 0 ? Math.max(...Object.values(carCount)) : 0;
+
         const mostSold = Object.keys(carCount).find((key) => {
-            return carCount[key] === max
-        })
-        console.log(carCount);
+            return carCount[key] === max;
+        });
+
         setMostSoldVehicle({
-            vehicle: mostSold ?? "",
+            vehicle: mostSold ?? "None",
             count: max
-        })
+        });
 
     }, [date, data]);
 

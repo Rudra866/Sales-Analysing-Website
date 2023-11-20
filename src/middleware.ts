@@ -5,7 +5,7 @@ import {getSupabaseMiddlewareClient} from "./lib/supabase";
 /**
  * ALL routes under `/admin` are automatically protected
  */
-export const admin_page_routes = /^\/admin\/.*$/;
+export const admin_page_routes = /^\/admin(?:\/.*)?$/ ;
 
 /**
  * ALL routes under `/api/admin` are automatically protected.

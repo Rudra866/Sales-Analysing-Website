@@ -12,6 +12,7 @@ import {
 import {DbResult, SaleWithEmployeeAndFinancingType} from "@/lib/types";
 import useAuth from "@/hooks/use-auth";
 import {PostgrestError} from "@supabase/supabase-js";
+import {filterSalesByDate, filterSalesByEmployee} from "@/lib/utils";
 
 type DashBoardContextProps = {
     saleWithEmployeeAndFinancing?: SaleWithEmployeeAndFinancingType[];

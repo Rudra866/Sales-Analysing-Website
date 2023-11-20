@@ -6,6 +6,7 @@ import CalendarDateRangePicker from "@/admin/dashboard/components/date-range-pic
 import {Button} from "@/components/ui/button";
 import {DynamicChart} from "@/components/dynamic-chart";
 import TasksQuickView from "@/employee/employee-components/tasks-quick-view";
+import {getSalesCSV} from "@/lib/csv";
 
 export default function EmployeePage() {
     const {
@@ -31,7 +32,7 @@ export default function EmployeePage() {
                         </div>
                         <div className="flex items-center space-x-2">
                             <CalendarDateRangePicker date={date} setDate={setDate}/>
-                            <Button>Download</Button>
+                            <Button onClick={() => getSalesCSV(date)}>Download</Button>
                         </div>
                     </div>
                     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
