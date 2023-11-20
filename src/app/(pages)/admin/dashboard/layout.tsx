@@ -8,9 +8,9 @@ import {DashboardProvider} from "./components/dashboard-provider";
 export default async function DashboardLayout({ children }: {children: React.ReactNode}) {
   return (
     <>
-      <DashboardProvider>
+      {/*<DashboardProvider>*/}
           {children}
-      </DashboardProvider>
+      {/*</DashboardProvider>*/}
     </>
   )
 }

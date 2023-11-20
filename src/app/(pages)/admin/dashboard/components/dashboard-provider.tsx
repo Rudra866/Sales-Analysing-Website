@@ -4,8 +4,8 @@ import {subDays} from "date-fns";
 import {DateRange} from "react-day-picker";
 import {
     Employee,
-    getAllEmployees,
-    getSupabaseBrowserClient,
+    getAllEmployees, getReferencePages,
+    getSupabaseBrowserClient, ReferencePage,
     Sale,
     SalesGoal
 } from "@/lib/database";
@@ -21,6 +21,7 @@ type DashBoardContextProps = {
     employees?: Employee[];
     date?: DateRange;
     setDate?: React.Dispatch<React.SetStateAction<DateRange | undefined>>;
+    referencePage?: ReferencePage[]
 }
 
 const supabase = getSupabaseBrowserClient()
@@ -39,6 +40,7 @@ export const DashboardProvider: React.FC<PropsWithChildren> = ({children}) => {
     const [saleWithEmployeeAndFinancing, setSaleWithEmployeeAndFinancing] = useState<SaleWithEmployeeAndFinancingType[]>();
     const [salesGoal, setSalesGoal] = useState<SalesGoal[]>();
     const [mySales, setMySales] = useState<SaleWithEmployeeAndFinancingType[]>();
+    const [referencePage, setReferencePage] = useState<ReferencePage[]>();
 
     const [date, setDate] = React.useState<DateRange | undefined>({
         from: subDays(new Date(), 120),
@@ -46,7 +48,6 @@ export const DashboardProvider: React.FC<PropsWithChildren> = ({children}) => {
     })
 
     function filterSalesByEmployee(sales: SaleWithEmployeeAndFinancingType[], employee: Employee | undefined) {
-        // console.log('employee', employee, 'sales: ', sales)
         return sales.filter((sale) => {
             return sale.EmployeeID === employee?.id
         })
@@ -59,6 +60,15 @@ export const DashboardProvider: React.FC<PropsWithChildren> = ({children}) => {
             return saleDate >= date?.from && saleDate <= date?.to
         })
     }
+
+    // get all reference pages on page load
+    useEffect(() => {
+        getReferencePages(supabase)
+            .then((res) => {
+                setReferencePage(res as ReferencePage[])
+            })
+    }, []);
+
 
     // get all employees on page load
     useEffect(() => {
@@ -112,7 +122,7 @@ export const DashboardProvider: React.FC<PropsWithChildren> = ({children}) => {
     }, [employee]);
 
     return (
-        <DashboardContext.Provider value={{data:filteredSales, salesGoal, employees, date, saleWithEmployeeAndFinancing, mySales, setDate}}>
+        <DashboardContext.Provider value={{data:filteredSales, salesGoal, employees, date, saleWithEmployeeAndFinancing, mySales, setDate, referencePage}}>
             {children}
         </DashboardContext.Provider>
     );

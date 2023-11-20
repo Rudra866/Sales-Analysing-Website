@@ -26,12 +26,7 @@ import TableSortButton from "@/components/tables/table-sort-button";
  * Component used to render sales page table at `/sales`
  * @group React Components
  */
-interface SalesTableProps {
-    sale: Sale[]
-    employee: Employee[]
-}
-
-export default function SalesTable(data: SalesTableProps) {
+export default function SalesTable() {
     const [loading, setLoading] = useState(true);
     const [sales, setSales] = useState<Sale[]>([]);
     const [employees, setEmployees] = useState<Employee[]>([]);
@@ -41,8 +36,6 @@ export default function SalesTable(data: SalesTableProps) {
     const supabase = getSupabaseBrowserClient();
 
     const {employee} = useAuth();
-
-
     useEffect(() => {
         function fetchEmployees() {
             return supabase.from('Employees').select()

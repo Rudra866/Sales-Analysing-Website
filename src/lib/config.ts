@@ -24,7 +24,7 @@ export const docsConfigAdmin: DocsConfig = {
         },
         {
             title: "Training",
-            href: "/training",
+            href: "/admin/training",
         },
         {
             title: "Test",
@@ -38,6 +38,10 @@ export const docsConfigAdmin: DocsConfig = {
 export const docsConfig: DocsConfig = {
     mainNav: [
         {
+            title: "Home",
+            href: "/employee",
+        },
+        {
             title: "Tasks",
             href: "/employee/tasks",
         },
@@ -47,7 +51,7 @@ export const docsConfig: DocsConfig = {
         },
         {
             title: "Training",
-            href: "/training",
+            href: "/employee/training",
         },
     ],
 }
