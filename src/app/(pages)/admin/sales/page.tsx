@@ -3,8 +3,9 @@ import useAuth from "@/hooks/use-auth";
 import dynamic from "next/dynamic";
 import {UserNav} from "@/components/user-nav";
 import {Suspense} from "react";
+import SalesGoalTable from "@/components/tables/sales-goal-table";
 
-const SalesTable = dynamic(() => import("@/components/tables/SalesTable"))
+const SalesTable = dynamic(() => import("@/components/tables/sales-table"))
 
 /**
  * Creates the sales viewing page using a {@link SalesTable} component.
@@ -23,9 +24,9 @@ export default function SalesPage() {
                             Welcome back, {employee?.Name}
                         </p>
                     </div>
-                    <SalesTable />
                 </div>
-
+                <SalesTable />
+                <SalesGoalTable />
             </div>
         </Suspense>
     );

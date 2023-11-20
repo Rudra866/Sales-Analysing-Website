@@ -23,34 +23,12 @@ import {
   TaskInsert,
   getAllEmployees, SalesGoal, SalesGoalInsert, MonthlySale, getAllMonthlySales
 } from "@/lib/database";
-import {ArrowUpDown, Plus} from "lucide-react";
-import {Badge} from "@/components/ui/badge";
-import {DropDownMenu} from "@/employee/sales/components/drop-down-menu";
-import {format} from "date-fns";
-import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger} from "@/components/ui/tooltip";
-import {DbResult} from "@/lib/types";
 import DataTable, {TableFilter} from "@/components/tables/DataTable";
-import {RowActionDialog} from "@/employee/sales/components/RowActionDialog";
-import FormModal from "@/components/dialogs/FormModal";
-import TableSortButton from "@/components/tables/TableSortButton";
+import TableSortButton from "@/components/tables/table-sort-button";
 import {toast} from "@/components/ui/use-toast";
-import {
-  CheckCircledIcon,
-  CircleIcon,
-  CrossCircledIcon,
-  QuestionMarkCircledIcon,
-  StopwatchIcon
-} from "@radix-ui/react-icons";
-import useAuth from "@/hooks/use-auth";
-import {TaskCreateDialog} from "@/components/dialogs/TaskCreateDialog";
 
-// todo align rows and columns
 
-/**
- * Component used to render sales goals at /admin/goals
- * @group React Components
- */
-export default function TasksTable() {
+export default function SalesGoalTable() {
   const [loading, setLoading] = useState(true);
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
@@ -146,17 +124,17 @@ export default function TasksTable() {
   return (
       <DataTable table={table} loading={loading}>
         <TableFilter table={table} initial={"Name"} placeholder={"Filter goals..."}/>
-        <div className="flex items-center space-x-2 w-full">
-          {/*<Button*/}
-          {/*    size="sm"*/}
-          {/*    variant="outline"*/}
-          {/*    className="ml-auto hidden h-8 lg:flex"*/}
-          {/*    onClick={() => setShowTaskCreateModal(true)} // todo post*/}
-          {/*>*/}
-          {/*  <Plus className="mr-2 h-4 w-4" />*/}
-          {/*  Create Task*/}
-          {/*</Button>*/}
-        </div>
+        {/*<div className="flex items-center space-x-2 w-full">*/}
+        {/*  <Button*/}
+        {/*      size="sm"*/}
+        {/*      variant="outline"*/}
+        {/*      className="ml-auto hidden h-8 lg:flex"*/}
+        {/*      onClick={() => setShowTaskCreateModal(true)} // todo post*/}
+        {/*  >*/}
+        {/*    <Plus className="mr-2 h-4 w-4" />*/}
+        {/*    Create Task*/}
+        {/*  </Button>*/}
+        {/*</div>*/}
       </DataTable>
 
   )

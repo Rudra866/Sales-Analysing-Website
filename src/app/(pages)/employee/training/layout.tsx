@@ -5,9 +5,8 @@ import ContainerLayout from "@/components/container-layout";
 import React, {useEffect} from "react";
 import {getReferencePages, getSupabaseBrowserClient} from "@/lib/database";
 import {TrainingSidebarNav} from "@/app/(pages)/training/training-sidebar-nav";
-
-const supabase = getSupabaseBrowserClient();
-
+import {useEmployee} from "@/employee/employee-components/employee-provider";
+import useAuth from "@/hooks/use-auth";
 
 interface SettingsLayoutProps {
     children: React.ReactNode
@@ -15,18 +14,16 @@ interface SettingsLayoutProps {
 
 export default function SettingsLayout({children}: SettingsLayoutProps) {
     const [sideBarItems, setSideBarItems] = React.useState<{ title: string, href: string }[]>([])
+    const {referencePage} = useEmployee()
+
     useEffect(() => {
-        const sidebarNavItems: { title: string, href: string }[] = []
-        getReferencePages(supabase)
-            .then((pages) => {
-                pages?.forEach((page) => {
-                    sidebarNavItems.push({
-                        title: page.pagename,
-                        href: `/training/${page.id}`,
-                    })
-                })
-                sidebarNavItems.sort((a, b) => a.title.localeCompare(b.title)) // sort alphabetically
-            }).then(() => setSideBarItems(sidebarNavItems))
+        if (!referencePage) return
+        setSideBarItems(
+            referencePage.map((page) => {
+                return {
+                    title: page.pagename,
+                    href: `/training/${page.id}`,
+                }}))
     }, [])
 
     return (

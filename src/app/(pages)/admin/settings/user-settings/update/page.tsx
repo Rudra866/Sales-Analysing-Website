@@ -9,7 +9,7 @@ import {
     getSupabaseBrowserClient, Role
 } from "@/lib/database";
 import {Button} from "@/components/ui/button";
-import EmployeeAvatar from "@/components/EmployeeAvatar";
+import EmployeeAvatar from "@/components/employee-avatar";
 import {Badge} from "@/components/ui/badge";
 import {Input} from "@/components/ui/input";
 import {useRouter} from "next/navigation";

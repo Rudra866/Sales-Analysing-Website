@@ -29,7 +29,7 @@ import {
 import FormModal from "@/components/dialogs/FormModal";
 import {EmployeeSelectModalForm} from "@/components/dialogs/EmployeeSelectModalForm";
 import {RoleSelectModalForm} from "@/components/dialogs/RoleSelectModalForm";
-import TableSortButton from "@/components/tables/TableSortButton";
+import TableSortButton from "@/components/tables/table-sort-button";
 import DataTable, {TableFilter} from "@/components/tables/DataTable";
 import useAuth from "@/hooks/use-auth";
 import {CreateRoleDialog} from "@/components/dialogs/CreateRoleDialog";

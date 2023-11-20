@@ -32,7 +32,7 @@ import {DbResult} from "@/lib/types";
 import DataTable, {TableFilter} from "@/components/tables/DataTable";
 import {RowActionDialog} from "@/employee/sales/components/RowActionDialog";
 import FormModal from "@/components/dialogs/FormModal";
-import TableSortButton from "@/components/tables/TableSortButton";
+import TableSortButton from "@/components/tables/table-sort-button";
 import {toast} from "@/components/ui/use-toast";
 import {
   CheckCircledIcon,
@@ -43,6 +43,7 @@ import {
 } from "@radix-ui/react-icons";
 import useAuth from "@/hooks/use-auth";
 import {TaskCreateDialog} from "@/components/dialogs/TaskCreateDialog";
+import tableTooltip from "@/components/table-tooltip";
 
 // todo align rows and columns
 
@@ -50,7 +51,7 @@ import {TaskCreateDialog} from "@/components/dialogs/TaskCreateDialog";
  * Component used to render sales page table at `/sales`
  * @group React Components
  */
-export default function TasksTable() {
+export default function TaskTable() {
   const [loading, setLoading] = useState(true);
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
@@ -58,7 +59,7 @@ export default function TasksTable() {
   const supabase = getSupabaseBrowserClient();
   const [showTaskCreateModal, setShowTaskCreateModal] = useState<boolean>(false)
 
-  const {employee} = useAuth();
+  // const {employee} = useAuth();
   const [employees, setEmployees] = useState<Employee[]>([])
   const statuses = [
     {
@@ -133,6 +134,15 @@ export default function TasksTable() {
     {
       accessorKey: "Description",
       header: ({column}) => <TableSortButton column={column}/>,
+      cell: ({row}) => {
+          return (
+              <div className="flex space-x-2 ml-1">
+                      <span className="max-w-[200px] truncate font-medium">
+                          {tableTooltip(row.original.Description || 'No Description')}
+                      </span>
+              </div>
+          )
+      }
     },
     {
       accessorKey: "Status",
@@ -164,12 +174,12 @@ export default function TasksTable() {
     {
       accessorKey: "StartDate",
       header: ({column}) => <TableSortButton column={column}/>,
-      cell: ({row}) => (new Date(row.getValue("StartDate")).toLocaleDateString())
+      cell: ({row}) => (format(new Date(row.getValue("StartDate")), "LLL dd, y"))
     },
     {
       accessorKey: "EndDate",
       header: ({column}) => <TableSortButton column={column}/>,
-      cell: ({row}) => (new Date(row.getValue("EndDate")).toLocaleDateString())
+      cell: ({row}) => (format(new Date(row.getValue("EndDate")), "LLL dd, y"))
     },
   ]
 
@@ -194,6 +204,7 @@ export default function TasksTable() {
   return (
       <DataTable table={table} loading={loading}>
         <TableFilter table={table} initial={"Name"} placeholder={"Filter tasks..."}/>
+
         <div className="flex items-center space-x-2 w-full">
           <Button
               size="sm"

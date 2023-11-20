@@ -1,17 +1,11 @@
-import {useRouter} from "next/navigation";
+
 import {useDashboard} from "./dashboard-provider";
-import useAuth from "@/hooks/use-auth";
-import EmployeeAvatar from "@/components/EmployeeAvatar";
-import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card";
+import EmployeeAvatar from "@/components/employee-avatar";
 import * as React from "react";
 import {ScrollArea, ScrollBar} from "@/components/ui/scroll-area";
 import {format} from "date-fns";
-import {Employee, getRoleFromEmployee, Sale} from "@/lib/database";
+import {Employee} from "@/lib/database";
 import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs";
-import {SaleWithEmployeeAndFinancingType} from "@/lib/types";
-
-/** @ignore these for now */
-
 
 export function RecentSales() {
     const {saleWithEmployeeAndFinancing, mySales} = useDashboard()
@@ -48,7 +42,6 @@ export function RecentSales() {
             <TabsList>
                 <TabsTrigger value="Sales Overview">Sales Overview</TabsTrigger>
                 <TabsTrigger value="My Sales">My Sales</TabsTrigger>
-
             </TabsList>
             <TabsContent value="Sales Overview" className="space-y-4">
                 <ScrollArea className="h-96">
@@ -91,7 +84,5 @@ export function RecentSales() {
                 </ScrollArea>
             </TabsContent>
         </Tabs>
-
-
     )
 }

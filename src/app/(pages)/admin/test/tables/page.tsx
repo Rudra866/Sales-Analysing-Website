@@ -3,16 +3,16 @@ import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs";
 import dynamic from "next/dynamic";
 
 const SalesTable =
-    dynamic(() => import('@/components/tables/SalesTable'))
+    dynamic(() => import('@/components/tables/sales-table'))
 
 const EmployeeTable =
     dynamic(() => import('@/components/tables/EmployeeTable'))
 
 const TasksTable =
-    dynamic(() => import('@/components/tables/TasksTable'))
+    dynamic(() => import('@/components/tables/task-table'))
 
 const SalesGoalsTable =
-    dynamic(() => import('@/components/tables/SalesGoalsTable'))
+    dynamic(() => import('@/components/tables/sales-goal-table'))
 
 export default function TestTables() {
   return (

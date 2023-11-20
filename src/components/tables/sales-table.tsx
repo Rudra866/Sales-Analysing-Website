@@ -20,13 +20,18 @@ import DataTable, {TableFilter} from "@/components/tables/DataTable";
 import {RowActionDialog} from "@/employee/sales/components/RowActionDialog";
 import FormModal from "@/components/dialogs/FormModal";
 import useAuth from "@/hooks/use-auth";
-import TableSortButton from "@/components/tables/TableSortButton";
+import TableSortButton from "@/components/tables/table-sort-button";
 
 /**
  * Component used to render sales page table at `/sales`
  * @group React Components
  */
-export default function SalesTable() {
+interface SalesTableProps {
+    sale: Sale[]
+    employee: Employee[]
+}
+
+export default function SalesTable(data: SalesTableProps) {
     const [loading, setLoading] = useState(true);
     const [sales, setSales] = useState<Sale[]>([]);
     const [employees, setEmployees] = useState<Employee[]>([]);
@@ -36,6 +41,8 @@ export default function SalesTable() {
     const supabase = getSupabaseBrowserClient();
 
     const {employee} = useAuth();
+
+
     useEffect(() => {
         function fetchEmployees() {
             return supabase.from('Employees').select()
@@ -66,10 +73,11 @@ export default function SalesTable() {
                 setLoading(false);
             }
         }
+
         loadData().then(() => setLoading(false));
     }, [supabase]);
 
-    function tooltip(cell:string){
+    function tooltip(cell: string) {
         return (
             <TooltipProvider>
                 <Tooltip>
@@ -91,7 +99,7 @@ export default function SalesTable() {
     async function onSubmit(data: SaleInsert) {
         data["EmployeeID"] = employee!.id;      // set current user to be the seller
         data["Total"] =                         // set total based on fields input
-            (data.GrossProfit)     +
+            (data.GrossProfit) +
             (data.FinAndInsurance) +
             (data.Holdback || 0);
         if (data.ROI) {
@@ -109,22 +117,15 @@ export default function SalesTable() {
     const columns: ColumnDef<Tables<'Sales'>, Employee>[] = [
         {
             accessorKey: "SaleTime",
-            // header: ({column}) => SortButton("SaleTime", column),
             header: ({column}) => <TableSortButton column={column}/>,
             cell: ({row}) => {
                 return (
                     <p className={'text-sm min-w-fit'}>
-                        {/*{new Date(row.original.SaleTime || new Date()).toDateString()}*/}
-                        {/*{format(new Date(row.original.SaleTime || new Date()), 'yyyy-MMM-dd')}*/}
                         {format(new Date(row.original.SaleTime || new Date()), "LLL dd, y")}
                     </p>
                 )
             },
         },
-        // {
-        //     accessorKey: "EmployeeID",
-        //     header: ({column}) => SortButton("EmployeeID", column)
-        // },
         {
             accessorKey: "Name",
             header: ({column}) => <TableSortButton column={column}/>,
@@ -166,7 +167,9 @@ export default function SalesTable() {
         {
             accessorKey: "Holdback",
             header: ({column}) => <TableSortButton column={column}/>,
-            cell: ({row}) => {return row.original.Holdback ? `$${row.original.Holdback.toLocaleString()}`: '0'},
+            cell: ({row}) => {
+                return row.original.Holdback ? `$${row.original.Holdback.toLocaleString()}` : '0'
+            },
         },
         {
             accessorKey: "Total",
@@ -179,7 +182,7 @@ export default function SalesTable() {
         },
     ]
 
-        const table = useReactTable({
+    const table = useReactTable({
         data: sales,
         columns,
         getCoreRowModel: getCoreRowModel(),
@@ -202,18 +205,19 @@ export default function SalesTable() {
             <TableFilter table={table} initial={"Name"} placeholder={"Filter sales..."}/>
             <div className="flex items-center space-x-2 w-full">
                 <Button
-                     size="sm"
-                     variant="outline"
-                     className="ml-auto hidden h-8 lg:flex"
-                     onClick={() => {
-                         setShowSaleDialog(true)
-                     }}
+                    size="sm"
+                    variant="outline"
+                    className="ml-auto hidden h-8 lg:flex"
+                    onClick={() => {
+                        setShowSaleDialog(true)
+                    }}
                 >
-                 <Plus className="mr-2 h-4 w-4" />
-                 Add Sale
+                    <Plus className="mr-2 h-4 w-4"/>
+                    Add Sale
                 </Button>
             </div>
-            <FormModal title={"Create Sale"} showDialog={showSaleDialog} setShowDialog={setShowSaleDialog} onSubmit={onSubmit}>
+            <FormModal title={"Create Sale"} showDialog={showSaleDialog} setShowDialog={setShowSaleDialog}
+                       onSubmit={onSubmit}>
                 <RowActionDialog/>
             </FormModal>
         </DataTable>

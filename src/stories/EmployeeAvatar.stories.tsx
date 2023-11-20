@@ -1,6 +1,6 @@
 import {Meta, StoryObj} from "@storybook/react";
 import {test_employee_set} from "@/tests/test_data";
-import EmployeeAvatar from "@/components/EmployeeAvatar";
+import EmployeeAvatar from "@/components/employee-avatar";
 
 export default {
   title: 'Employee Avatar',

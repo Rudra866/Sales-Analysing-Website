@@ -3,7 +3,7 @@ import React, {useEffect, useState} from 'react';
 // import {ScrollArea, ScrollBar} from "@/components/ui/scroll-area";
 import {getSupabaseBrowserClient} from "@/lib/supabase";
 import {getAllTasks, Task} from "@/lib/database";
-import TasksTable from "@/components/tables/TasksTable";
+import TaskTable from "@/components/tables/task-table";
 // import TasksTable from "@/app/(pages)/tasks/components/TasksTable";
 
 function Page() {
@@ -23,7 +23,7 @@ function Page() {
 
     return (
         <div className={'container'}>
-            <TasksTable />
+            <TaskTable />
         </div>
     );
 }

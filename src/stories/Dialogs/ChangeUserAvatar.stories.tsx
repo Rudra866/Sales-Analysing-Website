@@ -1,19 +1,9 @@
-import FormModal, {FormModalProps, useFormModalContext} from "@/components/dialogs/FormModal";
+import FormModal, {FormModalProps} from "@/components/dialogs/FormModal";
 import {Meta, StoryObj} from "@storybook/react";
 import {useArgs} from "@storybook/preview-api";
-import {Dispatch, SetStateAction, useEffect, useState} from "react";
+import {Dispatch, SetStateAction} from "react";
 import {Button} from "@/components/ui/button";
-import Image from "next/image";
-import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
-import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
-import {DialogBody} from "next/dist/client/components/react-dev-overlay/internal/components/Dialog";
-import {DialogFooter} from "@/components/ui/dialog";
-import {useForm, useFormContext} from "react-hook-form";
-import {z} from "zod";
-import {zodResolver} from "@hookform/resolvers/zod";
-import {Input} from "@/components/ui/input";
-import DialogCloseButton from "@/components/dialogs/DialogCloseButton";
-import ChangeUserAvatarDialog from "@/components/ChangeUserAvatarDialog";
+import UserAvatarDialog from "@/components/user-avatar-dialog";
 
 // TODO still unfinished.
 export default {
@@ -44,7 +34,7 @@ export const Default: StoryObj<FormModalProps> = {
               title={"Change Avatar"}
               showDialog={showDialog}
               setShowDialog={setShowDialog as Dispatch<SetStateAction<boolean>>}>
-            <ChangeUserAvatarDialog/>
+            <UserAvatarDialog/>
           </FormModal>
         </>
     )

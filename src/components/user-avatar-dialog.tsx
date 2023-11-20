@@ -44,7 +44,7 @@ function SelectableAvatar({image, selected, setSelected, selectedKey, onClick}: 
 }
 
 
-export default function ChangeUserAvatarDialog({loading}: {loading?:boolean}) {
+export default function UserAvatarDialog({loading}: {loading?:boolean}) {
   const formContext = useFormModalContext()
   const [selectedAvatar, setSelectedAvatar] = useState(-1)
   const [profilePics, setProfilePics] = useState<string[]>([])

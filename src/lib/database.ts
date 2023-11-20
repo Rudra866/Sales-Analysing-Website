@@ -865,6 +865,20 @@ export async function postToFinancing(supabase: SupabaseClient, newFinancier: Fi
   if (error) throw error;
   return financier;
 }
+export async function postToReferencePages(supabase: SupabaseClient, newPage: ReferencePageInsert): Promise<ReferencePage> {
+  const {data: financier, error} = await supabase
+      .from('ReferencePages')
+      .insert(newPage)
+      .select()
+      .limit(1)
+      .single();
+
+  if (error) throw error;
+  return financier;
+}
+
+
+
 
 /**
  * Posts a new row into the MonthlySales table

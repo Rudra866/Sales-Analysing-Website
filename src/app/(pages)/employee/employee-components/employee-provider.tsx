@@ -3,8 +3,8 @@
 import React, {useEffect} from 'react';
 import {
     Employee,
-    getAllTasksByAssignee, getSalesForEmployee,
-    getSupabaseBrowserClient,
+    getAllTasksByAssignee, getReferencePages, getSalesForEmployee,
+    getSupabaseBrowserClient, ReferencePage,
     Sale,
     Task
 } from "@/lib/database";
@@ -19,6 +19,7 @@ type EmployeeContextProps = {
     date?: DateRange;
     setDate?: React.Dispatch<React.SetStateAction<DateRange | undefined>>;
     employee?: Employee | null;
+    referencePage?: ReferencePage[]
 }
 
 const supabase = getSupabaseBrowserClient()
@@ -42,6 +43,7 @@ export const EmployeeProvider: React.FC<EmployeeProviderProps> = ({children}) =>
     })
     const [tasks, setTasks] = React.useState<Task[]>();
     const [sales, setSales] = React.useState<Sale[]>();
+    const [referencePage, setReferencePage] = React.useState<ReferencePage[]>()
     const {employee} = useAuth()
 
     useEffect(() => {
@@ -49,12 +51,16 @@ export const EmployeeProvider: React.FC<EmployeeProviderProps> = ({children}) =>
         getAllTasksByAssignee(supabase, employee?.id)
             .then((res) => {
                 setTasks(res as Task[])
-                // console.log(res)
             })
         getSalesForEmployee(supabase, employee?.id)
             .then((res) => {
                 setSales(res as Sale[])
             })
+        getReferencePages(supabase)
+            .then((res) => {
+            setReferencePage(res as ReferencePage[])
+        })
+
     }, [employee])
 
     useEffect(() => {
@@ -78,7 +84,7 @@ export const EmployeeProvider: React.FC<EmployeeProviderProps> = ({children}) =>
         })
     }
     return (
-        <EmployeeContext.Provider value={{tasks, sales, date, setDate, employee}}>
+        <EmployeeContext.Provider value={{tasks, sales, date, setDate, employee, referencePage}}>
             {children}
         </EmployeeContext.Provider>
     );
