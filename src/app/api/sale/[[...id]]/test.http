@@ -9,3 +9,57 @@ Cookie: {{cookie}}
 ###
 GET http://localhost:3000/api/sale/5/6/7
 Cookie: {{cookie}}
+
+
+###
+POST http://localhost:3000/api/sale
+Cookie: {{cookie}}
+Content-Type: application/json
+
+{
+  "StockNumber": "13097",
+  "VehicleMake": "Mercedes-Benz E500 4matic (wagon)",
+  "ActualCashValue": 73651.37,
+  "GrossProfit": 3553.44,
+  "FinAndInsurance": 4787.34,
+  "UsedSale": false,
+  "Holdback": 856.1,
+  "LotPack": null,
+  "DaysInStock": null,
+  "DealerCost": null,
+  "ROI": null,
+  "Total": 9196.88,
+  "SaleTime": "2023-11-06T13:42:16",
+  "CustomerName": "_TEST",
+  "CustomerCity": "Saskatoon",
+  "EmployeeID": "4ff2a2d7-09a1-4d26-81e1-55fcf9b0f49b"
+}
+
+###
+PATCH http://localhost:3000/api/sale/566
+Cookie: {{cookie}}
+Content-Type: application/json
+
+{
+  "StockNumber": "13555",
+  "VehicleMake": "Mercedes-Benz E500 4matic (wagon)",
+  "ActualCashValue": 73651.37,
+  "GrossProfit": 0,
+  "FinAndInsurance": 0,
+  "SaleTime": "2023-11-06T13:42:16",
+  "UsedSale": false,
+  "Holdback": 0,
+  "LotPack": null,
+  "DaysInStock": null,
+  "DealerCost": null,
+  "ROI": null,
+  "Total": 0,
+  "CustomerName": "_TEST",
+  "CustomerCity": "Saskatoon",
+  "EmployeeID": "4ff2a2d7-09a1-4d26-81e1-55fcf9b0f49b"
+}
+
+###
+# No id yet in params
+DELETE http://localhost:3000/api/sale/565
+Cookie: {{cookie}}

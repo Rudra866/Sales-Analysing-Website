@@ -113,9 +113,43 @@ export async function POST(request: NextRequest) {
   })
 }
 
-// TODO -- need RPC call
-export function PATCH(request: Request) {
-  return NextResponse.json({error: "Not yet implemented."}, {status: 405})
+
+// can only handle ONE update at a time
+export async function PATCH(request: Request, { params }: {params: {id: string[]}}) {
+  const supabase = getSupabaseRouteHandlerClient(cookies());
+  const {data: {session}} = await supabase.auth.getSession();
+  const employee = await getEmployeeFromAuthUser(supabase, session!.user)
+  const role = await getRoleFromEmployee(supabase, employee);
+
+  const requestBody = await request.json();
+
+  // if the user is not permitted to edit
+  if (!role.ModifySelfPermission && !role.ModifyAllPermission) {
+    return NextResponse.json({error: "Forbidden"}, {status: 401})
+  }
+
+  // if the user is only allowed to edit their own sale, but is attempting to edit another employee's
+  if (role.ModifySelfPermission && !role.ModifyAllPermission && requestBody.id !== employee.id) {
+    return NextResponse.json({error: "Forbidden"}, {status: 401})
+  }
+
+  if (!params.id) {
+    return NextResponse.json({error: "No ID provided to update."}, {status: 400})
+  }
+
+  if (params.id.length > 1) {
+    return NextResponse.json({error: "Multiple IDs provided to update. Need one."}, {status: 400})
+  }
+
+  const supabaseAdmin =
+      createClient<Database>(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_KEY!)
+
+  requestBody['id'] = params.id[0];
+
+  const res = await supabaseAdmin
+      .rpc("update_new_sale", {sale: requestBody});
+
+  return NextResponse.json(res);
 }
 
 
