@@ -29,7 +29,8 @@ export default function SummaryCard({defaultCategory = "Total"}) {
             // @ts-ignore
             return acc + curr[selectedCategory]
         }, 0)
-        setCardData(sum ?? 0)
+        if (selectedCategory === "ROI") setCardData((sum ?? 0)/(data?.length ?? 1) * 100)
+        else setCardData(sum ?? 0)
 
     }, [data, date, selectedCategory]);
 
@@ -56,7 +57,13 @@ export default function SummaryCard({defaultCategory = "Total"}) {
                         {/*<DollarSign className="h-4 w-4 text-muted-foreground"/>*/}
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">{`$${cardData.toLocaleString()}`}</div>
+                        {selectedCategory === "ROI" &&
+                            <div className="text-2xl font-bold">{`${cardData.toLocaleString()} %`}</div>
+                        }
+                        {selectedCategory !== "ROI" &&
+                            <div className="text-2xl font-bold">{`$${cardData.toLocaleString()}`}</div>
+                        }
+
                         <p className="text-xs text-muted-foreground">
                             <span className={cn('text-[#adfa1d]')}>+20.1% </span>
                             from last
