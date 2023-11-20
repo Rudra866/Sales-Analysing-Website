@@ -76,7 +76,7 @@ export async function GET(request: NextRequest, { params }: {params: {id: string
       const dbResult = await supabaseAdmin
           .from('Sales')
           .select()
-          .order('SaleTime', { ascending: false })
+          .order('SaleTime', { ascending: true })
       return NextResponse.json(dbResult);
     } else {
       const dbResult = await supabaseAdmin

@@ -8,9 +8,10 @@ import {
 } from "recharts";
 import {cn} from "@/lib/utils";
 import {DateRange} from "react-day-picker";
-import {getAllSalesGoals, getSupabaseBrowserClient, Sale, SalesGoal} from "@/lib/database";
+import {Sale} from "@/lib/database";
 import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
 import {format} from "date-fns";
+import {useDashboard} from "@/admin/dashboard/components/dashboard-provider";
 
 
 const numericSales = [
@@ -75,24 +76,14 @@ type ChartDataType = {
 
 
 export default function SalesLineChart({data, date, className}: SalesLineChartProps) {
-    const supabase = getSupabaseBrowserClient();
-    const [salesGoals, setSalesGoals] = useState<SalesGoal[]>();
     const [chartData, setChartData] = useState<ChartDataType[]>();
     const lineColors = ["#ffffff", "#adfa1d"]
     const color1 = `text-[${lineColors[0]}]`
     const color2 = `text-[${lineColors[1]}]`
+    const {salesGoal} = useDashboard();
 
     useEffect(() => {
-        getAllSalesGoals(supabase).then((res) => {
-            console.log("res: ", res)
-            setSalesGoals(res as SalesGoal[])
-        }).catch((err) => {
-            console.error(err)
-        })
-    }, [])
-
-    useEffect(() => {
-        if (!data || !salesGoals) {
+        if (!data || !salesGoal) {
             return;
         }
 
@@ -101,13 +92,12 @@ export default function SalesLineChart({data, date, className}: SalesLineChartPr
             return {
               date: key,
               estimatedSales: groupedData[key].Total,
-              actualSales: salesGoals.find(goal => format(new Date(goal.StartDate), 'MMM-yy') === key)?.TotalGoal || 0,
+              actualSales: salesGoal.find(goal => format(new Date(goal.StartDate), 'MMM-yy') === key)?.TotalGoal || 0,
             };
           });
-        console.log("chartData: ", chartData)
         setChartData(chartData);
 
-    }, [data, date, salesGoals]);
+    }, [data, date, salesGoal]);
 
 
     const customToolTip = (props: any) => {
