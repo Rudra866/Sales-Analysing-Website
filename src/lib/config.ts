@@ -15,6 +15,10 @@ export const docsConfigAdmin: DocsConfig = {
             href: "/admin/sales",
         },
         {
+            title: "Sales Goals",
+            href: "/admin/sales-goals",
+        },
+        {
             title: "Tasks",
             href: "/admin/tasks",
         },
