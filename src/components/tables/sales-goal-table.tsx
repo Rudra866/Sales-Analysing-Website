@@ -82,6 +82,14 @@ export default function SalesGoalTable() {
     {
       accessorKey: "Description",
       header: ({column}) => <TableSortButton column={column}/>,
+      // cell: ({row}) => flexRender(row.original.Description, row.getVisibleCells()[0])
+      cell: ({row}) => {
+        return (
+            <div className="flex flex-col">
+                <div className="text-sm truncate max-w-xl">{row.original.Description}</div>
+            </div>
+        )
+      }
     },
     {
       accessorKey: "StartDate",

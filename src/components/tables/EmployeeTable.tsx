@@ -8,7 +8,6 @@ import {
 } from "@tanstack/react-table";
 import React, {useCallback, useEffect, useState} from "react";
 import {Button} from "@/components/ui/button";
-import {Checkbox} from "@/components/ui/checkbox";
 import {
   Employee,
   Role,
@@ -29,11 +28,12 @@ import {
 import FormModal from "@/components/dialogs/FormModal";
 import {EmployeeSelectModalForm} from "@/components/dialogs/EmployeeSelectModalForm";
 import {RoleSelectModalForm} from "@/components/dialogs/RoleSelectModalForm";
-import TableSortButton from "@/components/tables/table-sort-button";
+// import TableSortButton from "@/components/tables/table-sort-button";
 import DataTable, {TableFilter} from "@/components/tables/DataTable";
 import useAuth from "@/hooks/use-auth";
 import {CreateRoleDialog} from "@/components/dialogs/CreateRoleDialog";
 import {toast} from "@/components/ui/use-toast";
+import TableSortButton from "@/components/tables/table-sort-button";
 
 /**
  * Component to create a table to render all employees in the database.
