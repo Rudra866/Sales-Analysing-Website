@@ -12,6 +12,7 @@ import {
 import {DbResult, SaleWithEmployeeAndFinancingType} from "@/lib/types";
 import useAuth from "@/hooks/use-auth";
 import {PostgrestError} from "@supabase/supabase-js";
+import {filterSalesByDate, filterSalesByEmployee} from "@/lib/utils";
 
 type DashBoardContextProps = {
     saleWithEmployeeAndFinancing?: SaleWithEmployeeAndFinancingType[];
@@ -44,21 +45,6 @@ export const DashboardProvider: React.FC<PropsWithChildren> = ({children}) => {
         from: subDays(new Date(), 120),
         to: new Date(),
     })
-
-    function filterSalesByEmployee(sales: SaleWithEmployeeAndFinancingType[], employee: Employee | undefined) {
-        // console.log('employee', employee, 'sales: ', sales)
-        return sales.filter((sale) => {
-            return sale.EmployeeID === employee?.id
-        })
-    }
-
-    function filterSalesByDate(sales: Sale[], date: DateRange | undefined) {
-        return sales.filter((sale) => {
-            const saleDate = new Date(sale?.SaleTime?.toString() || '')
-            if (date?.from === undefined || date?.to === undefined) return false
-            return saleDate >= date?.from && saleDate <= date?.to
-        })
-    }
 
     // get all employees on page load
     useEffect(() => {

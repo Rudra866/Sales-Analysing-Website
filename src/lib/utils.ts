@@ -2,6 +2,8 @@ import { type ClassValue, clsx } from "clsx"
 import { twMerge } from "tailwind-merge"
 import {format} from "date-fns";
 import {Employee, Sale, Tables} from "@/lib/database";
+import {DateRange} from "react-day-picker";
+import {SaleWithEmployeeAndFinancingType} from "@/lib/types";
 
 /** @ignore */
 export function cn(...inputs: ClassValue[]) {
@@ -74,6 +76,20 @@ export function groupByMonth(data: Sale[]): { [p: string]: number } {
     });
 
     return groupedData;
+}
+
+export function filterSalesByEmployee(sales: SaleWithEmployeeAndFinancingType[], employee: Employee | undefined) {
+    return sales.filter((sale) => {
+        return sale.EmployeeID === employee?.id
+    })
+}
+
+export function filterSalesByDate(sales: Sale[], date: DateRange | undefined) {
+    return sales.filter((sale) => {
+        const saleDate = new Date(sale?.SaleTime?.toString() || '')
+        if (date?.from === undefined || date?.to === undefined) return false
+        return saleDate >= date?.from && saleDate <= date?.to
+    })
 }
 
 export function groupSelectionByTimeFrame(data: (SaleWithIndex | null | undefined)[], grouping: string): { [p: string]: { [p: string]: number } } {
