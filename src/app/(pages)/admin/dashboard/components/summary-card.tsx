@@ -2,7 +2,7 @@
 
 import React, {useEffect, useState} from 'react';
 import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
-import {Car, DollarSign} from "lucide-react";
+import {Car} from "lucide-react";
 import {cn, numericSales} from "@/lib/utils";
 import {format} from "date-fns";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
@@ -84,15 +84,18 @@ export function CountCard() {
     useEffect(() => {
         const cars = data?.map((item) => {return item.VehicleMake})
         const carCount = counter(cars ?? [])
-        const max = Math.max(...Object.values(carCount))
+
+        // Check if carCount is not empty before finding the maximum value
+        const max = Object.values(carCount).length > 0 ? Math.max(...Object.values(carCount)) : 0;
+
         const mostSold = Object.keys(carCount).find((key) => {
-            return carCount[key] === max
-        })
-        console.log(carCount);
+            return carCount[key] === max;
+        });
+
         setMostSoldVehicle({
-            vehicle: mostSold ?? "",
+            vehicle: mostSold ?? "None",
             count: max
-        })
+        });
 
     }, [date, data]);
 
