@@ -1,12 +1,10 @@
 'use client'
-import React, {createContext, ReactNode, useEffect, useState} from 'react';
+import React, {createContext, PropsWithChildren, useEffect, useState} from 'react';
 import {subDays} from "date-fns";
 import {DateRange} from "react-day-picker";
 import {
     Employee,
     getAllEmployees,
-    getAllSales,
-    getAllSalesGoals,
     getSupabaseBrowserClient,
     Sale,
     SalesGoal
@@ -33,73 +31,88 @@ export function useDashboard(): DashBoardContextProps {
     if (!context) throw new Error('useDashboard must be used within a DashboardProvider'+ window.location.pathname.toString());
     return context;
 }
+export const DashboardProvider: React.FC<PropsWithChildren> = ({children}) => {
+    const {employee} = useAuth()
+    const [filteredSales, setFilteredSales] = useState<Sale[]>();
+    const [employees, setEmployees] = useState<Employee[]>();
+    const [sales, setSales] = useState<Sale[]>([])
+    const [saleWithEmployeeAndFinancing, setSaleWithEmployeeAndFinancing] = useState<SaleWithEmployeeAndFinancingType[]>();
+    const [salesGoal, setSalesGoal] = useState<SalesGoal[]>();
+    const [mySales, setMySales] = useState<SaleWithEmployeeAndFinancingType[]>();
 
-interface DashboardProviderProps {
-    children: ReactNode;
-}
-
-export const DashboardProvider: React.FC<DashboardProviderProps> = ({children}) => {
     const [date, setDate] = React.useState<DateRange | undefined>({
         from: subDays(new Date(), 120),
         to: new Date(),
     })
 
-    const {employee} = useAuth()
-    const [data, setData] = useState<Sale[]>();
-    const [employees, setEmployees] = useState<Employee[]>();
-    const [saleWithEmployeeAndFinancing, setSaleWithEmployeeAndFinancing] = useState<SaleWithEmployeeAndFinancingType[]>();
-    const [salesGoal, setSalesGoal] = useState<SalesGoal[]>();
-    const [mySales, setMySales] = useState<SaleWithEmployeeAndFinancingType[]>();
-    
+    function filterSalesByEmployee(sales: SaleWithEmployeeAndFinancingType[], employee: Employee | undefined) {
+        // console.log('employee', employee, 'sales: ', sales)
+        return sales.filter((sale) => {
+            return sale.EmployeeID === employee?.id
+        })
+    }
 
+    function filterSalesByDate(sales: Sale[], date: DateRange | undefined) {
+        return sales.filter((sale) => {
+            const saleDate = new Date(sale?.SaleTime?.toString() || '')
+            if (date?.from === undefined || date?.to === undefined) return false
+            return saleDate >= date?.from && saleDate <= date?.to
+        })
+    }
+
+    // get all employees on page load
     useEffect(() => {
         getAllEmployees(supabase).then((res) => {
             setEmployees(res as Employee[])
         })
     }, []);
 
+    // update filtered sales on date change
     useEffect(() => {
+        setFilteredSales(filterSalesByDate(sales, date))
+    }, [date, sales]);
 
-        getAllSales(supabase).then((res) => {
-            const sales = res && res.length > 0 ? res : []
-            setData(filterSalesByDate(sales, date) as Sale[])
-        })
 
-        getAllSalesGoals(supabase).then((res) => {
-            setSalesGoal(res as SalesGoal[])
-        })
+    useEffect(() => {
+        async function getAllSales() {
+            const response = await fetch(`/api/sale`, {
+                method: "GET"
+            });
+
+            const {data: sales, error}: {data: Sale[], error: PostgrestError} = await response.json()
+            if (error) throw error;
+            setSales(sales)
+        }
+        async function getSalesGoals() {
+            const response = await fetch(`/api/goal`, {
+                method: "GET"
+            });
+
+            const {data: goals, error}: {data: SalesGoal[], error: PostgrestError} = await response.json()
+
+            if (error) throw error;
+            setSalesGoal(goals);
+        }
 
         async function getEmployeeSales() {
             const salesRequest = await fetch(`/api/sale?type=formatted`, {
                 method: "GET"
             })
 
-            const {data: sales, error}: {data: Sale[], error: PostgrestError} = await salesRequest.json()
-            setSaleWithEmployeeAndFinancing(sales as DbResult<typeof sales>[])
-            setMySales(filterSalesByEmployee(sales as DbResult<typeof sales>[], employee as Employee) as DbResult<typeof sales>[])
-
+            const {data: sales, error}: {data: SaleWithEmployeeAndFinancingType[], error: PostgrestError} =
+                await salesRequest.json()
             if (error) throw error;
-            return sales;
-        }
-        getEmployeeSales()
-        function filterSalesByDate(sales: Sale[], date: DateRange | undefined) {
-            return sales.filter((sale) => {
-                const saleDate = new Date(sale?.SaleTime?.toString() || '')
-                if (date?.from === undefined || date?.to === undefined) return false
-                return saleDate >= date?.from && saleDate <= date?.to
-            })
+            setSaleWithEmployeeAndFinancing(sales as DbResult<typeof sales>[])
+            setMySales(filterSalesByEmployee(sales as DbResult<typeof sales>[], employee!) as DbResult<typeof sales>[])
         }
 
-        function filterSalesByEmployee(sales: SaleWithEmployeeAndFinancingType[], employee: Employee | undefined) {
-            // console.log('employee', employee, 'sales: ', sales)
-            return sales.filter((sale) => {
-                return sale.EmployeeID === employee?.id
-            })
-        }
-    }, [date, employee]); // todo on every date change, it should not pull data form the db, only filter the data that is already in state.
+        getAllSales();
+        getSalesGoals();
+        getEmployeeSales()
+    }, [employee]);
 
     return (
-        <DashboardContext.Provider value={{data, salesGoal, employees, date, saleWithEmployeeAndFinancing, mySales, setDate}}>
+        <DashboardContext.Provider value={{data:filteredSales, salesGoal, employees, date, saleWithEmployeeAndFinancing, mySales, setDate}}>
             {children}
         </DashboardContext.Provider>
     );
