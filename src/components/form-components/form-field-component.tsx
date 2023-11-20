@@ -48,6 +48,7 @@ export default function FormFieldComponent({name, form, label, inputType, classN
                                 <Textarea
                                     className='h-64'
                                     placeholder={'Enter text here...'}
+                                    defaultValue={label}
                                     {...field}
                                 />
                             ) : (

@@ -4,6 +4,7 @@ import React, {useEffect} from 'react';
 import {getReferencePagesById, getSupabaseBrowserClient, ReferencePage} from "@/lib/database";
 import {DbResult} from "@/lib/types";
 import {Separator} from "@/components/ui/separator";
+import {Button} from "@/components/ui/button";
 
 const supabase = getSupabaseBrowserClient();
 

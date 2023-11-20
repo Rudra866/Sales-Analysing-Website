@@ -24,7 +24,7 @@ export const docsConfigAdmin: DocsConfig = {
         },
         {
             title: "Training",
-            href: "/admin/training",
+            href: "/admin/training/create-new",
         },
         {
             title: "Test",

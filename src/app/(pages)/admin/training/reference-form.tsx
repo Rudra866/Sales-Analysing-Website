@@ -18,10 +18,6 @@ const referenceFormSchema = z.object({
 
 type ReferenceFormValues = z.infer<typeof referenceFormSchema>
 
-interface ReferenceFormProps {
-    reference?: ReferenceFormValues
-
-}
 
 export function ReferenceForm() {
 

@@ -27,19 +27,6 @@ export function TrainingSidebarNav({ className, items, ...props }: SidebarNavPro
       {...props}
     >
       <div>
-        {isAdmin(employee?.Role!) &&
-            <Link
-                href={'/training/create-new'}
-                className={cn(
-                    buttonVariants({ variant: "ghost" }),
-                    pathname === '/training/create-new'
-                        ? "bg-muted hover:bg-muted"
-                        : "hover:bg-transparent hover:underline",
-                    "justify-start", "truncate w-full")}
-            >
-              Create Page
-            </Link>
-        }
         {items.map((item) => (
             <Link
                 key={item.href}

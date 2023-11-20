@@ -29,7 +29,7 @@ export function TrainingSidebarNav({ className, items, ...props }: SidebarNavPro
       <div>
         {isAdmin(employee?.Role!) &&
             <Link
-                href={'/training/create-new'}
+                href={'/admin/training/create-new'}
                 className={cn(
                     buttonVariants({ variant: "ghost" }),
                     pathname === '/training/create-new'

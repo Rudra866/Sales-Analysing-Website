@@ -1,7 +1,9 @@
 'use client'
 
 
-import {ReferenceForm} from "@/app/(pages)/training/reference-form";
+
+import {ReferenceForm} from "@/admin/training/reference-form";
+
 function Page(props:any) {
     console.log('ref page props', props)
     return (

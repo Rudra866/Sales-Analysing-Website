@@ -3,10 +3,8 @@
 import {Separator} from "@/components/ui/separator"
 import ContainerLayout from "@/components/container-layout";
 import React, {useEffect} from "react";
-import {getReferencePages, getSupabaseBrowserClient} from "@/lib/database";
-import {TrainingSidebarNav} from "@/app/(pages)/training/training-sidebar-nav";
 import {useEmployee} from "@/employee/employee-components/employee-provider";
-import useAuth from "@/hooks/use-auth";
+import {TrainingSidebarNav} from "@/employee/training/training-sidebar-nav";
 
 interface SettingsLayoutProps {
     children: React.ReactNode
@@ -22,7 +20,7 @@ export default function SettingsLayout({children}: SettingsLayoutProps) {
             referencePage.map((page) => {
                 return {
                     title: page.pagename,
-                    href: `/training/${page.id}`,
+                    href: `/employee/training/${page.id}`,
                 }}))
     }, [])
 
