@@ -121,7 +121,7 @@ export default function EmployeeTable() {
           <FormModal title={"Employee"} onSubmit={submitEmployeeUpdate} showDialog={showEmployeeRoleModal} setShowDialog={setShowEmployeeRoleModal}>
             <RoleSelectModalForm employee={employee} roles={roles}/>
           </FormModal>
-  </DropdownMenu>
+          </DropdownMenu>
         </>
     );
   }

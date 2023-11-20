@@ -20,6 +20,7 @@ import useAuth from "@/hooks/use-auth";
 import {format} from "date-fns";
 import {Calendar} from "@/components/ui/calendar";
 import {Label} from "@/components/ui/label";
+import {ScrollArea, ScrollBar} from "@/components/ui/scroll-area";
 // todo unverified fields
 const newTaskSchema = z.object({
   Name: z.string(),
@@ -34,19 +35,23 @@ const newTaskSchema = z.object({
  * @param {EmployeeSelectModalFormProps} props
  * @group React Components
  */
-export function TaskCreateDialog({employees}: { employees: Employee[] }) {
+export function TaskCreateDialog({employees, task}: { employees: Employee[], task?: any }) {
+  console.log(task)
   const [openEmployees, setOpenEmployees] = useState<boolean>(false)
-  const [employeeValue, setEmployeeValue] = React.useState("")
+  const taskEmployee = task?.Assignee ? employees.find(employee => employee.id === task.Assignee)?.Name : ""
+  const [employeeValue, setEmployeeValue] = React.useState( taskEmployee ?? "")
   const formContext = useFormModalContext()
   const {employee} = useAuth();
 
-  const [startDate, setStartDate] = useState<Date | undefined>()
-  const [endDate, setEndDate] = useState<Date | undefined>()
+  const [startDate, setStartDate] = useState<Date | undefined>(task.StartDate ? new Date(task.StartDate) : undefined)
+  const [endDate, setEndDate] = useState<Date | undefined>( task.EndDate ? new Date(task.EndDate) : undefined)
+
+
   const form = useForm<z.infer<typeof newTaskSchema>>({
     resolver: zodResolver(newTaskSchema),
     defaultValues: {
-      Name: "",
-      Description: "",
+      Name: task.Name ?? "",
+      Description: task.Description ?? "",
     },
   })
   function onSubmit(data: any) {
@@ -62,8 +67,8 @@ export function TaskCreateDialog({employees}: { employees: Employee[] }) {
 
   return (
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-          <DialogBody>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 w-full">
+          <DialogBody className={'space-y-2 w-full'}>
             <FormField
                 control={form.control}
                 name="Name"
@@ -88,6 +93,7 @@ export function TaskCreateDialog({employees}: { employees: Employee[] }) {
                       <FormLabel>Description</FormLabel>
                       <FormControl>
                         <Textarea
+                            className="h-44"
                             placeholder="Employee Name"
                             {...field}
                         />
@@ -96,19 +102,18 @@ export function TaskCreateDialog({employees}: { employees: Employee[] }) {
                     </FormItem>
                 )}
             />
-            <div>
-              <Label>Start Date </Label>
+            <div className={'flex flex-row align-middle justify-between items-center w-full gap-2'}>
               <Popover>
                 <PopoverTrigger asChild>
                   <Button
                       variant={"outline"}
                       className={cn(
-                          "w-[280px] justify-start text-left font-normal",
+                          "w-full justify-start text-left font-normal",
                           !startDate && "text-muted-foreground"
                       )}
                   >
                     <CalendarIcon className="mr-2 h-4 w-4"/>
-                    {startDate ? format(startDate, "PPP") : <span>Pick a date</span>}
+                    {startDate ? format(startDate, "PPP") : <span>Start Date</span>}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0">
@@ -120,15 +125,13 @@ export function TaskCreateDialog({employees}: { employees: Employee[] }) {
                   />
                 </PopoverContent>
               </Popover>
-            </div>
-            <div>
-              <Label>End Date </Label>
+
               <Popover>
                 <PopoverTrigger asChild>
                   <Button
                       variant={"outline"}
                       className={cn(
-                          "w-[280px] justify-start text-left font-normal",
+                          "w-full justify-end text-left font-normal",
                           !endDate && "text-muted-foreground"
                       )}
                   >
@@ -152,8 +155,7 @@ export function TaskCreateDialog({employees}: { employees: Employee[] }) {
                 <Button
                     variant="outline"
                     role="combobox"
-                    // aria-expanded={open}
-                    className="w-[200px] justify-between"
+                    className="w-full justify-between"
                 >
                   {employeeValue
                       ? employees.find((employee) => employee.Name.toLowerCase() === employeeValue)?.Name
@@ -165,26 +167,32 @@ export function TaskCreateDialog({employees}: { employees: Employee[] }) {
                 <Command>
                   <CommandInput placeholder="Search employees..." className="h-9"/>
                   <CommandEmpty>No Employee</CommandEmpty>
-                  <CommandGroup className={"overflow-scroll"}>
-                    {employees.map((employee) => (
-                        <CommandItem
-                            key={employee.id}
-                            value={employee.Name}
-                            onSelect={(currentValue) => {
-                              setEmployeeValue(currentValue === employeeValue ? "" : currentValue)
-                              setOpenEmployees(false)
-                            }}
-                        >
-                          {employee.Name}
-                          <CheckIcon
-                              className={cn(
-                                  "ml-auto h-4 w-4",
-                                  employeeValue === employee.Name.toLowerCase() ? "opacity-100" : "opacity-0"
-                              )}
-                          />
-                        </CommandItem>
-                    ))}
-                  </CommandGroup>
+
+                  {/*todo scroll is not work..*/}
+                  <ScrollArea className="h-full">
+                    <CommandGroup className={'h-fit'}>
+                      {employees.map((employee) => (
+                          <CommandItem
+                              key={employee.id}
+                              value={employee.Name}
+                              onSelect={(currentValue) => {
+                                setEmployeeValue(currentValue === employeeValue ? "" : currentValue)
+                                setOpenEmployees(false)
+                              }}
+                          >
+                            {employee.Name}
+                            <CheckIcon
+                                className={cn(
+                                    "ml-auto h-4 w-4",
+                                    employeeValue === employee.Name.toLowerCase() ? "opacity-100" : "opacity-0"
+                                )}
+                            />
+                          </CommandItem>
+                      ))}
+                    </CommandGroup>
+                    <ScrollBar/>
+                  </ScrollArea>
+
                 </Command>
               </PopoverContent>
             </Popover>
