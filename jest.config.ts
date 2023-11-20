@@ -3,7 +3,7 @@ import { compilerOptions } from './tsconfig.json';
 
 const config =  {
   preset: "ts-jest",
-  testTimeout: 30000,
+  testTimeout: 30000, // quite long - add timeout to specific tests.
   testEnvironment: "jsdom",
   transform: {
     '^.+\\.tsx?$': ['ts-jest', {
