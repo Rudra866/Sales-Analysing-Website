@@ -643,12 +643,9 @@ export async function getSalesForEmployeeInDateRange(supabase: SupabaseClient, e
 export async function getSalesForEmployee(supabase: SupabaseClient, employeeID: string, sort?: "asc" | "dsc"){
   const { data: SaleTime, error } = await supabase
       .from('Sales')
-      .select('SaleTime, Total')
+      .select('*')
       .order('SaleTime', { ascending: sort != "dsc" })
-      // .filter('SaleTime', 'gte', format(startDate || new Date(), 'yyyy-MM-dd'))
-      // .filter('SaleTime', 'lte', format(endDate || new Date(), 'yyyy-MM-dd'))
       .filter('EmployeeID', 'eq', employeeID)
-
   if (error) throw error;
   return SaleTime;
 }

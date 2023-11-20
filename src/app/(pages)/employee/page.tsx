@@ -1,6 +1,6 @@
 'use client'
 
-import React, {Suspense} from 'react';
+import React, {Suspense, useEffect} from 'react';
 import {useEmployee} from "@/employee/employee-components/employee-provider";
 import CalendarDateRangePicker from "@/admin/dashboard/components/date-range-picker";
 import {Button} from "@/components/ui/button";
@@ -9,6 +9,8 @@ import TasksQuickView from "@/employee/employee-components/tasks-quick-view";
 import {getSalesCSV} from "@/lib/csv";
 
 export default function EmployeePage() {
+    const [data, setData] = React.useState<any[]>([]);
+
     const {
         employee,
         tasks,
@@ -16,6 +18,11 @@ export default function EmployeePage() {
         date,
         setDate
     } = useEmployee()
+
+    useEffect(() => {
+        console.log('sales: ', sales)
+        sales && setData(sales as any[])
+    }, [employee, tasks, sales, date, setDate])
 
     return (
         <Suspense fallback={null}>
@@ -39,7 +46,7 @@ export default function EmployeePage() {
                         {sales &&
                             <DynamicChart
                                 className="col-span-4"
-                                data={sales!}
+                                data={data}
                                 date={date}
                                 title={'Sales'}
                             />

@@ -25,14 +25,13 @@ interface DynamicChartProps {
 
 
 export function DynamicChart({ title, color, data, date, className }: DynamicChartProps) {
-
     const [keyValues, setKeyValues] = useState<{ key: string; value: number }[]>();
     const [selectedCategory, setSelectedCategory] = useState("Total");
     const [categories, setCategories] = useState<string[]>();
     const [grouping, setGrouping] = useState("MMM-yy");
 
-
     useEffect(() => {
+        console.log(selectedCategory, data)
         if (selectedCategory) {
             setKeyValues(
                 Object.entries(groupSelectionByTimeFrame(data, grouping)).map(([key, value]) => ({
@@ -41,14 +40,12 @@ export function DynamicChart({ title, color, data, date, className }: DynamicCha
                 }))
             );
         }
-    }, [data, date, grouping, selectedCategory]);
+    }, [data, date, grouping, selectedCategory, categories]);
 
     useEffect(() => {
-        if(!data || data.length < 1) return
-        // get sales columns that are of numeric type
         const numericColumns = data.length > 0 && Object.keys(data[0]).filter((key) => {
             // @ts-ignore
-            return typeof data[0][key] === "number" && key !== "id" // todo: fix this
+            return typeof data[0][key] === "number" && key !== "id"
         });
         numericColumns && setCategories(numericColumns)
     }, [data]);
