@@ -1,6 +1,6 @@
 'use client'
 
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
     Employee,
     getAllTasksByAssignee, getReferencePages, getSalesForEmployee,
@@ -11,6 +11,7 @@ import {
 import {DateRange} from "react-day-picker";
 import useAuth from "@/hooks/use-auth";
 import {subDays} from "date-fns";
+import {filterSalesByDate, filterTasksByStartDate} from "@/lib/utils";
 
 
 type EmployeeContextProps = {
@@ -37,13 +38,13 @@ interface EmployeeProviderProps {
 }
 
 export const EmployeeProvider: React.FC<EmployeeProviderProps> = ({children}) => {
-    const [date, setDate] = React.useState<DateRange | undefined>({
+    const [date, setDate] = useState<DateRange | undefined>({
         from: subDays(new Date(), 120),
         to: new Date(),
     })
-    const [tasks, setTasks] = React.useState<Task[]>();
-    const [sales, setSales] = React.useState<Sale[]>();
-    const [referencePage, setReferencePage] = React.useState<ReferencePage[]>()
+    const [tasks, setTasks] = useState<Task[]>();
+    const [sales, setSales] = useState<Sale[]>();
+    const [referencePage, setReferencePage] = useState<ReferencePage[]>()
     const {employee} = useAuth()
 
     useEffect(() => {
@@ -64,25 +65,10 @@ export const EmployeeProvider: React.FC<EmployeeProviderProps> = ({children}) =>
     }, [employee])
 
     useEffect(() => {
-        sales && setSales(filterSalesByDate(sales as Sale[], date) as Sale[])
-        tasks && setTasks(filterTasksByStartDate(tasks as Task[], date) as Task[])
+        setSales(sales => filterSalesByDate(date, sales))
+        setTasks(tasks => filterTasksByStartDate(tasks, date))
     }, [date])
 
-    function filterSalesByDate(sales: Sale[], date: DateRange | undefined) {
-        return sales.filter((sale) => {
-            const saleDate = new Date(sale?.SaleTime?.toString() || '')
-            if (date?.from === undefined || date?.to === undefined) return false
-            return saleDate >= date?.from && saleDate <= date?.to
-        })
-    }
-
-    function filterTasksByStartDate(tasks: Task[], date: DateRange | undefined) {
-        return tasks.filter((task) => {
-            const taskDate = new Date(task?.StartDate?.toString() || '')
-            if (date?.from === undefined || date?.to === undefined) return false
-            return taskDate >= date?.from && taskDate <= date?.to
-        })
-    }
     return (
         <EmployeeContext.Provider value={{tasks, sales, date, setDate, employee, referencePage}}>
             {children}

@@ -1,7 +1,7 @@
 import { type ClassValue, clsx } from "clsx"
 import { twMerge } from "tailwind-merge"
 import {format} from "date-fns";
-import {Employee, Sale, Tables} from "@/lib/database";
+import {Employee, Sale, Task} from "@/lib/database";
 import {DateRange} from "react-day-picker";
 import {SaleWithEmployeeAndFinancingType} from "@/lib/types";
 
@@ -84,11 +84,21 @@ export function filterSalesByEmployee(sales: SaleWithEmployeeAndFinancingType[],
     })
 }
 
-export function filterSalesByDate(sales: Sale[], date: DateRange | undefined) {
+export function filterSalesByDate(date: DateRange | undefined, sales?: Sale[]) {
+    if (!sales) return [];
     return sales.filter((sale) => {
         const saleDate = new Date(sale?.SaleTime?.toString() || '')
         if (date?.from === undefined || date?.to === undefined) return false
         return saleDate >= date?.from && saleDate <= date?.to
+    })
+}
+
+export function filterTasksByStartDate(tasks?: Task[], date?: DateRange | undefined) {
+    if (!tasks) return [];
+    return tasks.filter((task) => {
+        const taskDate = new Date(task?.StartDate?.toString() || '')
+        if (date?.from === undefined || date?.to === undefined) return false
+        return taskDate >= date?.from && taskDate <= date?.to
     })
 }
 

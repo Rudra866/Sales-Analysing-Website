@@ -9,10 +9,11 @@ import {
     Sale,
     SalesGoal
 } from "@/lib/database";
-import {DbResult, SaleWithEmployeeAndFinancingType} from "@/lib/types";
+import {SaleWithEmployeeAndFinancingType} from "@/lib/types";
 import useAuth from "@/hooks/use-auth";
 import {PostgrestError} from "@supabase/supabase-js";
 import {filterSalesByDate, filterSalesByEmployee} from "@/lib/utils";
+import {toast} from "@/components/ui/use-toast";
 
 type DashBoardContextProps = {
     saleWithEmployeeAndFinancing?: SaleWithEmployeeAndFinancingType[];
@@ -48,39 +49,32 @@ export const DashboardProvider: React.FC<PropsWithChildren> = ({children}) => {
         to: new Date(),
     })
 
-    function filterSalesByEmployee(sales: SaleWithEmployeeAndFinancingType[], employee: Employee | undefined) {
-        return sales.filter((sale) => {
-            return sale.EmployeeID === employee?.id
-        })
-    }
-
-    function filterSalesByDate(sales: Sale[], date: DateRange | undefined) {
-        return sales.filter((sale) => {
-            const saleDate = new Date(sale?.SaleTime?.toString() || '')
-            if (date?.from === undefined || date?.to === undefined) return false
-            return saleDate >= date?.from && saleDate <= date?.to
-        })
-    }
-
-    // get all reference pages on page load
-    useEffect(() => {
-        getReferencePages(supabase)
-            .then((res) => {
-                setReferencePage(res as ReferencePage[])
-            })
-    }, []);
-
-
-    // get all employees on page load
+    // get all employees && reference pages on page load
     useEffect(() => {
         getAllEmployees(supabase).then((res) => {
             setEmployees(res as Employee[])
+        }).catch(err => {
+            toast({
+                title: "Error",
+                description: "Failed to load employees."
+            })
+            console.log(err);
+        })
+        getReferencePages(supabase)
+            .then((res) => {
+                setReferencePage(res as ReferencePage[])
+            }).catch(err => {
+                toast({
+                    title: "Error",
+                    description: "Failed to load reference pages."
+                })
+            console.log(err);
         })
     }, []);
 
     // update filtered sales on date change
     useEffect(() => {
-        setFilteredSales(filterSalesByDate(sales, date))
+        setFilteredSales(filterSalesByDate(date, sales))
     }, [date, sales]);
 
 
@@ -113,8 +107,9 @@ export const DashboardProvider: React.FC<PropsWithChildren> = ({children}) => {
             const {data: sales, error}: {data: SaleWithEmployeeAndFinancingType[], error: PostgrestError} =
                 await salesRequest.json()
             if (error) throw error;
-            setSaleWithEmployeeAndFinancing(sales as DbResult<typeof sales>[])
-            setMySales(filterSalesByEmployee(sales as DbResult<typeof sales>[], employee!) as DbResult<typeof sales>[])
+
+            setSaleWithEmployeeAndFinancing(sales)
+            setMySales(filterSalesByEmployee(sales, employee!))
         }
 
         getAllSales();
