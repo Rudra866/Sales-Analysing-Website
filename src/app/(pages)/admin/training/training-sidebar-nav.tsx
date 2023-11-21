@@ -21,7 +21,7 @@ export function TrainingSidebarNav({ className, items, ...props }: SidebarNavPro
   return (
     <nav
       className={cn(
-        "flex space-x-2 lg:flex-col lg:space-x-0 lg:space-y-1",
+        "flex space-x-2 lg:flex-col lg:space-x-0 lg:space-y-1 pr-4",
         className
       )}
       {...props}
