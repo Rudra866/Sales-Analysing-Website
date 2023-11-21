@@ -1,11 +1,8 @@
 'use client'
+import dynamic from "next/dynamic";
+const ReferenceForm = dynamic(() => import("@/admin/training/reference-form"))
 
-
-
-import {ReferenceForm} from "@/admin/training/reference-form";
-
-function Page(props:any) {
-    console.log('ref page props', props)
+function Page() {
     return (
         <div>
             <ReferenceForm />

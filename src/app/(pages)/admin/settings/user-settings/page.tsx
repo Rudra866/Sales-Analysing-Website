@@ -1,6 +1,7 @@
 import { Separator } from "@/components/ui/separator"
-import { UserForm } from "../components/user-form"
+import dynamic from "next/dynamic";
 
+const UserForm = dynamic(() => import("../components/user-form"));
 export default function UserSettingsPage() {
   return (
     <div className="space-y-6">

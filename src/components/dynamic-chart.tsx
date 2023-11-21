@@ -24,7 +24,7 @@ interface DynamicChartProps {
 //  However this would require a complex data structure.
 
 
-export function DynamicChart({ title, color, data, date, className }: DynamicChartProps) {
+export default function DynamicChart({ title, color, data, date, className }: DynamicChartProps) {
     const [keyValues, setKeyValues] = useState<{ key: string; value: number }[]>();
     const [selectedCategory, setSelectedCategory] = useState("Total");
     const [grouping, setGrouping] = useState("MMM-yy");

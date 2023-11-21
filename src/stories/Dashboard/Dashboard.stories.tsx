@@ -2,7 +2,7 @@ import {Meta, StoryObj} from "@storybook/react";
 import React from "react";
 import {subMonths} from "date-fns";
 import {FakeDashboardProvider} from "@/stories/Dashboard/FakeDashboardProvider";
-import {Overview} from "@/admin/dashboard/components/overview";
+import Overview from "@/admin/dashboard/components/overview";
 
 export default {
   title: 'Dashboard/Tables',

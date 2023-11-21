@@ -19,15 +19,8 @@ import {cn} from "@/lib/utils"
 import useAuth from "@/hooks/use-auth";
 import {format} from "date-fns";
 import {Calendar} from "@/components/ui/calendar";
-import {Label} from "@/components/ui/label";
 import {ScrollArea, ScrollBar} from "@/components/ui/scroll-area";
-// todo unverified fields
-const newTaskSchema = z.object({
-  Name: z.string(),
-  Description: z.string(),
-})
-
-
+import {newTaskSchema} from "@/lib/zod-schemas";
 
 /**
  * Component to allow for viewing a user's details and modifying them. Has two states, view mode and edit mode.
@@ -55,8 +48,6 @@ export function TaskCreateDialog({employees, task}: { employees: Employee[], tas
     },
   })
   function onSubmit(data: any) {
-    console.log(employeeValue)
-    console.log(employees.find(employee => employee.Name.toLowerCase() === employeeValue)?.id)
     data["Creator"] = employee?.id;
     data["Assignee"] = employees.find((employee) => employee.Name.toLowerCase() === employeeValue)?.id // todo @bill better way to do this with keys?
     data["StartDate"] = startDate;

@@ -10,8 +10,8 @@ import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/c
 import {Button} from "@/components/ui/button";
 import {Employee, Role} from "@/lib/database";
 import {DialogClose} from "@radix-ui/react-dialog";
-import {existingEmployeeFormSchema} from "@/lib/types";
 import {useFormModalContext} from "@/components/dialogs/FormModal";
+import {existingEmployeeFormSchema} from "@/lib/zod-schemas";
 
 /**
  * Type

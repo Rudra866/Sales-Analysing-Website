@@ -1,6 +1,9 @@
 import { Separator } from "@/components/ui/separator"
-import { AccountForm } from "./account-form"
+import dynamic from "next/dynamic";
 
+const AccountForm = dynamic(() => import('./account-form'));
+
+// todo fix up this page
 export default function SettingsAccountPage() {
   return (
     <div className="space-y-6">

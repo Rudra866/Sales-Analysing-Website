@@ -1,8 +1,7 @@
 'use client'
 
-import React, {useEffect} from 'react';
+import {useEffect, useState} from 'react';
 import {getReferencePagesById, getSupabaseBrowserClient, postToReferencePages, ReferencePage} from "@/lib/database";
-import {DbResult} from "@/lib/types";
 import {Separator} from "@/components/ui/separator";
 import {Button} from "@/components/ui/button";
 import {Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
@@ -12,44 +11,43 @@ import * as z from "zod";
 import {Input} from "@/components/ui/input";
 import {Textarea} from "@/components/ui/textarea";
 import {Checkbox} from "@/components/ui/checkbox";
+import {referencePageFormSchema} from "@/lib/zod-schemas";
+import {errorToast, successToast} from "@/lib/toasts";
+import {PostgrestError} from "@supabase/postgrest-js";
 
 const supabase = getSupabaseBrowserClient();
 
 
-const referenceFormSchema = z.object({
-    title: z.string().min(3).optional(),
-    body: z.string().min(10).optional(),
-})
-
-type ReferenceFormValues = z.infer<typeof referenceFormSchema>
+type ReferenceFormValues = z.infer<typeof referencePageFormSchema>
 
 
 function Page(props: any) {
     const id = props.params.id;
-    const [page, setPage] = React.useState<ReferencePage>();
-    const [editMode, setEditMode] = React.useState<boolean>(false);
+    const [page, setPage] = useState<ReferencePage>();
+    const [editMode, setEditMode] = useState<boolean>(false);
 
     // todo -- error prone calls..
     useEffect(() => {
         getReferencePagesById(supabase, id)
-            .then((res) => {
-                setPage(res as DbResult<typeof page>)
-            })
+            .then((res) => setPage(res))
     }, [id]);
 
+    // todo fix this
     const form = useForm<ReferenceFormValues>({
-        resolver: zodResolver(referenceFormSchema),
+        resolver: zodResolver(referencePageFormSchema),
         mode: "onChange",
     })
 
     function onSubmit(data: ReferenceFormValues) {
         postToReferencePages(supabase, {
-            pagename: form.getValues().title,
-            pagebody: form.getValues().body
+            pagename: data.title,
+            pagebody: data.body
         }).then((res) => {
-            setPage(res as DbResult<typeof page>)
+            setPage(res as ReferencePage)
             setEditMode(false)
-            console.log(res)
+            successToast(`Updated page ${res.pagename}!`)
+        }).catch((err: PostgrestError) => {
+            errorToast(err.message);
         })
     }
 
@@ -110,6 +108,7 @@ function Page(props: any) {
                     </Form>
                 </div> :
                 <div className="space-y-6">
+                    {/* TODO twice? why? */}
                     <p className="text-sm text-muted-foreground">{page?.pagebody}</p>
                     <Separator />
                     <p className="text-sm text-muted-foreground">{page?.pagebody}</p>

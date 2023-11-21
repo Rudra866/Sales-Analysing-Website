@@ -6,7 +6,7 @@ import React, {useEffect, useState} from "react";
 import {groupByTimeFrame} from "@/lib/utils";
 import {customTooltip} from "@/components/custom-tooltip";
 
-export function Overview() {
+export default function Overview() {
     const {data, date} = useDashboard()
     const [salesByMonth, setSalesByMonth] = useState<{ name: string; total: number }[]>();
 

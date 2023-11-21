@@ -3,7 +3,7 @@ import FormModal, {FormModalProps} from "@/components/dialogs/FormModal";
 import {test_sales_set} from "@/tests/test_data";
 import {Button} from "@/components/ui/button";
 import {useTestDialogControls} from "@/stories/Dialogs/useDialogArgs";
-import {RowActionDialog, SaleSelectModalFormProps} from "@/admin/sales/components/RowActionDialog";
+import {RowActionDialog, SaleSelectModalFormProps} from "@/components/dialogs/row-action-dialog";
 type TestProps = SaleSelectModalFormProps & FormModalProps
 type Story = StoryObj<TestProps>
 

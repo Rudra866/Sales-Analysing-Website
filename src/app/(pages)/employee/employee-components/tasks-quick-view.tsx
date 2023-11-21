@@ -43,7 +43,6 @@ type TasksQuickViewProps = {
     tasks: Task[] | undefined;
 }
 function TasksQuickView({tasks}: TasksQuickViewProps) {
-    console.log('tasks: ',tasks)
     function TaskRow({task}: { task: Task }) {
         const status = statuses.find((status) => status.value === task.Status);
         return (

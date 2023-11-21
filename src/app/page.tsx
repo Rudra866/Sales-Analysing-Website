@@ -1,11 +1,12 @@
 'use client'
 import useAuth from "@/hooks/use-auth";
 import {DashboardProvider} from "@/admin/dashboard/components/dashboard-provider";
-import DashboardPage from "@/admin/dashboard/page";
 import {EmployeeProvider} from "@/employee/employee-components/employee-provider";
-import EmployeePage from "@/employee/page";
+import dynamic from "next/dynamic";
 
-// todo import components instead of entire pages, make them dynamic imports.
+// temp TODO -- do this properly with components rather than pages..
+const DashboardPage = dynamic(() => import('@/admin/dashboard/page'));
+const EmployeePage = dynamic(() => import('@/employee/page'));
 
 /**
  * The root page of the app. Loads employee/admin specific dashboard.
@@ -17,7 +18,7 @@ export default function RootPage() {
 
   if (!role) {
     return (
-        <>loading</> // todo
+        <></> // todo
     )
   }
 
@@ -28,6 +29,7 @@ export default function RootPage() {
         </DashboardProvider>
     )
   } else {
+    // this causes a refresh on data when leaving the main page..
     return (
         <EmployeeProvider>
           <EmployeePage/>

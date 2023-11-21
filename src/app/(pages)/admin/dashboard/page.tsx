@@ -1,16 +1,18 @@
 'use client'
-
 import {Button} from "@/components/ui/button"
 import {Card, CardContent, CardHeader, CardTitle,} from "@/components/ui/card"
-import CalendarDateRangePicker from "./components/date-range-picker"
-import {Overview} from "./components/overview"
-import {RecentSales} from "./components/recent-sales"
-import * as React from "react";
 import {useDashboard} from "./components/dashboard-provider";
-import {DynamicChart} from "@/components/dynamic-chart";
-import SalesLineChart from "@/components/sales-line-chart";
-import SummaryCard, {CountCard} from "./components/summary-card";
 import {getSalesCSV} from "@/lib/csv";
+import dynamic from "next/dynamic";
+
+/* Can probably optimize this down the line. */
+const SalesLineChart = dynamic(() => import(`@/components/sales-line-chart`))
+const Overview = dynamic(() => import(`./components/overview`))
+const RecentSales = dynamic(() => import(`./components/recent-sales`))
+const DynamicChart = dynamic(() => import(`@/components/dynamic-chart`))
+const CalendarDateRangePicker = dynamic(() => import(`@/components/date-range-picker`))
+const SummaryCard = dynamic(() => import('./components/summary-card'));
+const CountCard = dynamic(() => import('./components/count-card'));
 
 
 // TODO maybe we can split this page to some public components? We can also add db method to handle this db request.

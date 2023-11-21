@@ -40,10 +40,6 @@ interface EmployeeProviderProps {
 }
 
 export const EmployeeProvider: React.FC<EmployeeProviderProps> = ({children}) => {
-    const [date, setDate] = useState<DateRange | undefined>({
-        from: subDays(new Date(), 120),
-        to: new Date(),
-    })
     const [allTasks, setAllTasks] = useState<Task[]>([]);
     const [allSales, setAllSales] = useState<Sale[]>([]);
     const [tasks, setTasks] = useState<Task[]>([]);
@@ -51,6 +47,10 @@ export const EmployeeProvider: React.FC<EmployeeProviderProps> = ({children}) =>
     const [referencePage, setReferencePage] = useState<ReferencePage[]>()
     const {employee} = useAuth()
 
+    const [date, setDate] = useState<DateRange | undefined>({
+        from: subDays(new Date(), 120),
+        to: new Date(),
+    })
 
     // get data on initial load
     useEffect(() => {

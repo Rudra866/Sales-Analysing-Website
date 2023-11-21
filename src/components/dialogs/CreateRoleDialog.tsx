@@ -13,8 +13,9 @@ import {zodResolver} from "@hookform/resolvers/zod";
 import {DialogBody} from "next/dist/client/components/react-dev-overlay/internal/components/Dialog";
 import {DialogFooter} from "@/components/ui/dialog";
 import DialogCloseButton from "@/components/dialogs/DialogCloseButton";
+import {createRoleModalSchema} from "@/lib/zod-schemas";
 
-const role_options_config = [
+export const role_options_config = [
   {
     label: "Read Access",
     name: "ReadPermission",
@@ -53,19 +54,10 @@ const role_options_config = [
   },
 ]
 
-const roles = Object.fromEntries(
-    role_options_config.map((role) => [role.name, z.boolean()])
-);
-const role_defaults = Object.fromEntries(
+export const role_defaults = Object.fromEntries(
     role_options_config.map((role) => [role.name, role.default])
 );
 
-const createRoleModalSchema = z.object({
-  RoleName: z.string()
-      .min(1, "Role Name must not be empty")
-      .max(255, "Role name exceeds limit"),
-  ...roles
-});
 
 const RoleDialogOption = (
     {label,

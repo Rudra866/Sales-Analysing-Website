@@ -3,19 +3,12 @@
 import React from 'react';
 import { useRouter } from 'next/navigation';
 import {Database, getSupabaseBrowserClient, SupabaseClient} from "@/lib/database";
-import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
-import {Input} from "@/components/ui/input";
-import {Button} from "@/components/ui/button";
-import {useForm} from "react-hook-form";
 import * as z from "zod";
-import {zodResolver} from "@hookform/resolvers/zod";
-import {passwordFieldSchema} from "@/lib/types";
-import { passwordChangeFormSchema } from "./components/ChangePasswordForm";
+import { passwordChangeFormSchema } from "@/lib/zod-schemas";
 import dynamic from "next/dynamic";
+import {errorToast, successToast} from "@/lib/toasts";
 
 const ChangePasswordForm = dynamic(() => import("./components/ChangePasswordForm"))
-
-// todo probably move this page, or at least redesign it completely and use it in the auth flow (currently unused)
 
 export default function UpdatePassword() {
   const router = useRouter();
@@ -24,10 +17,10 @@ export default function UpdatePassword() {
   const handleSubmit = async (formData: z.infer<typeof passwordChangeFormSchema>) => {
     const {error } = await supabase.auth.updateUser(formData);
     if (error) {
-      console.error('Error updating password:', error);
+      errorToast(error.message);
     } else {
-      console.log('Password updated successfully');
-      router.push('/dashboard'); // Change the path to your success page
+      successToast("Password updated successfully!")
+      router.push('/'); // Change the path to your success page
     }
   };
 

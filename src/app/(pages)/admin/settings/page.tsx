@@ -1,12 +1,13 @@
 'use client'
 import { Separator } from "@/components/ui/separator"
-import EmployeeTable from "@/components/tables/employee-table";
 import {useEffect, useState} from "react";
 import {Employee, getAllEmployees, getAllRoles, getSupabaseBrowserClient, Role} from "@/lib/database";
 import {errorToast} from "@/lib/toasts";
+import dynamic from "next/dynamic";
 
 
-
+const EmployeeTable = dynamic(() =>
+    import("@/components/tables/employee-table"))
 
 export default function SettingsPage() {
   const [loading, setLoading] = useState<boolean>(false)
@@ -17,21 +18,19 @@ export default function SettingsPage() {
 
   useEffect(() => {
     setLoading(true);
-    getAllEmployees(supabase)
-        .then(employees => setEmployees(employees))
-        .catch(err => {
-          errorToast("Failed to load Employees")
-          console.error(err);
-        });
-
-    getAllRoles(supabase)
-        .then(roles => setRoles(roles))
-        .catch(err => {
-          errorToast("Failed to load Roles")
-          console.error(err);
-        });
-
-    setLoading(false);
+    Promise.all([
+        getAllEmployees(supabase),
+        getAllRoles(supabase)
+    ])
+      .then(([employees, roles]) => {
+        setEmployees(employees)
+        setRoles(roles)
+    })
+      .catch(err => {
+        errorToast("Failed to load data.")
+        console.error(err);
+      })
+        .finally(() => setLoading(false));
   }, [supabase]);
 
   return (

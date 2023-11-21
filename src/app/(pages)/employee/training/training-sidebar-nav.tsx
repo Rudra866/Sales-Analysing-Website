@@ -5,7 +5,6 @@ import { usePathname } from "next/navigation"
 
 import {cn} from "@/lib/utils"
 import { buttonVariants } from "@/components/ui/button"
-import useAuth from "@/hooks/use-auth";
 
 interface SidebarNavProps extends React.HTMLAttributes<HTMLElement> {
   items: {

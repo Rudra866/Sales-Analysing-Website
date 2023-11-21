@@ -10,7 +10,7 @@ import {DialogFooter} from "@/components/ui/dialog";
 import DialogCloseButton from "@/components/dialogs/DialogCloseButton";
 import {Button} from "@/components/ui/button";
 import React, {Dispatch, SetStateAction, useState} from "react";
-import {forgotPasswordDialogSchema} from "@/lib/types";
+import {forgotPasswordDialogSchema} from "@/lib/zod-schemas";
 
 const waitDuration = 60000;
 

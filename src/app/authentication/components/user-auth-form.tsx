@@ -4,14 +4,13 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import {useRouter} from "next/navigation";
-import useAuth from "@/hooks/use-auth";
 
 import React, { useState, ChangeEvent, FormEvent } from 'react';
 import { z } from 'zod';
 import {getSupabaseBrowserClient} from "@/lib/database";
 import FormModal from "@/components/dialogs/FormModal";
 import ForgotPasswordDialog from "@/components/dialogs/ForgotPasswordDialog";
-import {forgotPasswordDialogSchema, passwordFieldSchema} from "@/lib/types";
+import {forgotPasswordDialogSchema, LoginSchema} from "@/lib/zod-schemas";
 
 export type UserAuthFormProps = React.HTMLAttributes<HTMLDivElement>;
 
@@ -27,11 +26,6 @@ export default function UserAuthForm({ className, ...props }: UserAuthFormProps)
 
   const supabase = getSupabaseBrowserClient();
   const router = useRouter();
-  const LoginSchema = z.object({
-    email: z.string().email('Invalid email format'),
-    // todo admin setting up password restraints or sane defaults?
-    password: passwordFieldSchema,
-  });
 
   const [formData, setFormData] =
       useState({email: '', password: '',});

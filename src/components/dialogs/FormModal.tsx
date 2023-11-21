@@ -1,7 +1,5 @@
-'use client'
-
 import {Dialog, DialogContent, DialogHeader, DialogTitle} from "@/components/ui/dialog";
-import React, {createContext, Dispatch, ReactElement, ReactNode, SetStateAction, useContext, useState} from "react";
+import React, {createContext, Dispatch, ReactNode, SetStateAction, useContext} from "react";
 
 export interface FormModalProps {
   title: string

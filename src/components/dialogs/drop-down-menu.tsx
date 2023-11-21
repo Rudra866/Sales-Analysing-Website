@@ -1,3 +1,5 @@
+// rename or find somewhere for this
+
 import {Row} from "@tanstack/react-table";
 import React, {useState} from "react";
 import {
@@ -10,25 +12,24 @@ import {
 import {Button} from "@/components/ui/button";
 import {MoreHorizontal} from "lucide-react";
 import FormModal from "@/components/dialogs/FormModal";
-import {getSupabaseBrowserClient, Sale} from "@/lib/database";
-import {RowActionDialog} from "./RowActionDialog";
+import {Sale} from "@/lib/database";
+import {RowActionDialog} from "./row-action-dialog";
+import {errorToast} from "@/lib/toasts";
 type Props = {
     row: Row<Sale>
-    sales: Sale[]
-    setSales: (sales: Sale[]) => void
 }
 
 
-export function DropDownMenu({row, sales, setSales}: Props) {
-    const supabase = getSupabaseBrowserClient();
+export function DropDownMenu({row}: Props) {
     const [salesModal, setSalesModal] = useState(false);
 
-    function updateSales(sale: Sale) {
-        const originalSales = [...sales]
-        const updatedSales = originalSales
-            .map((oldSale) => oldSale.id === sale.id ? sale: oldSale)
-        setSales(updatedSales)
-    }
+    // TODO
+    // function updateSales(sale: Sale) {
+    //     const originalSales = [...sales]
+    //     const updatedSales = originalSales
+    //         .map((oldSale) => oldSale.id === sale.id ? sale: oldSale)
+    //     setSales(updatedSales)
+    // }
 
     return (
         <>
@@ -50,21 +51,24 @@ export function DropDownMenu({row, sales, setSales}: Props) {
                     </DropdownMenuItem>
                     <DropdownMenuSeparator/>
 
-                    <DropdownMenuItem onClick={() => {
-                        row.original.id && supabase.from('Sales').delete().eq('id', row.original.id).then(() => {
-                            const originalSales = [...sales]
-                            const updatedSales = originalSales.filter((oldSale) => oldSale.id !== row.original.id)
-                            setSales(updatedSales)
+                    <DropdownMenuItem onClick={async () => {
+                        const result = await fetch(`/api/sale/${row.original.id}`, {
+                            method: "DELETE",
                         })
-                    }}>
+                        const resultBody = await result.json();
+                        if (resultBody.error) {
+                            errorToast(resultBody.error);
+                        }
+                    }}
+                    >
                         Delete
                         <DropdownMenuShortcut>⌘⌫</DropdownMenuShortcut>
                     </DropdownMenuItem>
 
                 </DropdownMenuContent>
-            </DropdownMenu>
+            </DropdownMenu> {/* TODO  */}
             {salesModal &&
-                <FormModal title={"Sale"} showDialog={salesModal} setShowDialog={setSalesModal} onSubmit={updateSales}>
+                <FormModal title={"Sale"} showDialog={salesModal} setShowDialog={setSalesModal} onSubmit={(res) => console.log("sale patch:", res)}>
                     <RowActionDialog sale={row.original} />
                 </FormModal>
             }

@@ -1,5 +1,4 @@
 import { Icons } from "@/components/icons"
-import {z} from "zod";
 import { PostgrestError } from '@supabase/supabase-js'
 import {Employee} from "@/lib/database";
 import {
@@ -16,7 +15,7 @@ export type DbResultOk<T> = T extends PromiseLike<{ data: infer U }> ? Exclude<U
 export type DbResultErr = PostgrestError
 
 
-export interface NavItem {
+export interface MainNavItem {
     title: string
     href?: string
     disabled?: boolean
@@ -24,60 +23,6 @@ export interface NavItem {
     icon?: keyof typeof Icons
     label?: string
 }
-
-export interface NavItemWithChildren extends NavItem {
-    items: NavItemWithChildren[]
-}
-
-export interface MainNavItem extends NavItem {}
-
-export interface SidebarNavItem extends NavItemWithChildren {}
-
-export const existingEmployeeFormSchema = z.object({
-    EmployeeNumber:
-        z.string().min(1, {
-            message: "EmployeeNumber must not be empty."})
-            .max(255, {
-                message: "EmployeeNumber must be shorter than 255 characters."}),
-
-    Name:
-        z.string()
-            .min(1, {
-                message: "Employee Name must not be empty."})
-            .max(255, {
-                message: "Employee Name must be less than 255 characters."}),
-
-    email:
-        z.string()
-            .min(1, {
-                message: "Employee Email must not be empty."})
-            .max(320, {
-                message: "Employee Email must be less than 255 characters."})
-            .email({
-                message: "Employee Email must be a valid email address."}),
-
-    // password: z.string(),
-
-    Role:
-        z.string().refine(
-            (value) => {
-                return !isNaN(Number(value)) && Number(value) >= 1
-            }, {
-                message: "Invalid."
-            }
-        )
-})
-
-export const forgotPasswordDialogSchema = z.object({
-    email: z.string().min(1, "Email must not be empty")
-        .max(255, "Email exceeds maximum length")
-        .email("Only enter a valid email address")
-})
-
-// todo password restrictions?
-export const passwordFieldSchema = z.string().min(6)
-
-
 
 // unused
 /** @ignore */

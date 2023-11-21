@@ -2,11 +2,14 @@
 
 import React, {Suspense} from 'react';
 import {useEmployee} from "@/employee/employee-components/employee-provider";
-import CalendarDateRangePicker from "@/admin/dashboard/components/date-range-picker";
 import {Button} from "@/components/ui/button";
-import {DynamicChart} from "@/components/dynamic-chart";
-import TasksQuickView from "@/employee/employee-components/tasks-quick-view";
 import {getSalesCSV} from "@/lib/csv";
+import dynamic from "next/dynamic";
+
+const DynamicChart = dynamic(() => import(`@/components/dynamic-chart`))
+const TasksQuickView = dynamic(() => import('@/employee/employee-components/tasks-quick-view'));
+const CalendarDateRangePicker = dynamic(() => import(`@/components/date-range-picker`))
+
 
 // todo listing changing to daily breaks, doesn't render correctly.
 export default function EmployeePage() {

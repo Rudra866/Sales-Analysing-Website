@@ -1,9 +1,11 @@
 'use client'
 
 import React, {useEffect, useState} from 'react';
-import TaskTable from "@/components/tables/task-table";
 import {Employee, getAllEmployees, getSupabaseBrowserClient, Task} from "@/lib/database";
 import {errorToast} from "@/lib/toasts";
+import dynamic from "next/dynamic";
+
+const TaskTable = dynamic(() => import("@/components/tables/task-table"))
 
 // currently identical to AdminTasksPage...
 function EmployeeTasksPage() {
