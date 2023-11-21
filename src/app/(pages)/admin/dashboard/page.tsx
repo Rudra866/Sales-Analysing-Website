@@ -7,7 +7,6 @@ import {Overview} from "./components/overview"
 import {RecentSales} from "./components/recent-sales"
 import * as React from "react";
 import {useDashboard} from "./components/dashboard-provider";
-import {Sale} from "@/lib/database";
 import {DynamicChart} from "@/components/dynamic-chart";
 import SalesLineChart from "@/components/sales-line-chart";
 import SummaryCard, {CountCard} from "./components/summary-card";
@@ -49,7 +48,7 @@ export default function DashboardPage() {
                             </CardContent>
                         </Card>
                         <RecentSales/>
-                        <SalesLineChart data={data as Sale[]} date={date}/>
+                        <SalesLineChart/>
                         <DynamicChart
                             className="col-span-3"
                             data={data!}

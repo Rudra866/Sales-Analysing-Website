@@ -8,7 +8,7 @@ export const docsConfigAdmin: DocsConfig = {
     mainNav: [
         {
             title: "Dashboard",
-            href: "/admin/dashboard",
+            href: "/",
         },
         {
             title: "Sales",
@@ -43,7 +43,7 @@ export const docsConfig: DocsConfig = {
     mainNav: [
         {
             title: "Home",
-            href: "/employee",
+            href: "/",
         },
         {
             title: "Tasks",

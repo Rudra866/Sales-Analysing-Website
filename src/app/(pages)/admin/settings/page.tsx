@@ -1,15 +1,39 @@
 'use client'
 import { Separator } from "@/components/ui/separator"
-import { ProfileForm } from "./profile-form"
-import {CreateRoleDialog} from "@/components/dialogs/CreateRoleDialog";
-import FormModal from "@/components/dialogs/FormModal";
-import {useState} from "react";
-import EmployeeTable from "@/components/tables/EmployeeTable";
+import EmployeeTable from "@/components/tables/employee-table";
+import {useEffect, useState} from "react";
+import {Employee, getAllEmployees, getAllRoles, getSupabaseBrowserClient, Role} from "@/lib/database";
+import {errorToast} from "@/lib/toasts";
 
 
 
 
 export default function SettingsPage() {
+  const [loading, setLoading] = useState<boolean>(false)
+  const [employees, setEmployees] = useState<Employee[]>([])
+  const [roles, setRoles] = useState<Role[]>([])
+  const supabase
+      = getSupabaseBrowserClient();
+
+  useEffect(() => {
+    setLoading(true);
+    getAllEmployees(supabase)
+        .then(employees => setEmployees(employees))
+        .catch(err => {
+          errorToast("Failed to load Employees")
+          console.error(err);
+        });
+
+    getAllRoles(supabase)
+        .then(roles => setRoles(roles))
+        .catch(err => {
+          errorToast("Failed to load Roles")
+          console.error(err);
+        });
+
+    setLoading(false);
+  }, [supabase]);
+
   return (
     <div className="space-y-6 w-full">
       <div>
@@ -19,7 +43,7 @@ export default function SettingsPage() {
         </p>
       </div>
         <Separator />
-        <EmployeeTable />
+        <EmployeeTable data={employees} roles={roles} loading={loading}/>
     </div>
   )
 }

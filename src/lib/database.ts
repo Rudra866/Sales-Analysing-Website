@@ -9,6 +9,7 @@ import {getSupabaseRouteHandlerClient,
 // export type for docs
 import {PostgrestError} from "@supabase/postgrest-js";
 import {format} from "date-fns";
+import {SaleWithEmployeeAndFinancingType} from "@/lib/types";
 export type { PostgrestError };
 
 // export types from other files, so we can not have to import directly
@@ -505,14 +506,14 @@ export async function getAllMonthlySales(supabase: SupabaseClient): Promise<Mont
  * @throws {@link PostgrestError} on database error.
  * @group Database Functions
  */
-export async function getAllRoles(supabase: SupabaseClient): Promise<Role[] | null>
+export async function getAllRoles(supabase: SupabaseClient): Promise<Role[]>
 {
   const {data: roles, error} = await supabase
       .from('Roles')
       .select('*')
 
   if (error) throw error;
-  return roles;
+  return roles ?? [];
 }
 
 /**
@@ -974,6 +975,43 @@ export async function postToTradeIns(supabase: SupabaseClient, newTradeIn: Trade
   return tradeIn
 }
 
+// when called from a user access level, only returns sales for that user.
+export async function getSales(): Promise<Sale[]> {
+  const response = await fetch(`/api/sale`, { method: "GET" })
+  const responseBody = await response.json()
+
+  if (responseBody.error) throw responseBody.error;
+  return responseBody.data ?? [];
+}
+
+// when called from a user access level, only returns tasks for that user.
+export async function getTasks(): Promise<Task[]> {
+  const response = await fetch(`/api/task`, { method: "GET" })
+  const responseBody = await response.json()
+
+  if (responseBody.error) throw responseBody.error;
+  return responseBody.data ?? [];
+}
+
+// when called from a user access level, only returns tasks for that user.
+export async function getGoals(): Promise<SalesGoal[]> {
+  const response = await fetch(`/api/goal`, { method: "GET" })
+  const responseBody = await response.json()
+
+  if (responseBody.error) throw responseBody.error;
+  return responseBody.data ?? [];
+}
+
+// gets sales with Customer, TradeIn, Financier and Employee info expanded.
+export async function getFormattedSales() {
+  const salesRequest = await fetch(`/api/sale?type=formatted`, { method: "GET" })
+
+  const {data: sales, error}: { data: SaleWithEmployeeAndFinancingType[], error: PostgrestError } =
+    await salesRequest.json()
+  if (error) throw error;
+
+  return sales ?? [];
+}
 
 /** @ignore */
 export type Tables<T extends keyof Database['public']['Tables']> = Database['public']['Tables'][T]['Row'];

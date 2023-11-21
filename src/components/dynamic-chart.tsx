@@ -2,12 +2,12 @@
 
 import {Bar, BarChart, ResponsiveContainer, Tooltip, XAxis, YAxis} from "recharts"
 import React, {useEffect, useState} from "react";
-import {cn, groupSelectionByTimeFrame, numericSales} from "@/lib/utils";
+import {cn, groupSelectionByTimeFrame, numericSalesFields} from "@/lib/utils";
 import {DateRange} from "react-day-picker";
-import {format} from "date-fns";
 import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 import {Sale} from "@/lib/database";
+import {customTooltip} from "@/components/custom-tooltip";
 
 
 // todo - make this dynamic based on the data as well as dynamic depending on the data type
@@ -27,7 +27,6 @@ interface DynamicChartProps {
 export function DynamicChart({ title, color, data, date, className }: DynamicChartProps) {
     const [keyValues, setKeyValues] = useState<{ key: string; value: number }[]>();
     const [selectedCategory, setSelectedCategory] = useState("Total");
-    const [categories, setCategories] = useState<string[]>();
     const [grouping, setGrouping] = useState("MMM-yy");
 
     useEffect(() => {
@@ -39,39 +38,13 @@ export function DynamicChart({ title, color, data, date, className }: DynamicCha
                 }))
             );
         }
-    }, [data, date, grouping, selectedCategory, categories]);
-
-    // todo what's this for? no comments and broken when !data
-    // useEffect(() => {
-    //     const numericColumns = data.length > 0 && Object.keys(data[0]).filter((key) => {
-    //         // @ts-ignore
-    //         return typeof data[0][key] === "number" && key !== "id"
-    //     });
-    //     numericColumns && setCategories(numericColumns)
-    // }, [data]);
-
-    const customToolTip = (props: any) => {
-        try {
-            if (props.active && props.payload && props.payload.length) {
-                return (
-                    <div className="bg-muted p-4 rounded-md shadow-md">
-                        <p className="text-primary text-sm">{props.label}</p>
-                        <p className="text-primary text-sm">
-                            {`$${Number(props?.payload[0]?.value)?.toLocaleString()}`}
-                        </p>
-                    </div>
-                )
-            }
-        } catch (e) {
-            console.log(e)
-        } return null
-    }
+    }, [data, date, grouping, selectedCategory]);
 
     return (
         <Card className={cn("col-span-4", className)}>
             <CardHeader className={'flex flex-row justify-between gap-2'}>
                 <CardTitle className={'w-full self-center'}>{title}</CardTitle>
-                <Select defaultValue="MMM-yy" onValueChange={setGrouping}>
+                <Select defaultValue={grouping} onValueChange={setGrouping}>
                     <SelectTrigger id="area"  >
                         <SelectValue placeholder="Monthly" />
                     </SelectTrigger>
@@ -87,7 +60,7 @@ export function DynamicChart({ title, color, data, date, className }: DynamicCha
                         <SelectValue placeholder="Select"/>
                     </SelectTrigger>
                     <SelectContent>
-                        {numericSales?.map((cat, index) => {
+                        {numericSalesFields?.map((cat, index) => {
                             return (
                                 <SelectItem key={index} value={cat}>
                                     {cat}
@@ -122,7 +95,7 @@ export function DynamicChart({ title, color, data, date, className }: DynamicCha
                         />
                         <Bar dataKey="value" fill={color || "#adfa1d"} radius={[4, 4, 0, 0]}/>
                         <Tooltip
-                            content={customToolTip}
+                            content={customTooltip}
                             cursor={{fill: 'rgba(250,250,250,0.3)', radius: 4}}
                         />
                     </BarChart>

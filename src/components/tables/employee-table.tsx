@@ -6,16 +6,12 @@ import {
   SortingState,
   useReactTable,
 } from "@tanstack/react-table";
-import React, {useCallback, useEffect, useState} from "react";
+import React, {useState} from "react";
 import {Button} from "@/components/ui/button";
 import {
   Employee,
   Role,
-  getSupabaseBrowserClient,
-  Database,
-  SupabaseClient,
-  getAllEmployees,
-  getAllRoles, RoleInsert
+  RoleInsert
 } from "@/lib/database";
 import {MoreHorizontal, Plus} from "lucide-react";
 import {
@@ -28,22 +24,24 @@ import {
 import FormModal from "@/components/dialogs/FormModal";
 import {EmployeeSelectModalForm} from "@/components/dialogs/EmployeeSelectModalForm";
 import {RoleSelectModalForm} from "@/components/dialogs/RoleSelectModalForm";
-// import TableSortButton from "@/components/tables/table-sort-button";
-import DataTable, {TableFilter} from "@/components/tables/DataTable";
+import DataTable, {TableFilter} from "./data-table";
 import useAuth from "@/hooks/use-auth";
 import {CreateRoleDialog} from "@/components/dialogs/CreateRoleDialog";
-import {toast} from "@/components/ui/use-toast";
 import TableSortButton from "@/components/tables/table-sort-button";
+import {errorToast, successToast} from "@/lib/toasts";
+
+type DropDownMenuProps = {
+  row: Row<Employee>,
+  roles: Role[],
+}
+
+// need mechanism for table updates, either lazily reload all data or update in place with expected / returned value from call
 
 /**
  * Component to create a table to render all employees in the database.
  * @group React Components
  */
-export default function EmployeeTable() {
-  const [loading, setLoading] = useState(true);
-  const [employees, setEmployees] = useState<Employee[]>([]);
-  const [roles, setRoles] = useState<Role[]>([]);
-  const supabase: SupabaseClient<Database> = getSupabaseBrowserClient();
+export default function EmployeeTable({data, roles, loading}: {data: Employee[], roles: Role[], loading: boolean}) {
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
 
@@ -52,37 +50,68 @@ export default function EmployeeTable() {
   const [showEmployeeEditModal, setShowEmployeeEditModal] = useState(false); // this is a bit lazy, someone else can fix it if we have time
   const [showRoleModal, setShowRoleModal] = useState(false);
 
-  const {employee, role} = useAuth();
+  const {role} = useAuth();
 
-  useEffect(() => {
-    async function loadData() {
-      try {
-        setLoading(true);
-        setEmployees(await getAllEmployees(supabase) ?? [])
-        setRoles(await getAllRoles(supabase) ?? [])
-      } catch (error) {
-        console.error("Supabase error: ", error)
-        console.error("Failed to load employee or roles data.")
-      } finally {
-        setLoading(false)
-      }
+  // SEND request for employee creation
+  async function submitEmployeeInvite(data: any) {
+    const res = await fetch('/api/admin/employee/invite', {
+      method: "POST",
+      body: JSON.stringify(data),
+    })
+
+    if (res.ok) {
+      setShowEmployeeModal(false);
+      successToast(`Employee ${data.Name} was invited!`);
+    } else {
+      errorToast("Failed to invite employee.")
+      console.error((await res.json()))
     }
-
-    loadData()
-  }, [supabase]);
-
-  const updateEmployee = useCallback((employee: Employee) => {
-    const originalEmployees = [...employees]
-    const updatedEmployees = originalEmployees
-        .map((oldEmployee) =>
-            oldEmployee.id === employee.id ? employee: oldEmployee)
-    setEmployees(updatedEmployees)
-  }, [employees]);
-
-  type DropDownMenuProps = {
-    row: Row<Employee>,
-    roles: Role[],
   }
+
+  // SEND request for employee update
+  async function submitEmployeeUpdate(data: any) {
+    const res = await fetch('/api/admin/employee', {
+      method: "PATCH",
+      body: JSON.stringify(data),
+    })
+
+    if (res.ok) {
+      setShowEmployeeModal(false);
+      successToast(`Employee ${data.Name} was updated!`);
+    } else {
+      errorToast("Failed to update employee.")
+      console.error((await res.json()))
+    }
+  }
+
+  // SEND request for employee deletion
+  async function submitEmployeeDeletion(data: any) {
+    const res = await fetch('/api/admin/employee', {
+      method: "DELETE",
+      body: JSON.stringify(data),
+    })
+
+    if (res.ok) {
+      successToast(`Employee ${data.Name} was deleted!`);
+    } else {
+      errorToast("Failed to update employee.")
+      console.error((await res.json()))
+    }
+  }
+
+  async function submitNewRole(data: RoleInsert) {
+    const res = await fetch('/api/admin/role/', {
+      method: "POST",
+      body: JSON.stringify(data),
+    })
+    if (res.ok) {
+      setShowRoleModal(false);
+    } else {
+      errorToast("Failed to create new role.")
+      console.error((await res.json()))
+    }
+  }
+
   function DropDownMenu({row, roles}: DropDownMenuProps) {
     const employee = row.original;
     return (
@@ -97,70 +126,33 @@ export default function EmployeeTable() {
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
               <DropdownMenuSeparator/>
-                <DropdownMenuItem onClick={() => navigator.clipboard.writeText(employee?.EmployeeNumber ?? "")}>
-                  Copy Employee Number
-                </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => navigator.clipboard.writeText(employee?.EmployeeNumber ?? "")}>
+                Copy Employee Number
+              </DropdownMenuItem>
               {role?.EmployeePermission &&
-                <>
-                  <DropdownMenuItem onClick={() => setShowEmployeeEditModal(true)}>
-                    <span>Show Employee</span>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={()=> setShowEmployeeRoleModal(true)}>
-                    <span>Change Role</span>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={()=> submitEmployeeDeletion({id: employee?.id})}>
-                      <span>Delete Employee</span>
-                  </DropdownMenuItem>
-                </>
-            }
+                  <>
+                      <DropdownMenuItem onClick={() => setShowEmployeeEditModal(true)}>
+                          <span>Show Employee</span>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={()=> setShowEmployeeRoleModal(true)}>
+                          <span>Change Role</span>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={()=> submitEmployeeDeletion({id: employee?.id})}>
+                          <span>Delete Employee</span>
+                      </DropdownMenuItem>
+                  </>
+              }
             </DropdownMenuContent>
 
-          <FormModal title={"Employee"} onSubmit={submitEmployeeUpdate} showDialog={showEmployeeEditModal} setShowDialog={setShowEmployeeEditModal}>
-            <EmployeeSelectModalForm employee={employee}  roles={roles}/>
-          </FormModal>
-          <FormModal title={"Employee"} onSubmit={submitEmployeeUpdate} showDialog={showEmployeeRoleModal} setShowDialog={setShowEmployeeRoleModal}>
-            <RoleSelectModalForm employee={employee} roles={roles}/>
-          </FormModal>
+            <FormModal title={"Employee"} onSubmit={submitEmployeeUpdate} showDialog={showEmployeeEditModal} setShowDialog={setShowEmployeeEditModal}>
+              <EmployeeSelectModalForm employee={employee}  roles={roles}/>
+            </FormModal>
+            <FormModal title={"Employee"} onSubmit={submitEmployeeUpdate} showDialog={showEmployeeRoleModal} setShowDialog={setShowEmployeeRoleModal}>
+              <RoleSelectModalForm employee={employee} roles={roles}/>
+            </FormModal>
           </DropdownMenu>
         </>
     );
-  }
-
-  async function submitEmployeeInvite(data: any) {
-    await fetch('/api/admin/employee/invite', {
-      method: "POST",
-      body: JSON.stringify(data),
-    })
-  }
-
-  async function submitEmployeeUpdate(data: any) {
-    await fetch('/api/admin/employee', {
-      method: "PATCH",
-      body: JSON.stringify(data),
-    })
-  }
-
-  async function submitEmployeeDeletion(data: any) {
-    await fetch('/api/admin/employee', {
-      method: "DELETE",
-      body: JSON.stringify(data),
-    })
-  }
-
-  async function submitNewRole(data: RoleInsert) {
-    const res = await fetch('/api/admin/role/', {
-      method: "POST",
-      body: JSON.stringify(data),
-    })
-    if (res.status == 201) {
-      setShowRoleModal(false);
-    } else {
-      toast({
-        title: "Error!",
-        description: "Role was not created.",
-        variant: "destructive"
-      });
-    }
   }
 
   const columns: ColumnDef<Employee, any>[] = [
@@ -190,7 +182,7 @@ export default function EmployeeTable() {
   ]
 
   const table: import("@tanstack/table-core").Table<Employee> = useReactTable({
-    data: employees,
+    data,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),

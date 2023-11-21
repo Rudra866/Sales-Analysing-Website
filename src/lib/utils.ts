@@ -10,15 +10,7 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-
-export function isAdmin(role: number) {
-    const adminRoles = [1, 2, 3, 4, 5];
-    return adminRoles.includes(role);
-}
-
-
-
-export const numericSales = [
+export const numericSalesFields = [
     "ActualCashValue",
     "DealerCost",
     "FinAndInsurance",
@@ -119,7 +111,7 @@ export function groupSelectionByTimeFrame(data: (SaleWithIndex | null | undefine
             groupedData[monthYearKey] = {};
         }
 
-        numericSales.forEach((field) => {
+        numericSalesFields.forEach((field) => {
             if (!groupedData[monthYearKey][field]) {
                 groupedData[monthYearKey][field] = 0;
             }

@@ -25,7 +25,7 @@ export default function SettingsLayout({children}: SettingsLayoutProps) {
                     href: `/admin/training/${page.id}`,
                 }}))
         console.log('sidebar items', sideBarItems)
-    }, [referencePage])
+    }, [referencePage, sideBarItems])
 
     return (
         <ContainerLayout>

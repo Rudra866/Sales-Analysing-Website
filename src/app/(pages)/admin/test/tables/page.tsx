@@ -6,7 +6,7 @@ const SalesTable =
     dynamic(() => import('@/components/tables/sales-table'))
 
 const EmployeeTable =
-    dynamic(() => import('@/components/tables/EmployeeTable'))
+    dynamic(() => import('@/components/tables/employee-table'))
 
 const TasksTable =
     dynamic(() => import('@/components/tables/task-table'))
@@ -25,16 +25,20 @@ export default function TestTables() {
             <TabsTrigger value="other">Other</TabsTrigger>
           </TabsList>
           <TabsContent value="sales" className="p-2 overflow-clip rounded-[0.5rem] border bg-background shadow">
-            <SalesTable/>
+            <>No longer connected to database.</>
+            <SalesTable data={[]} loading={false} employees={[]}/>
           </TabsContent>
           <TabsContent value="employee" className="p-2 overflow-clip rounded-[0.5rem] border bg-background shadow">
-            <EmployeeTable/>
+            <>No longer connected to database.</>
+            <EmployeeTable data={[]} roles={[]} loading={false}/>
           </TabsContent>
           <TabsContent value="tasks" className="p-2 overflow-clip rounded-[0.5rem] border bg-background shadow">
-            <TasksTable/>
+            <>No longer connected to database.</>
+            <TasksTable data={[]} employees={[]} loading={false}/>
           </TabsContent>
           <TabsContent value="saleGoals" className="p-2 overflow-clip rounded-[0.5rem] border bg-background shadow">
-            <SalesGoalsTable/>
+            <>No longer connected to database.</>
+            <SalesGoalsTable data={[]} employees={[]} loading={false} monthlySales={[]}/>
           </TabsContent>
           <TabsContent value="other">
             <p>Nothing here yet.. how about you go make one?</p>

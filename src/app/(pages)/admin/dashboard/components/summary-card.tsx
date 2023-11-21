@@ -3,7 +3,7 @@
 import React, {useEffect, useState} from 'react';
 import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
 import {Car} from "lucide-react";
-import {cn, numericSales} from "@/lib/utils";
+import {cn, numericSalesFields} from "@/lib/utils";
 import {format} from "date-fns";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 import {useDashboard} from "./dashboard-provider";
@@ -45,7 +45,7 @@ export default function SummaryCard({defaultCategory = "Total"}) {
                                 <SelectValue placeholder="Select" className={'text-sm font-medium'}/>
                             </SelectTrigger>
                             <SelectContent>
-                                {numericSales?.map((cat, index) => {
+                                {numericSalesFields?.map((cat, index) => {
                                     return (
                                         <SelectItem key={index} value={cat}>
                                             {cat}

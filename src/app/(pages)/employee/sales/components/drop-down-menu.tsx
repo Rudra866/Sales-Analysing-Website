@@ -10,25 +10,24 @@ import {
 import {Button} from "@/components/ui/button";
 import {MoreHorizontal} from "lucide-react";
 import FormModal from "@/components/dialogs/FormModal";
-import {getSupabaseBrowserClient, Sale} from "@/lib/database";
+import {Sale} from "@/lib/database";
 import {RowActionDialog} from "./RowActionDialog";
-import {toast} from "@/components/ui/use-toast";
+import {errorToast} from "@/lib/toasts";
 type Props = {
     row: Row<Sale>
-    sales: Sale[]
-    setSales: (sales: Sale[]) => void
 }
 
 
-export function DropDownMenu({row, sales, setSales}: Props) {
+export function DropDownMenu({row}: Props) {
     const [salesModal, setSalesModal] = useState(false);
 
-    function updateSales(sale: Sale) {
-        const originalSales = [...sales]
-        const updatedSales = originalSales
-            .map((oldSale) => oldSale.id === sale.id ? sale: oldSale)
-        setSales(updatedSales)
-    }
+    // TODO
+    // function updateSales(sale: Sale) {
+    //     const originalSales = [...sales]
+    //     const updatedSales = originalSales
+    //         .map((oldSale) => oldSale.id === sale.id ? sale: oldSale)
+    //     setSales(updatedSales)
+    // }
 
     return (
         <>
@@ -56,20 +55,18 @@ export function DropDownMenu({row, sales, setSales}: Props) {
                         })
                         const resultBody = await result.json();
                         if (resultBody.error) {
-                            toast({
-                                title: "Error",
-                                description: resultBody.error
-                            })
+                            errorToast(resultBody.error);
                         }
-                    }}>
+                    }}
+                    >
                         Delete
                         <DropdownMenuShortcut>⌘⌫</DropdownMenuShortcut>
                     </DropdownMenuItem>
 
                 </DropdownMenuContent>
-            </DropdownMenu>
+            </DropdownMenu> {/* TODO  */}
             {salesModal &&
-                <FormModal title={"Sale"} showDialog={salesModal} setShowDialog={setSalesModal} onSubmit={updateSales}>
+                <FormModal title={"Sale"} showDialog={salesModal} setShowDialog={setSalesModal} onSubmit={(res) => console.log("sale patch:", res)}>
                     <RowActionDialog sale={row.original} />
                 </FormModal>
             }

@@ -1,5 +1,5 @@
-import DataTable, {DataTableProps} from "@/components/tables/DataTable"
-import EmployeeTable from "@/components/tables/EmployeeTable"
+import DataTable, {DataTableProps} from "@/components/tables/data-table"
+import EmployeeTable from "@/components/tables/employee-table"
 import {Meta, StoryObj} from "@storybook/react";
 import React from "react";
 
@@ -8,7 +8,7 @@ import {Employee} from "@/lib/database";
 export default {
   title: 'Tables/Employee Table',
   component: DataTable,
-  render: () => <EmployeeTable/>,
+  render: () => <EmployeeTable data={[]} loading={false} roles={[]}/>,
   args: {
     loading: true
   },

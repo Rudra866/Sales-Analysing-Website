@@ -12,6 +12,11 @@ export interface DataTableProps<TData> {
   loading: boolean
 }
 
+export type DataTableChildProps<TData> = {
+  data: TData[],
+  loading: boolean
+}
+
 export const tablePageSizes = [10, 25, 50, 100, 250, 1000]
 
 // todo need to refactor the way this works, I don't like it.
@@ -48,15 +53,11 @@ export default function DataTable<TData>({table, loading, children}:
                 ))}
               </TableHeader>
               <TableBody>
-                {!loading && table.getRowModel().rows?.length ? (
+                {!loading ? (
                     table.getRowModel().rows.map((row) => (
                         <TableRow
-                            // className={'cursor-pointer'}
                             key={row.id}
                             data-state={row.getIsSelected() && "selected"}
-                            // onClick={() => {
-                            //   console.log('row clicked', row.original) // todo might do something cool with this?
-                            // }}
                         >
                           {row.getVisibleCells().map((cell) => (
                               <TableCell key={cell.id}>
@@ -68,7 +69,6 @@ export default function DataTable<TData>({table, loading, children}:
                 ) : (
                     <TableRow>
                       <TableCell colSpan={columns.length} className="h-24 text-center">
-                        {/* Todo */}
                         <div className="flex items-center justify-center h-24">
                           <div className="flex items-center space-x-2">
                             <div className="w-4 h-4 bg-accent rounded-full animate-bounce"/>

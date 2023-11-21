@@ -7,7 +7,7 @@ import {
     Sale,
     Task,
     getReferencePages,
-    getSupabaseBrowserClient,
+    getSupabaseBrowserClient, getTasks, getSales,
 } from "@/lib/database";
 import {DateRange} from "react-day-picker";
 import useAuth from "@/hooks/use-auth";
@@ -44,34 +44,20 @@ export const EmployeeProvider: React.FC<EmployeeProviderProps> = ({children}) =>
         from: subDays(new Date(), 120),
         to: new Date(),
     })
-    const [tasks, setTasks] = useState<Task[]>();
+    const [allTasks, setAllTasks] = useState<Task[]>([]);
+    const [allSales, setAllSales] = useState<Sale[]>([]);
+    const [tasks, setTasks] = useState<Task[]>([]);
     const [sales, setSales] = useState<Sale[]>();
     const [referencePage, setReferencePage] = useState<ReferencePage[]>()
     const {employee} = useAuth()
 
-    // when called from a user access level, only returns sales for that user.
-    async function getSales(): Promise<Sale[]> {
-        const response = await fetch(`/api/sale`, { method: "GET" })
-        const responseBody = await response.json()
 
-        if (responseBody.error) throw responseBody.error;
-        return responseBody.data;
-    }
-
-    // when called from a user access level, only returns tasks for that user.
-    async function getTasks(): Promise<Task[]> {
-        const response = await fetch(`/api/task`, { method: "GET" })
-        const responseBody = await response.json()
-
-        if (responseBody.error) throw responseBody.error;
-        return responseBody.data;
-    }
-
+    // get data on initial load
     useEffect(() => {
         if (!employee) return // if there's no employee, the page is broken already anyway.
         getTasks()
             .then((res) => {
-                setTasks(res as Task[])
+                setAllTasks(res as Task[])
             })
             .catch(e => {
                 errorToast("Failed to load tasks.")
@@ -79,7 +65,7 @@ export const EmployeeProvider: React.FC<EmployeeProviderProps> = ({children}) =>
             })
         getSales()
             .then((res) => {
-                setSales(res)
+                setAllSales(res)
             })
             .catch(e => {
                 errorToast("Failed to load sales.")
@@ -96,9 +82,9 @@ export const EmployeeProvider: React.FC<EmployeeProviderProps> = ({children}) =>
     }, [employee])
 
     useEffect(() => {
-        setSales(sales => filterSalesByDate(date, sales))
-        setTasks(tasks => filterTasksByStartDate(tasks, date))
-    }, [date])
+        setSales(filterSalesByDate(date, allSales))
+        setTasks(filterTasksByStartDate(allTasks, date))
+    }, [allSales, allTasks, date])
 
     return (
         <EmployeeContext.Provider value={{tasks, sales, date, setDate, employee, referencePage}}>

@@ -8,67 +8,35 @@ import {
     SortingState,
     useReactTable
 } from "@tanstack/react-table";
-import React, {useEffect, useState} from "react";
+import React, {useState} from "react";
 import {Button} from "@/components/ui/button";
-import {Employee, Tables, Sale, getSupabaseBrowserClient, SaleInsert} from "@/lib/database";
+import {Employee, Sale, SaleInsert} from "@/lib/database";
 import {Plus} from "lucide-react";
 import {Badge} from "@/components/ui/badge";
 import {DropDownMenu} from "@/employee/sales/components/drop-down-menu";
 import {format} from "date-fns";
 import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger} from "@/components/ui/tooltip";
-import DataTable, {TableFilter} from "@/components/tables/DataTable";
+import DataTable, {DataTableChildProps, TableFilter} from "@/components/tables/data-table";
 import {RowActionDialog} from "@/employee/sales/components/RowActionDialog";
 import FormModal from "@/components/dialogs/FormModal";
 import useAuth from "@/hooks/use-auth";
 import TableSortButton from "@/components/tables/table-sort-button";
 
+
+export type SalesTableProps = DataTableChildProps<Sale> & {
+    employees: Employee[]
+}
+
 /**
  * Component used to render sales page table at `/sales`
  * @group React Components
  */
-export default function SalesTable() {
-    const [loading, setLoading] = useState(true);
-    const [sales, setSales] = useState<Sale[]>([]);
-    const [employees, setEmployees] = useState<Employee[]>([]);
+export default function SalesTable({data, employees, loading}: SalesTableProps) {
     const [sorting, setSorting] = useState<SortingState>([])
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
     const [showSaleDialog, setShowSaleDialog] = useState<boolean>(false)
-    const supabase = getSupabaseBrowserClient();
 
     const {employee} = useAuth();
-    useEffect(() => {
-        function fetchEmployees() {
-            return supabase.from('Employees').select()
-        }
-
-        async function fetchSales() {
-            const res = await fetch(`/api/sale`, {
-                method: "GET"
-            })
-            return res.json();
-        }
-
-        async function loadData() {
-            try {
-                setLoading(true);
-                const {data: employees, error: employeeError} = await fetchEmployees();
-                const {data: sales, error: salesError} = await fetchSales();
-
-                if (salesError || employeeError) {
-                    console.error("Supabase error: ", (salesError ?? employeeError));
-                    throw new Error("Failed to load sales or employees data.");
-                }
-                setSales(sales);
-                setEmployees(employees);
-            } catch (error) {
-                console.error(error);
-            } finally {
-                setLoading(false);
-            }
-        }
-
-        loadData().then(() => setLoading(false));
-    }, [supabase]);
 
     function tooltip(cell: string) {
         return (
@@ -89,6 +57,7 @@ export default function SalesTable() {
     }
 
 
+    // POST new sale to db
     async function onSubmit(data: SaleInsert) {
         data["EmployeeID"] = employee!.id;      // set current user to be the seller
         data["Total"] =                         // set total based on fields input
@@ -98,6 +67,7 @@ export default function SalesTable() {
         if (data.ROI) {
             data.ROI = data.ROI / 100           // convert ROI to decimal.
         }
+
         await fetch(`http://localhost:3000/api/sale`, {
             method: "POST",
             headers: {
@@ -107,7 +77,7 @@ export default function SalesTable() {
         })
     }
 
-    const columns: ColumnDef<Tables<'Sales'>, Employee>[] = [
+    const columns: ColumnDef<Sale, Employee>[] = [
         {
             accessorKey: "SaleTime",
             header: ({column}) => <TableSortButton column={column}/>,
@@ -128,7 +98,8 @@ export default function SalesTable() {
                     <div className="flex space-x-2 ml-1">
                         <Badge variant="outline">
                             <span className="max-w-[200px] truncate font-medium">
-                                {tooltip(employees.find((employee) => employee.id === row.original.EmployeeID)?.Name || 'Employee Name')}
+                                {tooltip(employees.find((employee) =>
+                                    employee.id === row.original.EmployeeID)?.Name || 'Employee Name')}
                             </span>
                         </Badge>
                     </div>
@@ -171,12 +142,12 @@ export default function SalesTable() {
         },
         {
             id: "actions",
-            cell: ({row}) => DropDownMenu({row, sales, setSales}),
+            cell: ({row}) => DropDownMenu({row}),
         },
     ]
 
     const table = useReactTable({
-        data: sales,
+        data,
         columns,
         getCoreRowModel: getCoreRowModel(),
         onSortingChange: setSorting,

@@ -1,39 +1,25 @@
 'use client'
 
 import {
-    Column,
     ColumnDef,
-    ColumnFiltersState, flexRender,
+    ColumnFiltersState,
     getCoreRowModel, getFilteredRowModel,
     getPaginationRowModel, getSortedRowModel,
     SortingState,
     useReactTable
 } from "@tanstack/react-table";
-import React, {useEffect, useState} from "react";
-import {Input} from "@/components/ui/input";
+import React, {useState} from "react";
 import {Button} from "@/components/ui/button";
-import {Checkbox} from "@/components/ui/checkbox";
 import {
     Employee,
-    Tables,
-    Sale,
-    getSupabaseBrowserClient,
     Task,
-    getAllTasks,
     TaskInsert,
-    getAllEmployees
 } from "@/lib/database";
-import {ArrowUpDown, MoreHorizontal, Plus} from "lucide-react";
-import {Badge} from "@/components/ui/badge";
-import {DropDownMenu} from "@/employee/sales/components/drop-down-menu";
+import {MoreHorizontal, Plus} from "lucide-react";
 import {format} from "date-fns";
-import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger} from "@/components/ui/tooltip";
-import {DbResult} from "@/lib/types";
-import DataTable, {TableFilter} from "@/components/tables/DataTable";
-import {RowActionDialog} from "@/employee/sales/components/RowActionDialog";
+import DataTable, {DataTableChildProps, TableFilter} from "@/components/tables/data-table";
 import FormModal from "@/components/dialogs/FormModal";
 import TableSortButton from "@/components/tables/table-sort-button";
-import {toast} from "@/components/ui/use-toast";
 import {
     CheckCircledIcon,
     CircleIcon,
@@ -41,24 +27,21 @@ import {
     QuestionMarkCircledIcon,
     StopwatchIcon
 } from "@radix-ui/react-icons";
-import useAuth from "@/hooks/use-auth";
 import {TaskCreateDialog} from "@/components/dialogs/TaskCreateDialog";
 import tableTooltip from "@/components/table-tooltip";
 
-// todo align rows and columns
+type TaskTableProps = DataTableChildProps<Task> & {
+    employees: Employee[]
+}
 
 /**
- * Component used to render sales page table at `/sales`
+ * Component used to render tasks table
  * @group React Components
  */
-export default function TaskTable() {
-    const [loading, setLoading] = useState(true);
+export default function TaskTable({data, employees, loading}: TaskTableProps) {
     const [sorting, setSorting] = useState<SortingState>([])
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
-    const [tasks, setTasks] = useState<Task[]>([])
-    const supabase = getSupabaseBrowserClient();
     const [showTaskCreateModal, setShowTaskCreateModal] = useState<boolean>(false)
-    const [employees, setEmployees] = useState<Employee[]>([])
     const [task, setTask] = useState<Task | undefined>(undefined)
     const statuses = [
         {
@@ -94,27 +77,6 @@ export default function TaskTable() {
             body: JSON.stringify(data)
         })
     }
-
-
-    useEffect(() => {
-        async function getTasks() {
-            try {
-                const taskResponse = await fetch("/api/task", {method: "GET"})
-                const tasks = (await taskResponse.json()).data;
-                const employees = await getAllEmployees(supabase);
-                setTasks(tasks);
-                setEmployees(employees);
-                setLoading(false);
-            } catch (e) {
-                toast({
-                    title: "Error!",
-                    description: "Failed to load Tasks!"
-                })
-            }
-        }
-
-        getTasks()
-    }, [supabase]);
 
     const columns: ColumnDef<Task>[] = [
         {
@@ -200,7 +162,7 @@ export default function TaskTable() {
     ]
 
     const table = useReactTable({
-        data: tasks,
+        data,
         columns,
         getCoreRowModel: getCoreRowModel(),
         onSortingChange: setSorting,
@@ -220,13 +182,12 @@ export default function TaskTable() {
     return (
         <DataTable table={table} loading={loading}>
             <TableFilter table={table} initial={"Name"} placeholder={"Filter tasks..."}/>
-
             <div className="flex items-center space-x-2 w-full">
                 <Button
                     size="sm"
                     variant="outline"
                     className="ml-auto hidden h-8 lg:flex"
-                    onClick={() => setShowTaskCreateModal(true)} // todo post
+                    onClick={() => setShowTaskCreateModal(true)}
                 >
                     <Plus className="mr-2 h-4 w-4"/>
                     Create Task
