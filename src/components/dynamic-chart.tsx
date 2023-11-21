@@ -20,10 +20,6 @@ interface DynamicChartProps {
     className?: string
 }
 
-// TODO - On hover tooltip it should display more relevant information such as a list of cars that the bar is summing, average ROI, etc..
-//  However this would require a complex data structure.
-
-
 export function DynamicChart({ title, color, data, date, className }: DynamicChartProps) {
     const [keyValues, setKeyValues] = useState<{ key: string; value: number }[]>();
     const [selectedCategory, setSelectedCategory] = useState("Total");
@@ -31,24 +27,21 @@ export function DynamicChart({ title, color, data, date, className }: DynamicCha
     const [grouping, setGrouping] = useState("MMM-yy");
 
     useEffect(() => {
-        console.log(selectedCategory, data)
-        if (selectedCategory) {
-            setKeyValues(
-                Object.entries(groupSelectionByTimeFrame(data, grouping)).map(([key, value]) => ({
-                    key,
-                    value: value[selectedCategory],
-                }))
-            );
+        try {
+            if (selectedCategory) {
+                setKeyValues(
+                    Object.entries(groupSelectionByTimeFrame(data, grouping)).map(([key, value]) => ({
+                        key,
+                        value: value[selectedCategory],
+                    }))
+                );
+            }
         }
-    }, [data, date, grouping, selectedCategory, categories]);
+        catch (e) {
+            console.log(e)
+        }
 
-    useEffect(() => {
-        const numericColumns = data.length > 0 && Object.keys(data[0]).filter((key) => {
-            // @ts-ignore
-            return typeof data[0][key] === "number" && key !== "id"
-        });
-        numericColumns && setCategories(numericColumns)
-    }, [data]);
+    }, [data, date, grouping, selectedCategory, categories]);
 
     const customToolTip = (props: any) => {
         try {

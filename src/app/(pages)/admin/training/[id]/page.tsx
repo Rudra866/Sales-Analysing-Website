@@ -111,8 +111,8 @@ function Page(props: any) {
                 </div> :
                 <div className="space-y-6">
                     <p className="text-sm text-muted-foreground">{page?.pagebody}</p>
-                    <Separator />
-                    <p className="text-sm text-muted-foreground">{page?.pagebody}</p>
+                    {/*<Separator />*/}
+                    {/*<p className="text-sm text-muted-foreground">{page?.pagebody}</p>*/}
                 </div>
             }
 

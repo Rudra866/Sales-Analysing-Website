@@ -3,7 +3,7 @@
 import {Bar, BarChart, ResponsiveContainer, Tooltip, XAxis, YAxis} from "recharts"
 import {useDashboard} from "./dashboard-provider";
 import {useEffect, useState} from "react";
-import {groupByMonth, groupByTimeFrame} from "@/lib/utils";
+import {groupByTimeFrame} from "@/lib/utils";
 
 export function Overview() {
 

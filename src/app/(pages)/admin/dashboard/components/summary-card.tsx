@@ -3,8 +3,8 @@
 import React, {useEffect, useState} from 'react';
 import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
 import {Car} from "lucide-react";
-import {cn, numericSales} from "@/lib/utils";
-import {format} from "date-fns";
+import {cn, groupByMonth, monthlyAverage, numericSales} from "@/lib/utils";
+import {addDays, format} from "date-fns";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 import {useDashboard} from "./dashboard-provider";
 
@@ -16,12 +16,11 @@ function counter(arr: string[]) {
     }, {} as { [key: string]: number });
 }
 
-
-
 export default function SummaryCard({defaultCategory = "Total"}) {
     const {date , data } = useDashboard()
     const [selectedCategory, setSelectedCategory] = React.useState(defaultCategory);
     const [cardData, setCardData] = React.useState<number>(0);
+    const [average, setAverage] = React.useState<number>(0);
 
     useEffect(() => {
         // sum product of selected category in the data
@@ -33,6 +32,22 @@ export default function SummaryCard({defaultCategory = "Total"}) {
         else setCardData(sum ?? 0)
 
     }, [data, date, selectedCategory]);
+
+
+
+    //  todo this shit is very buggy. need to revisit this.
+    useEffect(() => {
+        const thisMonth = format(new Date(date?.to || new Date()), 'MMM-yy')
+        const lastMonth = format(new Date(date?.from || new Date()), 'MMM-yy')
+        const previousMonth = format(addDays(new Date(), -Number(30)), 'MMM-yy')
+        const e = data && monthlyAverage(data, selectedCategory)
+        console.log(e, selectedCategory, e && e[thisMonth])
+
+        setAverage(e && e[thisMonth] ? e[lastMonth] : 0)
+
+
+    }, [selectedCategory , data, date])
+
 
 
     return (
@@ -54,7 +69,6 @@ export default function SummaryCard({defaultCategory = "Total"}) {
                                 })}
                             </SelectContent>
                         </Select>
-                        {/*<DollarSign className="h-4 w-4 text-muted-foreground"/>*/}
                     </CardHeader>
                     <CardContent>
                         {selectedCategory === "ROI" &&
@@ -65,7 +79,7 @@ export default function SummaryCard({defaultCategory = "Total"}) {
                         }
 
                         <p className="text-xs text-muted-foreground">
-                            <span className={cn('text-[#adfa1d]')}>+20.1% </span>
+                            <span className={cn('text-[#adfa1d]')}>+{average}% </span>
                             from last
                             <span>
                             {" "}{format(new Date(date?.from || new Date()), 'yyyy-MM-dd')}
@@ -117,7 +131,7 @@ export function CountCard() {
                 <CardContent>
                     <div className="text-xl font-bold truncate">{mostSoldVehicle?.vehicle}</div>
                     <p className="text-xs text-muted-foreground">
-                        <span className={cn('text-[#adfa1d]')}>{mostSoldVehicle?.count} total vehicles</span>
+                        <span className={cn('text-[#adfa1d] font-bold')}>{mostSoldVehicle?.count} total vehicles</span>
                         <span>
                             {" "}{format(new Date(date?.from || new Date()), 'MMM-dd-yyyy')}
                         </span>

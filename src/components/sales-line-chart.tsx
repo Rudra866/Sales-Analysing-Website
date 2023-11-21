@@ -12,6 +12,7 @@ import {Sale} from "@/lib/database";
 import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
 import {format} from "date-fns";
 import {useDashboard} from "@/admin/dashboard/components/dashboard-provider";
+import {useTheme} from "next-themes";
 
 
 const numericSales = [
@@ -77,7 +78,9 @@ type ChartDataType = {
 
 export default function SalesLineChart({data, date, className}: SalesLineChartProps) {
     const [chartData, setChartData] = useState<ChartDataType[]>();
-    const lineColors = ["#ffffff", "#adfa1d"]
+    const {theme} = useTheme();
+
+    const lineColors = [ theme ==='dark' ? "#ffffff" : "#888", "#adfa1d"]
     const color1 = `text-[${lineColors[0]}]`
     const color2 = `text-[${lineColors[1]}]`
     const {salesGoal} = useDashboard();
