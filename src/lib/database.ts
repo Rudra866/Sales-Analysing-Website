@@ -9,6 +9,7 @@ import {getSupabaseRouteHandlerClient,
 // export type for docs
 import {PostgrestError} from "@supabase/postgrest-js";
 import {format} from "date-fns";
+import {SaleWithEmployeeAndFinancingType} from "@/lib/types";
 export type { PostgrestError };
 
 // export types from other files, so we can not have to import directly
@@ -119,6 +120,30 @@ export async function getEmployee(supabase: SupabaseClient, employeeNumber: stri
   if (error) throw error;
   return employee;
 }
+
+export async function getReferencePages(supabase: SupabaseClient): Promise<ReferencePage[]>{
+  let { data: ReferencePages, error } = await supabase
+      .from('ReferencePages')
+      .select('*')
+
+  if (error) throw error;
+  return ReferencePages ?? [];
+}
+
+
+
+export async function getReferencePagesById(supabase: SupabaseClient, id: string){
+  let { data: ReferencePages, error } = await supabase
+      .from('ReferencePages')
+      .select('*')
+      .eq('id', id)
+      .maybeSingle();
+
+  if (error) throw error;
+  return ReferencePages;
+}
+
+
 
 export async function getEmployeeById(supabase: SupabaseClient, employeeID: string): Promise<Employee| null> {
   const {data: employee, error} = await supabase
@@ -300,6 +325,9 @@ export async function getTask(supabase: SupabaseClient, taskName: string): Promi
   return task;
 }
 
+
+
+
 // is there much point to this one? There may be multiple duplicates, and our sales record holds an id.
 // we probably want to return multiple if we have?
 /**
@@ -361,6 +389,47 @@ export async function getRoleFromEmployee(supabase: SupabaseClient, employee: Em
   return role;
 }
 
+export async function getAllTasksByAssignee(supabase: SupabaseClient, assigneeID: string): Promise<Task[]> {
+  const {data: task, error} = await supabase
+      .from('Tasks')
+      .select('*')
+      .eq('Assignee', assigneeID)
+
+  if (error) throw error;
+  return task;
+}
+
+export async function getAllTasksByCreator(supabase: SupabaseClient, creatorID: string): Promise<Task[]> {
+  const {data: task, error} = await supabase
+      .from('Tasks')
+      .select('*')
+      .eq('Creator', creatorID)
+
+  if (error) throw error;
+  return task;
+}
+
+/**
+ * Get all rows in the tasks table.
+ * @param {SupabaseClient} supabase Any type of Supabase client (client, server, middleware, route).
+ * @returns {Promise<Task[] | null>} A list of all tasks, or null if none exist.
+ * @throws {@link PostgrestError} on database error.
+ * @group Database Functions
+ */
+export async function getAllTasks(supabase: SupabaseClient): Promise<Task[]>
+{
+  const {data: tasks, error} = await supabase
+      .from('Tasks')
+      .select(`
+        Creator (
+          Name
+        ), *
+      `)
+
+  if (error) throw error;
+  return tasks;
+}
+
 /**
  * Get all the rows of the customers table.
  * @param {SupabaseClient} supabase Any type of Supabase client (client, server, middleware, route).
@@ -385,7 +454,7 @@ export async function getAllCustomers(supabase: SupabaseClient): Promise<Custome
  * @throws {@link PostgrestError} on database error.
  * @group Database Functions
  */
-export async function getAllEmployees(supabase: SupabaseClient): Promise<Employee[] | null>
+export async function getAllEmployees(supabase: SupabaseClient): Promise<Employee[]>
 // todo this function might be a bad idea because it's returning all employee passwords?
 {
   const {data: employees, error} = await supabase
@@ -420,7 +489,7 @@ export async function getAllFinancingOptions(supabase: SupabaseClient): Promise<
  * @throws {@link PostgrestError} on database error.
  * @group Database Functions
  */
-export async function getAllMonthlySales(supabase: SupabaseClient): Promise<MonthlySale[] | null>
+export async function getAllMonthlySales(supabase: SupabaseClient): Promise<MonthlySale[]>
 {
   const {data: monthlySales, error} = await supabase
       .from('MonthlySales')
@@ -437,14 +506,14 @@ export async function getAllMonthlySales(supabase: SupabaseClient): Promise<Mont
  * @throws {@link PostgrestError} on database error.
  * @group Database Functions
  */
-export async function getAllRoles(supabase: SupabaseClient): Promise<Role[] | null>
+export async function getAllRoles(supabase: SupabaseClient): Promise<Role[]>
 {
   const {data: roles, error} = await supabase
       .from('Roles')
       .select('*')
 
   if (error) throw error;
-  return roles;
+  return roles ?? [];
 }
 
 /**
@@ -496,22 +565,7 @@ export async function getAllSalesGoals(supabase: SupabaseClient): Promise<SalesG
   return salesGoals;
 }
 
-/**
- * Get all rows in the tasks table.
- * @param {SupabaseClient} supabase Any type of Supabase client (client, server, middleware, route).
- * @returns {Promise<Task[] | null>} A list of all tasks, or null if none exist.
- * @throws {@link PostgrestError} on database error.
- * @group Database Functions
- */
-export async function getAllTasks(supabase: SupabaseClient): Promise<Task[] | null>
-{
-  const {data: tasks, error} = await supabase
-      .from('Tasks')
-      .select('*')
 
-  if (error) throw error;
-  return tasks;
-}
 
 /**
  * Get all rows in the TradeIns table.
@@ -572,6 +626,32 @@ export async function getSalesInDateRange(supabase: SupabaseClient, startDate?: 
   if (error) throw error;
   return SaleTime;
 }
+
+export async function getSalesForEmployeeInDateRange(supabase: SupabaseClient, employeeID: string, startDate?: Date, endDate?: Date, sort?: "asc" | "dsc"){
+  const { data: SaleTime, error } = await supabase
+        .from('Sales')
+        .select('SaleTime, Total')
+        .order('SaleTime', { ascending: sort != "dsc" })
+        .filter('SaleTime', 'gte', format(startDate || new Date(), 'yyyy-MM-dd'))
+        .filter('SaleTime', 'lte', format(endDate || new Date(), 'yyyy-MM-dd'))
+        .filter('EmployeeID', 'eq', employeeID)
+
+    if (error) throw error;
+    return SaleTime;
+}
+
+
+export async function getSalesForEmployee(supabase: SupabaseClient, employeeID: string, sort?: "asc" | "dsc"){
+  const { data: SaleTime, error } = await supabase
+      .from('Sales')
+      .select('*')
+      .order('SaleTime', { ascending: sort != "dsc" })
+      .filter('EmployeeID', 'eq', employeeID)
+  if (error) throw error;
+  return SaleTime;
+}
+
+
 
 // leaving this one for now, but we should make our forms use interactive components, and this will let us get the
 // ids from those. EX. see src/app/(pages)/admin/employees/components/EmployeeSelectModalForm.tsx
@@ -783,6 +863,31 @@ export async function postToFinancing(supabase: SupabaseClient, newFinancier: Fi
   if (error) throw error;
   return financier;
 }
+export async function postToReferencePages(supabase: SupabaseClient, newPage: ReferencePageInsert): Promise<ReferencePage> {
+  const {data: ref, error} = await supabase
+      .from('ReferencePages')
+      .insert(newPage)
+      .select()
+      .limit(1)
+      .single();
+
+  if (error) throw error;
+  return ref;
+}
+
+export async function updateToReferencePages(supabase: SupabaseClient, newPage: ReferencePageInsert): Promise<ReferencePage> {
+  const {data: ref, error} = await supabase
+      .from('ReferencePages')
+      .update(newPage)
+      .select()
+      .limit(1)
+      .single();
+
+  if (error) throw error;
+  return ref;
+}
+
+
 
 /**
  * Posts a new row into the MonthlySales table
@@ -839,33 +944,6 @@ export async function postToNotifications(supabase: SupabaseClient, newNotificat
  */
 export async function postToTasks(supabase: SupabaseClient, newTask: TaskInsert): Promise<Task>
 {
-  if (!newTask.Creator) throw new Error("New tasks need a creator!"); // temp until db update
-  const employeeResp = await supabase
-      .from('Employees')
-      .select()
-      .eq('id', newTask.Creator)
-      .limit(1)
-      .maybeSingle();
-
-  // If the response has an error (which is most likely a not found error), throw a new exception
-  if (employeeResp.error || !employeeResp.data)
-  {
-    throw employeeResp.error ?? new Error;
-  }
-
-  const assigneeResp = await supabase
-      .from('Employees')
-      .select()
-      .eq("id", newTask.Assignee)
-      .limit(1)
-      .maybeSingle();
-
-  // If the response has an error (which is most likely a not found error), throw a new exception
-  if (assigneeResp.error || !assigneeResp.data)
-  {
-    throw new EmployeeIDNotFoundError("Employee ID not found", "");
-  }
-
   const post = await supabase
       .from('Tasks')
       .insert(newTask)
@@ -897,6 +975,43 @@ export async function postToTradeIns(supabase: SupabaseClient, newTradeIn: Trade
   return tradeIn
 }
 
+// when called from a user access level, only returns sales for that user.
+export async function getSales(): Promise<Sale[]> {
+  const response = await fetch(`/api/sale`, { method: "GET" })
+  const responseBody = await response.json()
+
+  if (responseBody.error) throw responseBody.error;
+  return responseBody.data ?? [];
+}
+
+// when called from a user access level, only returns tasks for that user.
+export async function getTasks(): Promise<Task[]> {
+  const response = await fetch(`/api/task`, { method: "GET" })
+  const responseBody = await response.json()
+
+  if (responseBody.error) throw responseBody.error;
+  return responseBody.data ?? [];
+}
+
+// when called from a user access level, only returns tasks for that user.
+export async function getGoals(): Promise<SalesGoal[]> {
+  const response = await fetch(`/api/goal`, { method: "GET" })
+  const responseBody = await response.json()
+
+  if (responseBody.error) throw responseBody.error;
+  return responseBody.data ?? [];
+}
+
+// gets sales with Customer, TradeIn, Financier and Employee info expanded.
+export async function getFormattedSales() {
+  const salesRequest = await fetch(`/api/sale?type=formatted`, { method: "GET" })
+
+  const {data: sales, error}: { data: SaleWithEmployeeAndFinancingType[], error: PostgrestError } =
+    await salesRequest.json()
+  if (error) throw error;
+
+  return sales ?? [];
+}
 
 /** @ignore */
 export type Tables<T extends keyof Database['public']['Tables']> = Database['public']['Tables'][T]['Row'];
@@ -959,6 +1074,8 @@ export type Task =                 Tables<"Tasks">;
  *  @category Database Row */
 export type TradeIn =              Tables<"TradeIns">;
 
+export type ReferencePage  =  Tables<"ReferencePages">;
+
 // todo the rest::
 /** Represents a partial employee row in the database with all required fields. If you need an incomplete
  *  type instead, consider using {@link TradeInInsert} or {@link TradeInUpdate}.
@@ -993,6 +1110,7 @@ export type TaskInsert =           InsertTables<"Tasks">;
  *  @category Database Insert */
 export type TradeInInsert =        InsertTables<"TradeIns">;
 
+export type ReferencePageInsert  =  InsertTables<"ReferencePages">;
 /** @interface
  *  @category Database Update */
 export type EmployeeUpdate =       UpdateTables<"Employees">;
@@ -1023,3 +1141,5 @@ export type TaskUpdate =           UpdateTables<"Tasks">;
 /** @interface
  *  @category Database Update */
 export type TradeInUpdate =        UpdateTables<"TradeIns">;
+
+export type ReferencePageUpdate  =  UpdateTables<"ReferencePages">;

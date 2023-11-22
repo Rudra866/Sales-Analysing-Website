@@ -136,7 +136,7 @@ export interface Database {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "notifications_sale_fkey"
+            foreignKeyName: "Notifications_Sale_fkey"
             columns: ["Sale"]
             isOneToOne: false
             referencedRelation: "Sales"
@@ -300,10 +300,10 @@ export interface Database {
         Insert: {
           Creator: string
           Description?: string | null
-          EndDate?: string
+          EndDate: string
           id?: number
           Name: string
-          StartDate?: string
+          StartDate: string
           TotalGoal: number
         }
         Update: {
@@ -397,6 +397,12 @@ export interface Database {
     }
     Functions: {
       create_new_sale: {
+        Args: {
+          sale: Json
+        }
+        Returns: undefined
+      }
+      update_new_sale: {
         Args: {
           sale: Json
         }

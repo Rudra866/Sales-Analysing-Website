@@ -1,5 +1,9 @@
+import {pathsToModuleNameMapper} from "ts-jest";
+import { compilerOptions } from './tsconfig.json';
+
 const config =  {
   preset: "ts-jest",
+  testTimeout: 30000, // quite long - add timeout to specific tests.
   testEnvironment: "jsdom",
   transform: {
     '^.+\\.tsx?$': ['ts-jest', {
@@ -7,9 +11,7 @@ const config =  {
       tsconfig: "./tsconfig.jest.json"
     }],
   },
-  moduleNameMapper: {
-    "@/(.*)": "<rootDir>/src/$1",
-  },
+  moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths, { prefix: '<rootDir>' }),
   setupFilesAfterEnv: ['<rootDir>/jest-setup.ts'],
   coveragePathIgnorePatterns: [
     "<rootDir>/.next/",

@@ -6,6 +6,8 @@ import {AuthContextProvider} from "@/components/auth-provider";
 import Navigation from "@/components/menu/navigation";
 import { ReactNode } from "react";
 
+import dynamic from 'next/dynamic';
+import {Toaster} from "@/components/ui/toaster";
 /**
  * Root layout that is rendered on all pages.
  * @param children
@@ -17,8 +19,9 @@ export default function RootLayout({children,}: { children: ReactNode }) {
       <body className={cn("min-h-screen bg-background font-sans antialiased", fontSans.variable)}>
         <AuthContextProvider>
           <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
-            <Navigation />
-            {children}
+              <Navigation />
+              {children}
+              <Toaster />
           </ThemeProvider>
         </AuthContextProvider>
       </body>
