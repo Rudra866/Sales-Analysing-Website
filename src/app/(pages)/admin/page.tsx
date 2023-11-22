@@ -12,6 +12,6 @@ export default function AdminPage() {
   }, []);
 
 
-  return <>This page is blank for now</>;
+  return <div className={'ADMIN PAGE'}>This page is blank for now</div>;
 
 }

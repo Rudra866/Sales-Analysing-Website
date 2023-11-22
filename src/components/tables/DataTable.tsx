@@ -6,6 +6,7 @@ import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/c
 import {Button} from "@/components/ui/button";
 import {ChevronLeftIcon, ChevronRightIcon, DoubleArrowLeftIcon, DoubleArrowRightIcon} from "@radix-ui/react-icons";
 import {Input} from "@/components/ui/input";
+import LoadingAnimation from "@/components/loading-animation";
 
 export interface DataTableProps<TData> {
   table: import("@tanstack/table-core").Table<TData>
@@ -51,12 +52,8 @@ export default function DataTable<TData>({table, loading, children}:
                 {!loading && table.getRowModel().rows?.length ? (
                     table.getRowModel().rows.map((row) => (
                         <TableRow
-                            // className={'cursor-pointer'}
                             key={row.id}
                             data-state={row.getIsSelected() && "selected"}
-                            // onClick={() => {
-                            //   console.log('row clicked', row.original) // todo might do something cool with this?
-                            // }}
                         >
                           {row.getVisibleCells().map((cell) => (
                               <TableCell key={cell.id}>
@@ -68,14 +65,7 @@ export default function DataTable<TData>({table, loading, children}:
                 ) : (
                     <TableRow>
                       <TableCell colSpan={columns.length} className="h-24 text-center">
-                        {/* Todo */}
-                        <div className="flex items-center justify-center h-24">
-                          <div className="flex items-center space-x-2">
-                            <div className="w-4 h-4 bg-accent rounded-full animate-bounce"/>
-                            <div className="w-4 h-4 bg-accent rounded-full animate-bounce delay-75"/>
-                            <div className="w-4 h-4 bg-accent rounded-full animate-bounce delay-150"/>
-                          </div>
-                        </div>
+                        <LoadingAnimation />
                       </TableCell>
                     </TableRow>
                 )}

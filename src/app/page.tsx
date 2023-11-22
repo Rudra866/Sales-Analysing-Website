@@ -34,13 +34,6 @@ export default function RootPage() {
         </EmployeeProvider>
     )
   }
-  // return (
-  //     <>
-  //         <div className="md:hidden">
-  //             Old Dashboard
-  //         </div>
-  //     </>
-  // )
 }
 
 

@@ -16,7 +16,7 @@ function counter(arr: string[]) {
     }, {} as { [key: string]: number });
 }
 
-export default function SummaryCard({defaultCategory = "Total"}) {
+export default function SummaryCard({className, defaultCategory = "Total"}: { className?: string, defaultCategory?: string }) {
     const {date , data } = useDashboard()
     const [selectedCategory, setSelectedCategory] = React.useState(defaultCategory);
     const [cardData, setCardData] = React.useState<number>(0);
@@ -41,7 +41,7 @@ export default function SummaryCard({defaultCategory = "Total"}) {
         const lastMonth = format(new Date(date?.from || new Date()), 'MMM-yy')
         const previousMonth = format(addDays(new Date(), -Number(30)), 'MMM-yy')
         const e = data && monthlyAverage(data, selectedCategory)
-        console.log(e, selectedCategory, e && e[thisMonth])
+        // console.log(e, selectedCategory, e && e[thisMonth])
 
         setAverage(e && e[thisMonth] ? e[lastMonth] : 0)
 
@@ -54,7 +54,7 @@ export default function SummaryCard({defaultCategory = "Total"}) {
         <div>
             {data && (
                 <Card>
-                    <CardHeader className="flex flex-row items-center justify-between pb-2">
+                    <CardHeader className={cn("flex flex-row items-center justify-between pb-2 w-full", className)}>
                         <Select defaultValue={selectedCategory} onValueChange={setSelectedCategory}>
                             <SelectTrigger id="area" className={'border-transparent px-0'}>
                                 <SelectValue placeholder="Select" className={'text-sm font-medium'}/>
@@ -79,10 +79,11 @@ export default function SummaryCard({defaultCategory = "Total"}) {
                         }
 
                         <p className="text-xs text-muted-foreground">
-                            <span className={cn('text-[#adfa1d]')}>+{average}% </span>
+                            {average > 0 && <span className={cn('text-[#adfa1d]')}>+{average}% </span>}
+                            {}
                             from last
                             <span>
-                            {" "}{format(new Date(date?.from || new Date()), 'yyyy-MM-dd')}
+                            {" "}{format(new Date(date?.from || new Date()), 'yyyy-MMM-dd')}
                         </span>
                         </p>
                     </CardContent>
@@ -124,7 +125,7 @@ export function CountCard() {
     return (
         <div>
             <Card className={'h-full'}>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-5">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className={'font-medium text-sm'}> Most Sold Vehicle</CardTitle>
                     <Car className="h-4 w-4 text-muted-foreground"/>
                 </CardHeader>

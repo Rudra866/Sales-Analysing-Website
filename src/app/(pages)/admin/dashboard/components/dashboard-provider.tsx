@@ -23,6 +23,7 @@ type DashBoardContextProps = {
     date?: DateRange;
     setDate?: React.Dispatch<React.SetStateAction<DateRange | undefined>>;
     referencePage?: ReferencePage[]
+    isLoading?: boolean
 }
 
 const supabase = getSupabaseBrowserClient()
@@ -42,6 +43,22 @@ export const DashboardProvider: React.FC<PropsWithChildren> = ({children}) => {
     const [salesGoal, setSalesGoal] = useState<SalesGoal[]>();
     const [mySales, setMySales] = useState<SaleWithEmployeeAndFinancingType[]>();
     const [referencePage, setReferencePage] = useState<ReferencePage[]>();
+    const [isLoading, setIsLoading] = useState<boolean>(false);
+
+
+    useEffect(() => { // todo - this is a hacky way to do this. need to revisit this.
+        setIsLoading(true)
+        employee &&
+        filteredSales &&
+        employees &&
+        sales &&
+        saleWithEmployeeAndFinancing &&
+        salesGoal &&
+        mySales &&
+        referencePage &&
+        setIsLoading(false)
+    }, [employee, filteredSales, employees, sales, saleWithEmployeeAndFinancing, salesGoal, mySales, referencePage]);
+
 
     const [date, setDate] = React.useState<DateRange | undefined>({
         from: subDays(new Date(), 120),
@@ -123,7 +140,7 @@ export const DashboardProvider: React.FC<PropsWithChildren> = ({children}) => {
     }, [employee]);
 
     return (
-        <DashboardContext.Provider value={{data:filteredSales, salesGoal, employees, date, saleWithEmployeeAndFinancing, mySales, setDate, referencePage}}>
+        <DashboardContext.Provider value={{data:filteredSales, salesGoal, employees, date, saleWithEmployeeAndFinancing, mySales, setDate, referencePage, isLoading}}>
             {children}
         </DashboardContext.Provider>
     );
