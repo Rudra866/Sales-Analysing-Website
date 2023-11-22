@@ -3,10 +3,11 @@ import { Meta, StoryObj } from "@storybook/react";
 import { useArgs } from "@storybook/preview-api";
 import { Dispatch, SetStateAction } from "react";
 import { Button } from "@/components/ui/button";
+import UserAvatarDialog from "@/components/user-avatar-dialog";
 
 // TODO still unfinished.
 export default {
-  title: "Dialogs/Form Dialog",
+  title: "Dialogs/Change User Avatar (Unfinished)",
   component: FormModal,
   parameters: {
     layout: "centered",
@@ -15,7 +16,6 @@ export default {
 
 export const Default: StoryObj<FormModalProps> = {
   args: {
-    title: "Empty Dialog",
     showDialog: true,
   },
   render: function Render(args) {
@@ -23,15 +23,18 @@ export const Default: StoryObj<FormModalProps> = {
     const setShowDialog = (value: boolean) => {
       updateArgs({ showDialog: value });
     };
+
+    // will make this dynamic later with api call
     return (
       <>
         <Button onClick={() => setShowDialog(true)}>Trigger</Button>
         <FormModal
           {...args}
+          title={"Change Avatar"}
           showDialog={showDialog}
           setShowDialog={setShowDialog as Dispatch<SetStateAction<boolean>>}
         >
-          <div>Empty Div</div>
+          <UserAvatarDialog />
         </FormModal>
       </>
     );
