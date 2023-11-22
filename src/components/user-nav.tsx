@@ -1,10 +1,5 @@
 'use client'
 
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -22,12 +17,18 @@ import {useTheme} from "next-themes";
 import { useRouter } from 'next/navigation'
 import useAuth from "@/hooks/use-auth";
 import {getSupabaseBrowserClient} from "@/lib/database";
+import EmployeeAvatar from "@/components/employee-avatar";
+
+
+const userDirectory = {
+  profile: "/admin"
+}
 
 export function UserNav() {
   const { setTheme, theme } = useTheme()
   const router = useRouter()
   const supabase = getSupabaseBrowserClient();
-  const {user, employee} = useAuth();
+  const {employee} = useAuth();
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
@@ -37,10 +38,7 @@ export function UserNav() {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-          <Avatar className="h-8 w-8">
-            <AvatarImage src="/avatars/01.png" alt="@shadcn" />
-            <AvatarFallback>SC</AvatarFallback>
-          </Avatar>
+          <EmployeeAvatar employee={employee}/>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56" align="end" forceMount>
@@ -54,13 +52,9 @@ export function UserNav() {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <DropdownMenuItem>
+          <DropdownMenuItem onClick={() => router.push(userDirectory.profile)}>
             Profile
             <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
-          </DropdownMenuItem>
-          <DropdownMenuItem>
-            Billing
-            <DropdownMenuShortcut>⌘B</DropdownMenuShortcut>
           </DropdownMenuItem>
           <DropdownMenuSub>
             <DropdownMenuSubTrigger>
@@ -85,11 +79,10 @@ export function UserNav() {
               </DropdownMenuSubContent>
             </DropdownMenuPortal>
           </DropdownMenuSub>
-          <DropdownMenuItem>
+          <DropdownMenuItem onClick={() => router.push('/settings')}>
             Settings
             <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
           </DropdownMenuItem>
-          <DropdownMenuItem>New Team</DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuItem onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}>
           <Sun className="mr-2 h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />

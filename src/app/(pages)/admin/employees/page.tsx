@@ -1,7 +1,12 @@
 "use client"
-import EmployeeTable from "@/components/EmployeeTable";
-import React from "react";
-import useAuth from "@/hooks/use-auth";
+import React, {Suspense, useEffect, useState} from "react";
+import dynamic from "next/dynamic";
+import {Employee, getAllEmployees, getAllRoles, getSupabaseBrowserClient, Role} from "@/lib/database";
+import {errorToast} from "@/lib/toasts";
+
+const EmployeeTable = dynamic(() => import("@/components/tables/employee-table"))
+
+
 
 /**
  * Dashboard page that displays an EmployeeTable component.
@@ -9,14 +14,37 @@ import useAuth from "@/hooks/use-auth";
  * @route `/admin/employees`
  */
 export default function EmployeeManagementPage() {
-  const {user, isLoading} = useAuth()
-    return (!isLoading &&
-        // todo the table disappears for any small update
-        <>
+  const [loading, setLoading] = useState<boolean>(false)
+  const [employees, setEmployees] = useState<Employee[]>([])
+  const [roles, setRoles] = useState<Role[]>([])
+
+  const supabase = getSupabaseBrowserClient();
+  useEffect(() => {
+    setLoading(true);
+
+    Promise.all([
+      getAllEmployees(supabase),
+      getAllRoles(supabase)
+    ])
+        .then(([employees, roles]) => {
+          setEmployees(employees);
+          setRoles(roles);
+        })
+        .catch(err => {
+          errorToast("Failed to load data.");
+          console.error(err);
+        })
+        .finally(() => {
+          setLoading(false);
+        });
+  }, [supabase]);
+
+    return (
+        <Suspense>
           <div className="hidden h-full flex-1 flex-col space-y-8 p-8 md:flex">
-              <EmployeeTable/>
+              <EmployeeTable data={employees} roles={roles} loading={loading}/>
           </div>
-        </>
+        </Suspense>
     );
 }
 
