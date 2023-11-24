@@ -1,40 +1,15 @@
 // todo modify when we remove data collection from the tables
-import DataTable, {DataTableProps} from "@/components/DataTable";
+import DataTable, {DataTableProps} from "@/components/tables/data-table";
 import {Meta, StoryObj} from "@storybook/react";
 import {Sale} from "@/lib/database";
-import SalesTable from "@/app/(pages)/sales/components/SalesTable";
+import SalesTable from "@/components/tables/sales-table";
+import {test_employee_set, test_sales_set} from "@/tests/test_data";
 
 export default {
   title: 'Tables/Sales Table',
   component: DataTable,
-  render: () => <SalesTable/>
+  render: () => <SalesTable data={test_sales_set} loading={false} employees={test_employee_set}/>
 } as Meta;
-  // render: function Render (args) {
-  //   const [sorting, setSorting] = useState<SortingState>([])
-  //   const [columnFilters, setColumnFilters] =
-  //       useState<ColumnFiltersState>([])
-  //
-  //   const table: import("@tanstack/table-core").Table<any> = useReactTable({
-  //     data: args.data,
-  //     columns: columns,
-  //     getCoreRowModel: getCoreRowModel(),
-  //     getPaginationRowModel: getPaginationRowModel(),
-  //     getFilteredRowModel: getFilteredRowModel(),
-  //     getSortedRowModel: getSortedRowModel(),
-  //     state: {
-  //       sorting,
-  //       columnFilters
-  //     }
-  //   })
-  //
-  //   return (
-  //       <DataTable table={table} loading={args.loading}/>
-  //   )
-  // },
-//   args: {
-//     loading: true
-//   }
-// } as Meta;
 
 
 export const Sales: StoryObj<DataTableProps<Sale>> = {

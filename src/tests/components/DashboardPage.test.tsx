@@ -1,8 +1,8 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import DashboardPage from "@/app/(pages)/dashboard/page";
+import DashboardPage from "@/app/(pages)/admin/dashboard/page";
 import {FakeDashboardProvider} from "@/stories/Dashboard/FakeDashboardProvider";
-import {DashboardProvider} from "@/app/(pages)/dashboard/components/dashboard-provider";
+import {DashboardProvider} from "@/app/(pages)/admin/dashboard/components/dashboard-provider";
 
 describe("Dashboard Page", () => {
   test.todo("Test making sure the tabs show up")

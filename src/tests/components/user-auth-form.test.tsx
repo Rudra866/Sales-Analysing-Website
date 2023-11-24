@@ -1,28 +1,11 @@
 import React from 'react';
-import {render, RenderResult, screen, waitFor} from '@testing-library/react';
+import {render, screen, waitFor} from '@testing-library/react';
 import '@testing-library/jest-dom';
 import UserAuthForm from "@/app/authentication/components/user-auth-form";
 import {userEvent} from "@storybook/testing-library";
 import {act} from "react-dom/test-utils";
-import {test_user_info} from "../../../jest-setup";
+import {getCookie, getCookieName, test_user_info} from "../../../jest-setup";
 
-
-function getCookie(name: string): string | null {
-  const value = `; ${document.cookie}`;
-  const parts = value.split(`; ${name}=`);
-  if (parts.length === 2) {
-    const cookieValue = parts.pop()?.split(';').shift();
-    if (cookieValue) {
-      return cookieValue;
-    }
-  }
-  return null;
-}
-
-// implement -- strip url, add "-auth-token"
-function getCookieName() {
-  return "sb-ciguaogfmmnxjxfqpwhp-auth-token"
-}
 
 describe("User Authentication form", () => {
   test('renders with a email label', () => {

@@ -1,10 +1,5 @@
 'use client'
 
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -22,10 +17,9 @@ import {useTheme} from "next-themes";
 import { useRouter } from 'next/navigation'
 import useAuth from "@/hooks/use-auth";
 import {getSupabaseBrowserClient} from "@/lib/database";
-import EmployeeAvatar from "@/components/EmployeeAvatar";
-// import EmployeeAvatar from "@/components/dashboard-components/EmployeeAvatar";
+import EmployeeAvatar from "@/components/employee-avatar";
 
-// temp -- replace if needed
+
 const userDirectory = {
   profile: "/admin"
 }
@@ -62,10 +56,6 @@ export function UserNav() {
             Profile
             <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
           </DropdownMenuItem>
-          <DropdownMenuItem>
-            Billing
-            <DropdownMenuShortcut>⌘B</DropdownMenuShortcut>
-          </DropdownMenuItem>
           <DropdownMenuSub>
             <DropdownMenuSubTrigger>
               <UserPlus className="mr-2 h-4 w-4" />
@@ -89,11 +79,10 @@ export function UserNav() {
               </DropdownMenuSubContent>
             </DropdownMenuPortal>
           </DropdownMenuSub>
-          <DropdownMenuItem>
+          <DropdownMenuItem onClick={() => router.push('/settings')}>
             Settings
             <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
           </DropdownMenuItem>
-          <DropdownMenuItem>New Team</DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuItem onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}>
           <Sun className="mr-2 h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />

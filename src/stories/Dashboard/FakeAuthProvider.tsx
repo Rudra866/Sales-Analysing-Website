@@ -1,5 +1,5 @@
 import React, {PropsWithChildren} from "react";
-import {test_employee_set, test_roles_set, test_sales_set} from "@/stories/test_data";
+import {test_employee_set, test_roles_set} from "@/tests/test_data";
 import {AuthContext} from "@/components/auth-provider";
 import {AuthContextType} from "@/hooks/use-auth";
 
