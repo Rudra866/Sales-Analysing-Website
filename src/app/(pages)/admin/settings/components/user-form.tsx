@@ -4,30 +4,17 @@ import {zodResolver} from "@hookform/resolvers/zod"
 import {useForm, UseFormReturn} from "react-hook-form"
 import * as z from "zod"
 import {Button} from "@/components/ui/button"
-import {Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage,} from "@/components/ui/form"
-import {toast, useToast} from "@/components/ui/use-toast"
+import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form"
+import {useToast} from "@/components/ui/use-toast"
 import {Input} from "@/components/ui/input";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 import React, {useEffect} from "react";
 import {Employee, getAllRoles, getSupabaseBrowserClient, Role} from "@/lib/database";
-import {useRouter} from "next/navigation";
-
-const createEmployeeSchema = z.object({
-    Name: z.string()
-        .min(1, "Role Name must not be empty")
-        .max(255, "Role name exceeds limit"),
-    email: z.string()
-        .email("Please enter a valid email address")
-        .min(1, "Email must not be empty")
-        .max(255, "Email exceeds limit"),
-    EmployeeNumber: z.string()
-        .min(1, "Employee Number must not be empty")
-        .max(255, "Employee Number exceeds limit"),
-    Role: z.string()
-});
+import {existingEmployeeFormSchema} from "@/lib/zod-schemas";
+import {errorToast, successToast} from "@/lib/toasts";
 
 type FormInputFieldProps = { // fk typescript
-    form: UseFormReturn<z.infer<typeof createEmployeeSchema>>,
+    form: UseFormReturn<z.infer<typeof existingEmployeeFormSchema>>,
     name: "EmployeeNumber" | "Name" | "email",
     label: string
 }
@@ -61,20 +48,19 @@ interface UserFormProps {
     remove?: boolean
 }
 
-export function UserForm({name, email, password, number, employee, role, remove}: UserFormProps) {
+export default function UserForm({name, email, password, number, employee, role, remove}: UserFormProps) {
     const supabase = getSupabaseBrowserClient();
     const [roles, setRoles] = React.useState<Role[]>([])
 
     useEffect(() => {
         getAllRoles(supabase).then((res) => {
-            setRoles(res as Role[])
+            setRoles(res)
             return res
         })
-    }, []);
+    }, [supabase]);
 
-    const {toast} = useToast();
-    const form = useForm<z.infer<typeof createEmployeeSchema>>({
-        resolver: zodResolver(createEmployeeSchema),
+    const form = useForm<z.infer<typeof existingEmployeeFormSchema>>({
+        resolver: zodResolver(existingEmployeeFormSchema),
         defaultValues: {
             Name: name || "",
             email: email || "",
@@ -82,8 +68,7 @@ export function UserForm({name, email, password, number, employee, role, remove}
         }
     })
 
-    // todo: make this relevant
-    async function onSubmit(data: z.infer<typeof createEmployeeSchema>) {
+    async function onSubmit(data: z.infer<typeof existingEmployeeFormSchema>) {
         if (employee) { // edit existing employee
             const updatingData: any = data;
             updatingData.id = employee.id;
@@ -92,17 +77,9 @@ export function UserForm({name, email, password, number, employee, role, remove}
                 body: JSON.stringify(updatingData)
             })
             if (result.ok) {
-                toast({
-                    title: "Employee Updated",
-                    description: "The employee was successfully updated!"
-
-                })
+                successToast("The employee was successfully updated!")
             } else {
-                toast({
-                    title: "Error",
-                    variant: "destructive",
-                    description: result.statusText
-                })
+                errorToast(result.statusText)
             }
         } else { // invite an employee
             const result = await fetch(`/api/admin/employee/invite`, {
@@ -110,43 +87,17 @@ export function UserForm({name, email, password, number, employee, role, remove}
                 body: JSON.stringify(data)
             })
             if (result.ok) {
-                toast({
-                    title: "Employee Invited",
-                    description: (
-                        <>
-                            The email {data.email} was successfully invited!
-                        </>
-                    ),
-                })
+                successToast(`The email ${data.email} was successfully invited!`)
             } else {
-                toast({
-                    title: "Error",
-                    variant: "destructive",
-                    description: result.statusText
-                })
+                errorToast(result.statusText)
             }
         }
-
-
-
-            // don't think this actually works?
-        // .catch((err) => {
-        //     toast({
-        //         title: "Error",
-        //         variant: "destructive",
-        //         description: (
-        //             {err}
-        //         ),
-        //     })
-        // })
-
     }
 
     const getRoleName = (id: string) => {
         const role = roles.find(role => role.id.toString() === id)
         return role?.RoleName
     }
-
 
     return (
         <Form {...form}>
@@ -184,24 +135,20 @@ export function UserForm({name, email, password, number, employee, role, remove}
                 <div className={'flex gap-2'}>
                     <Button type="submit">Submit</Button>
                     {remove && <Button variant="destructive"
-                                       onClick={() => {
-                                           employee?.id &&
-                                               fetch("/api/admin/employee", {
-                                                   method: "DELETE",
-                                                   body: JSON.stringify(employee)
-                                               })
-                                               .then(() => {
-                                                   toast({
-                                                       title: "Employee Deleted",
-                                                       description: "Employee has been deleted",
-                                               })
-                                           }).catch((error) => {
-                                                   toast({
-                                                       title: "Error",
-                                                       description: error
-                                                   })
-                                               })
-                                       }}
+                       onClick={() => {
+                           employee?.id &&
+                               fetch("/api/admin/employee", {
+                                   method: "DELETE",
+                                   body: JSON.stringify(employee)
+                               })
+                               .then(() => {
+                                   successToast("Employee has been deleted")
+                               })
+                               .catch((error) => {
+                                   errorToast("Failed to delete employee.")
+                                   console.error(error);
+                               })
+                       }}
                     >Delete</Button>}
                 </div>
             </form>

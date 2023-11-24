@@ -4,15 +4,16 @@ import {subDays} from "date-fns";
 import {DateRange} from "react-day-picker";
 import {
     Employee,
-    getAllEmployees, getReferencePages,
+    getAllEmployees, getFormattedSales, getGoals, getReferencePages, getSales,
     getSupabaseBrowserClient, ReferencePage,
     Sale,
     SalesGoal
 } from "@/lib/database";
-import {DbResult, SaleWithEmployeeAndFinancingType} from "@/lib/types";
+import {SaleWithEmployeeAndFinancingType} from "@/lib/types";
 import useAuth from "@/hooks/use-auth";
 import {PostgrestError} from "@supabase/supabase-js";
 import {filterSalesByDate, filterSalesByEmployee} from "@/lib/utils";
+import {errorToast} from "@/lib/toasts";
 
 type DashBoardContextProps = {
     saleWithEmployeeAndFinancing?: SaleWithEmployeeAndFinancingType[];
@@ -35,7 +36,6 @@ export function useDashboard(): DashBoardContextProps {
     return context;
 }
 export const DashboardProvider: React.FC<PropsWithChildren> = ({children}) => {
-    const {employee} = useAuth()
     const [filteredSales, setFilteredSales] = useState<Sale[]>();
     const [employees, setEmployees] = useState<Employee[]>();
     const [sales, setSales] = useState<Sale[]>([])
@@ -64,83 +64,69 @@ export const DashboardProvider: React.FC<PropsWithChildren> = ({children}) => {
         from: subDays(new Date(), 120),
         to: new Date(),
     })
+    const {employee} = useAuth()
 
-    function filterSalesByEmployee(sales: SaleWithEmployeeAndFinancingType[], employee: Employee | undefined) {
-        return sales.filter((sale) => {
-            return sale.EmployeeID === employee?.id
-        })
-    }
-
-    function filterSalesByDate(sales: Sale[], date: DateRange | undefined) {
-        return sales.filter((sale) => {
-            const saleDate = new Date(sale?.SaleTime?.toString() || '')
-            if (date?.from === undefined || date?.to === undefined) return false
-            return saleDate >= date?.from && saleDate <= date?.to
-        })
-    }
-
-    // get all reference pages on page load
+    // get all employees, sales, goals and reference pages on initial provider load
     useEffect(() => {
+        getAllEmployees(supabase)
+            .then(res => setEmployees(res as Employee[]))
+            .catch(err => {
+                errorToast("Failed to get Employees.")
+                console.error(err);
+            })
+
+        getSales()
+            .then((sales) => setSales(sales))
+            .catch(err => {
+                errorToast("Failed to load Sales.");
+                console.error(err);
+            });
+
+        getGoals()
+            .then((goals) => setSalesGoal(goals))
+            .catch(err => {
+                errorToast("Failed to load Goals.");
+                console.error(err);
+            });
+
         getReferencePages(supabase)
             .then((res) => {
                 setReferencePage(res as ReferencePage[])
-            })
-    }, []);
-
-
-    // get all employees on page load
-    useEffect(() => {
-        getAllEmployees(supabase).then((res) => {
-            setEmployees(res as Employee[])
+            }).catch(err => {
+                errorToast("Failed to load Reference Pages")
+            console.error(err);
         })
     }, []);
 
     // update filtered sales on date change
     useEffect(() => {
-        setFilteredSales(filterSalesByDate(sales, date))
+        setFilteredSales(filterSalesByDate(date, sales))
     }, [date, sales]);
 
 
     useEffect(() => {
-        async function getAllSales() {
-            const response = await fetch(`/api/sale`, {
-                method: "GET"
-            });
-
-            const {data: sales, error}: {data: Sale[], error: PostgrestError} = await response.json()
-            if (error) throw error;
-            setSales(sales)
-        }
-        async function getSalesGoals() {
-            const response = await fetch(`/api/goal`, {
-                method: "GET"
-            });
-
-            const {data: goals, error}: {data: SalesGoal[], error: PostgrestError} = await response.json()
-
-            if (error) throw error;
-            setSalesGoal(goals);
-        }
-
-        async function getEmployeeSales() {
-            const salesRequest = await fetch(`/api/sale?type=formatted`, {
-                method: "GET"
+        getFormattedSales()
+            .then((sales) => {
+                setSaleWithEmployeeAndFinancing(sales)
+                setMySales(filterSalesByEmployee(sales, employee!))
             })
-
-            const {data: sales, error}: {data: SaleWithEmployeeAndFinancingType[], error: PostgrestError} =
-                await salesRequest.json()
-            if (error) throw error;
-            setSaleWithEmployeeAndFinancing(sales as DbResult<typeof sales>[])
-            setMySales(filterSalesByEmployee(sales as DbResult<typeof sales>[], employee!) as DbResult<typeof sales>[])
-        }
-
-        getAllSales();
-        getSalesGoals();
-        getEmployeeSales()
+            .catch(err => {
+                errorToast("Failed to load formatted Sales.");
+                console.error(err);
+            });
     }, [employee]);
 
     return (
-        <DashboardContext.Provider value={{data:filteredSales, salesGoal, employees, date, saleWithEmployeeAndFinancing, mySales, setDate, referencePage, isLoading}}>
+        <DashboardContext.Provider
+            value={{data:filteredSales,
+                salesGoal,
+                employees,
+                date,
+                saleWithEmployeeAndFinancing,
+                mySales,
+                setDate,
+                referencePage
+                , isLoading}}>
             {children}
         </DashboardContext.Provider>
     );

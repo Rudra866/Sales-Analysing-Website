@@ -13,6 +13,11 @@ export interface DataTableProps<TData> {
   loading: boolean
 }
 
+export type DataTableChildProps<TData> = {
+  data: TData[],
+  loading: boolean
+}
+
 export const tablePageSizes = [10, 25, 50, 100, 250, 1000]
 
 // todo need to refactor the way this works, I don't like it.

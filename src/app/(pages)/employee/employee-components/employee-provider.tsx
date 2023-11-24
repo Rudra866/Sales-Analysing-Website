@@ -1,16 +1,19 @@
 'use client'
 
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
     Employee,
-    getAllTasksByAssignee, getReferencePages, getSalesForEmployee,
-    getSupabaseBrowserClient, ReferencePage,
+    ReferencePage,
     Sale,
-    Task
+    Task,
+    getReferencePages,
+    getSupabaseBrowserClient, getTasks, getSales,
 } from "@/lib/database";
 import {DateRange} from "react-day-picker";
 import useAuth from "@/hooks/use-auth";
 import {subDays} from "date-fns";
+import {filterSalesByDate, filterTasksByStartDate} from "@/lib/utils";
+import {errorToast} from "@/lib/toasts";
 
 
 type EmployeeContextProps = {
@@ -37,52 +40,52 @@ interface EmployeeProviderProps {
 }
 
 export const EmployeeProvider: React.FC<EmployeeProviderProps> = ({children}) => {
-    const [date, setDate] = React.useState<DateRange | undefined>({
+    const [allTasks, setAllTasks] = useState<Task[]>([]);
+    const [allSales, setAllSales] = useState<Sale[]>([]);
+    const [tasks, setTasks] = useState<Task[]>([]);
+    const [sales, setSales] = useState<Sale[]>();
+    const [referencePage, setReferencePage] = useState<ReferencePage[]>()
+    const {employee} = useAuth()
+
+    const [date, setDate] = useState<DateRange | undefined>({
         from: subDays(new Date(), 120),
         to: new Date(),
     })
-    const [tasks, setTasks] = React.useState<Task[]>();
-    const [sales, setSales] = React.useState<Sale[]>();
-    const [referencePage, setReferencePage] = React.useState<ReferencePage[]>()
-    const {employee} = useAuth()
 
+    // get data on initial load
     useEffect(() => {
-        if (!employee) return
-        getAllTasksByAssignee(supabase, employee?.id)
+        if (!employee) return // if there's no employee, the page is broken already anyway.
+        getTasks()
             .then((res) => {
-                setTasks(res as Task[])
+                setAllTasks(res as Task[])
             })
-        getSalesForEmployee(supabase, employee?.id)
+            .catch(e => {
+                errorToast("Failed to load tasks.")
+                console.error(e);
+            })
+        getSales()
             .then((res) => {
-                setSales(res as Sale[])
+                setAllSales(res)
+            })
+            .catch(e => {
+                errorToast("Failed to load sales.")
+                console.error(e);
             })
         getReferencePages(supabase)
             .then((res) => {
-            setReferencePage(res as ReferencePage[])
-        })
-
+                setReferencePage(res)
+            })
+            .catch(e => {
+                errorToast("Failed to load sales.")
+                console.error(e);
+            })
     }, [employee])
 
     useEffect(() => {
-        sales && setSales(filterSalesByDate(sales as Sale[], date) as Sale[])
-        tasks && setTasks(filterTasksByStartDate(tasks as Task[], date) as Task[])
-    }, [date])
+        setSales(filterSalesByDate(date, allSales))
+        setTasks(filterTasksByStartDate(allTasks, date))
+    }, [allSales, allTasks, date])
 
-    function filterSalesByDate(sales: Sale[], date: DateRange | undefined) {
-        return sales.filter((sale) => {
-            const saleDate = new Date(sale?.SaleTime?.toString() || '')
-            if (date?.from === undefined || date?.to === undefined) return false
-            return saleDate >= date?.from && saleDate <= date?.to
-        })
-    }
-
-    function filterTasksByStartDate(tasks: Task[], date: DateRange | undefined) {
-        return tasks.filter((task) => {
-            const taskDate = new Date(task?.StartDate?.toString() || '')
-            if (date?.from === undefined || date?.to === undefined) return false
-            return taskDate >= date?.from && taskDate <= date?.to
-        })
-    }
     return (
         <EmployeeContext.Provider value={{tasks, sales, date, setDate, employee, referencePage}}>
             {children}

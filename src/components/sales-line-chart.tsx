@@ -6,66 +6,13 @@ import {
     YAxis,
     Tooltip, ResponsiveContainer, LineChart, Line
 } from "recharts";
-import {cn} from "@/lib/utils";
-import {DateRange} from "react-day-picker";
-import {Sale} from "@/lib/database";
+import {cn, groupSelectionByTimeFrame} from "@/lib/utils";
 import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
 import {format} from "date-fns";
 import {useDashboard} from "@/admin/dashboard/components/dashboard-provider";
 import {useTheme} from "next-themes";
 
-
-const numericSales = [
-    "ActualCashValue",
-    "DealerCost",
-    "FinAndInsurance",
-    "GrossProfit",
-    "Holdback",
-    "LotPack",
-    "ROI",
-    "Total",
-];
-
-type SaleWithIndex = Sale & {
-    [key: string]: any;
-};
-
-function groupByTimeFrame(data: (SaleWithIndex | null | undefined)[], grouping: string): { [p: string]: { [p: string]: number } } {
-    if (!data) {
-        return {};
-    }
-
-    return data.reduce((groupedData: { [key: string]: { [p: string]: number } }, item) => {
-        if (!item) {
-            return groupedData;
-        }
-
-        const date = new Date(item.SaleTime?.toString() || '');
-        const monthYearKey = format(date, grouping);
-
-        if (!groupedData[monthYearKey]) {
-            groupedData[monthYearKey] = {};
-        }
-
-        numericSales.forEach((field) => {
-            if (!groupedData[monthYearKey][field]) {
-                groupedData[monthYearKey][field] = 0;
-            }
-
-            const fieldValue = item[field];
-            groupedData[monthYearKey][field] += typeof fieldValue === 'number' ? fieldValue : 0;
-        });
-
-        return groupedData;
-    }, {});
-}
-
-//
-
-
 interface SalesLineChartProps {
-    data: Sale[]
-    date: DateRange | undefined
     className?: string
 }
 
@@ -75,33 +22,14 @@ type ChartDataType = {
     actualSales: number
 }
 
-
-export default function SalesLineChart({data, date, className}: SalesLineChartProps) {
+export default function SalesLineChart({className}: SalesLineChartProps) {
     const [chartData, setChartData] = useState<ChartDataType[]>();
     const {theme} = useTheme();
 
     const lineColors = [ theme ==='dark' ? "#ffffff" : "#88888", "#adfa1d"]
     const color1 = `text-[${lineColors[0]}]`
     const color2 = `text-[${lineColors[1]}]`
-    const {salesGoal} = useDashboard();
-
-    useEffect(() => {
-        if (!data || !salesGoal) {
-            return;
-        }
-
-        const groupedData = groupByTimeFrame(data, 'MMM-yy');
-        const chartData: ChartDataType[] = Object.keys(groupedData).map((key) => {
-            return {
-              date: key,
-              estimatedSales: groupedData[key].Total,
-              actualSales: salesGoal.find(goal => format(new Date(goal.StartDate), 'MMM-yy') === key)?.TotalGoal || 0,
-            };
-          });
-        setChartData(chartData);
-
-    }, [data, date, salesGoal]);
-
+    const {salesGoal, data, date} = useDashboard();
 
     const customToolTip = (props: any) => {
         try {
@@ -125,6 +53,23 @@ export default function SalesLineChart({data, date, className}: SalesLineChartPr
         }
         return null
     }
+
+    useEffect(() => {
+        if (!data || !salesGoal) {
+            return;
+        }
+
+        const groupedData = groupSelectionByTimeFrame(data, 'MMM-yy');
+        const chartData: ChartDataType[] = Object.keys(groupedData).map((key) => {
+            return {
+                date: key,
+                estimatedSales: groupedData[key].Total,
+                actualSales: salesGoal.find
+                (goal => format(new Date(goal.StartDate), 'MMM-yy') === key)?.TotalGoal || 0,
+            };
+        });
+        setChartData(chartData);
+    }, [data, date, salesGoal]);
 
     return (
         <Card className={cn("col-span-4 w-full", className)}>

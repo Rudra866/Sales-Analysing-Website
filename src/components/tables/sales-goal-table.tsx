@@ -1,29 +1,18 @@
 'use client'
 
 import {
-  Column,
   ColumnDef,
-  ColumnFiltersState, flexRender,
+  ColumnFiltersState,
   getCoreRowModel, getFilteredRowModel,
   getPaginationRowModel, getSortedRowModel,
   SortingState,
   useReactTable
 } from "@tanstack/react-table";
-import React, {useEffect, useState} from "react";
-import {Input} from "@/components/ui/input";
-import {Button} from "@/components/ui/button";
-import {Checkbox} from "@/components/ui/checkbox";
+import {useState} from "react";
 import {
-  Employee,
-  Tables,
-  Sale,
-  getSupabaseBrowserClient,
-  Task,
-  getAllTasks,
-  TaskInsert,
-  getAllEmployees, SalesGoal, SalesGoalInsert, MonthlySale, getAllMonthlySales
+  Employee, SalesGoal, SalesGoalInsert, MonthlySale
 } from "@/lib/database";
-import DataTable, {TableFilter} from "@/components/tables/DataTable";
+import DataTable, {DataTableChildProps, TableFilter} from "@/components/tables/data-table";
 import TableSortButton from "@/components/tables/table-sort-button";
 import {toast} from "@/components/ui/use-toast";
 import {Plus} from "lucide-react";
@@ -32,9 +21,12 @@ import useAuth from "@/hooks/use-auth";
 import FormModal from "@/components/dialogs/FormModal";
 import {TaskCreateDialog} from "@/components/dialogs/TaskCreateDialog";
 
+export type SalesGoalTableProps = DataTableChildProps<SalesGoal> & {
+  employees: Employee[]
+  monthlySales: MonthlySale[]
+}
 
-export default function SalesGoalTable() {
-  const [loading, setLoading] = useState(true);
+export default function SalesGoalTable({data, monthlySales, employees, loading}: SalesGoalTableProps) {
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   const [goals, setGoals] = useState<SalesGoal[]>([])
@@ -44,6 +36,7 @@ export default function SalesGoalTable() {
   const [employees, setEmployees] = useState<Employee[]>([])
   const [monthlySales, setMonthlySales] = useState<MonthlySale[]>([])
   const {employee} = useAuth();
+  const [showGoalCreateModal, setShowGoalCreateModal] = useState<boolean>(false)
 
   async function createNewSaleGoal(data: SalesGoalInsert) {
     await fetch(`/api/goal`, {
@@ -51,28 +44,6 @@ export default function SalesGoalTable() {
       body: JSON.stringify(data)
     })
   }
-
-
-  useEffect(() => {
-    async function getSalesGoals() {
-      try {
-        const response = await fetch("/api/goal", {method: "GET"})
-        const goals = (await response.json()).data;
-        const employees = await getAllEmployees(supabase);
-        const monthlySales = await getAllMonthlySales(supabase);
-        setMonthlySales(monthlySales);
-        setGoals(goals);
-        setEmployees(employees);
-        setLoading(false);
-      } catch (e) {
-        toast({
-          title: "Error!",
-          description: "Failed to load Tasks!"
-        })
-      }
-    }
-    getSalesGoals()
-  }, [supabase]);
 
   const columns: ColumnDef<SalesGoal>[] = [
     {
@@ -118,7 +89,7 @@ export default function SalesGoalTable() {
   ]
 
   const table = useReactTable({
-    data: goals,
+    data,
     columns,
     getCoreRowModel: getCoreRowModel(),
     onSortingChange: setSorting,
@@ -138,27 +109,7 @@ export default function SalesGoalTable() {
   return (
       <DataTable table={table} loading={loading}>
         <TableFilter table={table} initial={"Name"} placeholder={"Filter goals..."}/>
-        {employee && isAdmin(employee?.Role) &&
-            <div className="flex items-center space-x-2 w-full">
-              <Button
-                  size="sm"
-                  variant="outline"
-                  className="ml-auto hidden h-8 lg:flex"
-                  onClick={() => setShowTaskCreateModal(true)} // todo post
-              >
-                <Plus className="mr-2 h-4 w-4" />
-                Create Goal
-              </Button>
-            </div>
-        }
-        <FormModal title={"Create Task"}
-                   showDialog={showTaskCreateModal}
-                   setShowDialog={setShowTaskCreateModal}
-                   onSubmit={createNewSaleGoal}>
-          <TaskCreateDialog employees={employees} task={goals}/>
-        </FormModal>
       </DataTable>
-
 
   )
 }

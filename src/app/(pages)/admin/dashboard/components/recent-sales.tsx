@@ -8,7 +8,7 @@ import {Employee} from "@/lib/database";
 import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs";
 import {cn} from "@/lib/utils";
 
-export function RecentSales({className}: { className?: string }) {
+export default function RecentSales({className}: { className?: string }) {
     const {saleWithEmployeeAndFinancing, mySales} = useDashboard()
     function SalesRow({employee, vehicle, amount, id, date}: {
         employee?: Employee;
@@ -24,7 +24,7 @@ export function RecentSales({className}: { className?: string }) {
                     console.log("employee id: ", id)
                 }}
             >
-                <EmployeeAvatar employee={employee}/> {/* for now since no user info yet, just use signed in employee */}
+                <EmployeeAvatar employee={employee}/>
                 <div className="ml-4 space-y-1">
                     {employee && <p className="text-sm font-medium leading-none">{employee.Name}</p>}
                     <p className="text-sm text-muted-foreground">{format(new Date(date), "LLL dd, y")}</p>

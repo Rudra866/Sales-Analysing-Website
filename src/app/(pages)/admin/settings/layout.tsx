@@ -1,8 +1,5 @@
-import { Metadata } from "next"
-import Image from "next/image"
-
 import { Separator } from "@/components/ui/separator"
-import { SidebarNav } from "./components/sidebar-nav"
+import SidebarNav from "./components/sidebar-nav"
 import ContainerLayout from "@/components/container-layout";
 
 

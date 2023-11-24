@@ -1,6 +1,7 @@
-'use client'
+"use client";
 
-import {useEffect} from "react";
+import { useEffect } from "react";
+import DashboardPage from "@/admin/dashboard/page";
 
 /**
  * This page will be used for the admin dashboard.
@@ -8,10 +9,7 @@ import {useEffect} from "react";
  * @route `/admin`
  */
 export default function AdminPage() {
-  useEffect(() => {
-  }, []);
-
-
-  return <div className={'ADMIN PAGE'}>This page is blank for now</div>;
-
+  useEffect(() => {}, []);
+  // this page just aliases /admin/dashboard
+  return <DashboardPage />;
 }

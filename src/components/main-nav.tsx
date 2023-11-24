@@ -1,22 +1,23 @@
 'use client'
 import Link from "next/link"
 
-import {cn, isAdmin} from "@/lib/utils"
+import {cn} from "@/lib/utils"
 import {usePathname} from "next/navigation";
 import {docsConfig, docsConfigAdmin} from "@/lib/config";
 import useAuth from "@/hooks/use-auth";
+import {HTMLAttributes} from "react";
 
 
 
-export function MainNav({className, ...props}: React.HTMLAttributes<HTMLElement>) {
+export function MainNav({className, ...props}: HTMLAttributes<HTMLElement>) {
   const pathname = usePathname()
   const {role} = useAuth()
-  const routes = role && isAdmin(role.id) ? docsConfigAdmin : docsConfig
+  const routes = role?.EmployeePermission ? docsConfigAdmin : docsConfig
 
   return (
     <nav className={cn("flex items-center space-x-4 lg:space-x-6", className)}{...props}>
       {
-        routes.mainNav.map((item, index) => (
+        routes.mainNav.map((item) => (
             <Link
                 key={item.href}
                 href={'' + item.href}

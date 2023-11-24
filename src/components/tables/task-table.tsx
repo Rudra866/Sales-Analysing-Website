@@ -1,13 +1,14 @@
 'use client'
 
 import {
-    Column,
-    ColumnDef,
-    ColumnFiltersState, flexRender,
-    getCoreRowModel, getFilteredRowModel,
-    getPaginationRowModel, getSortedRowModel,
-    SortingState,
-    useReactTable
+  ColumnDef,
+  ColumnFiltersState,
+  getCoreRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  SortingState,
+  useReactTable,
 } from "@tanstack/react-table";
 import React, {useEffect, useState} from "react";
 import {Button} from "@/components/ui/button";
@@ -22,126 +23,120 @@ import {ArrowUpDown, MoreHorizontal, Plus} from "lucide-react";
 import {format} from "date-fns";
 import DataTable, {TableFilter} from "@/components/tables/DataTable";
 import FormModal from "@/components/dialogs/FormModal";
+import React, { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Employee, Task, TaskInsert } from "@/lib/database";
+import { MoreHorizontal, Plus } from "lucide-react";
+import { format } from "date-fns";
+import DataTable, {
+  DataTableChildProps,
+  TableFilter,
+} from "@/components/tables/data-table";
+import FormModal from "@/components/dialogs/form-modal";
 import TableSortButton from "@/components/tables/table-sort-button";
 import {toast} from "@/components/ui/use-toast";
 import {
-    CheckCircledIcon,
-    CircleIcon,
-    CrossCircledIcon,
-    QuestionMarkCircledIcon,
-    StopwatchIcon
+  CheckCircledIcon,
+  CircleIcon,
+  CrossCircledIcon,
+  QuestionMarkCircledIcon,
+  StopwatchIcon,
 } from "@radix-ui/react-icons";
-import {TaskCreateDialog} from "@/components/dialogs/TaskCreateDialog";
+import { TaskCreateDialog } from "@/components/dialogs/task-create-dialog";
 import tableTooltip from "@/components/table-tooltip";
 
-// todo align rows and columns
+type TaskTableProps = DataTableChildProps<Task> & {
+  employees: Employee[];
+};
 
 /**
- * Component used to render sales page table at `/sales`
+ * Component used to render tasks table
  * @group React Components
  */
-export default function TaskTable() {
-    const [loading, setLoading] = useState(true);
-    const [sorting, setSorting] = useState<SortingState>([])
-    const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
-    const [tasks, setTasks] = useState<Task[]>([])
-    const supabase = getSupabaseBrowserClient();
-    const [showTaskCreateModal, setShowTaskCreateModal] = useState<boolean>(false)
-    const [employees, setEmployees] = useState<Employee[]>([])
-    const [task, setTask] = useState<Task | undefined>(undefined)
-    const statuses = [
-        {
-            value: "BACKLOG",
-            label: "Backlog",
-            icon: QuestionMarkCircledIcon,
-        },
-        {
-            value: "TODO",
-            label: "Todo",
-            icon: CircleIcon,
-        },
-        {
-            value: "IN_PROGRESS",
-            label: "In Progress",
-            icon: StopwatchIcon,
-        },
-        {
-            value: "FINISHED",
-            label: "Done",
-            icon: CheckCircledIcon,
-        },
-        {
-            value: "CANCELLED",
-            label: "Canceled",
-            icon: CrossCircledIcon,
-        },
-    ]
+export default function TaskTable({
+  data,
+  employees,
+  loading,
+}: TaskTableProps) {
+  const [sorting, setSorting] = useState<SortingState>([]);
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [showTaskCreateModal, setShowTaskCreateModal] =
+    useState<boolean>(false);
+  const [task, setTask] = useState<Task | undefined>(undefined);
+  const statuses = [
+    {
+      value: "BACKLOG",
+      label: "Backlog",
+      icon: QuestionMarkCircledIcon,
+    },
+    {
+      value: "TODO",
+      label: "Todo",
+      icon: CircleIcon,
+    },
+    {
+      value: "IN_PROGRESS",
+      label: "In Progress",
+      icon: StopwatchIcon,
+    },
+    {
+      value: "FINISHED",
+      label: "Done",
+      icon: CheckCircledIcon,
+    },
+    {
+      value: "CANCELLED",
+      label: "Canceled",
+      icon: CrossCircledIcon,
+    },
+  ];
 
-    async function createNewTask(data: TaskInsert) {
-        await fetch(`/api/task`, {
-            method: "POST",
-            body: JSON.stringify(data)
-        })
-    }
+  async function createNewTask(data: TaskInsert) {
+    await fetch(`/api/task`, {
+      method: "POST",
+      body: JSON.stringify(data),
+    });
+  }
 
-
-    useEffect(() => {
-        async function getTasks() {
-            try {
-                const taskResponse = await fetch("/api/task", {method: "GET"})
-                const tasks = (await taskResponse.json()).data;
-                const employees = await getAllEmployees(supabase);
-                setTasks(tasks);
-                setEmployees(employees);
-                setLoading(false);
-            } catch (e) {
-                toast({
-                    title: "Error!",
-                    description: "Failed to load Tasks!"
-                })
-            }
-        }
-
-        getTasks()
-    }, [supabase]);
-
-    const columns: ColumnDef<Task>[] = [
-        {
-            accessorKey: "Creator",
-            header: ({column}) => <TableSortButton column={column}/>,
-            cell: ({row}) => employees.find((employee) => row.original.Creator === employee.id)?.Name,
-        },
-        {
-            accessorKey: "Assignee",
-            header: ({column}) => <TableSortButton column={column}/>,
-            cell: ({row}) => employees.find((employee) => row.original.Assignee === employee.id)?.Name,
-        },
-        {
-            accessorKey: "Name",
-            header: ({column}) => <TableSortButton column={column}/>,
-        },
-        {
-            accessorKey: "Description",
-            header: ({column}) => <TableSortButton column={column}/>,
-            cell: ({row}) => {
-                return (
-                    <div className="flex space-x-2 ml-1">
-                        <span className="max-w-[200px] truncate font-medium">
-                            {tableTooltip(row.original.Description || 'No Description')}
-                        </span>
-                    </div>
-                )
-            }
-        },
-        {
-            accessorKey: "Status",
-            header: ({column}) => (
-                <TableSortButton column={column}/>
-            ),
-            cell: ({row}) => {
-                const status = statuses.find(
-                    (status) => status.value === row.getValue("Status")
-                )
+  const columns: ColumnDef<Task>[] = [
+    {
+      accessorKey: "Creator",
+      header: ({ column }) => <TableSortButton column={column} />,
+      cell: ({ row }) =>
+        employees.find((employee) => row.original.Creator === employee.id)
+          ?.Name,
+    },
+    {
+      accessorKey: "Assignee",
+      header: ({ column }) => <TableSortButton column={column} />,
+      cell: ({ row }) =>
+        employees.find((employee) => row.original.Assignee === employee.id)
+          ?.Name,
+    },
+    {
+      accessorKey: "Name",
+      header: ({ column }) => <TableSortButton column={column} />,
+    },
+    {
+      accessorKey: "Description",
+      header: ({ column }) => <TableSortButton column={column} />,
+      cell: ({ row }) => {
+        return (
+          <div className="flex space-x-2 ml-1">
+            <span className="max-w-[200px] truncate font-medium">
+              {tableTooltip(row.original.Description || "No Description")}
+            </span>
+          </div>
+        );
+      },
+    },
+    {
+      accessorKey: "Status",
+      header: ({ column }) => <TableSortButton column={column} />,
+      cell: ({ row }) => {
+        const status = statuses.find(
+          (status) => status.value === row.getValue("Status"),
+        );
 
                 if (!status) {
                     return null
@@ -189,23 +184,22 @@ export default function TaskTable() {
         },
     ]
 
-    const table = useReactTable({
-        data: tasks,
-        columns,
-        getCoreRowModel: getCoreRowModel(),
-        onSortingChange: setSorting,
-        getPaginationRowModel: getPaginationRowModel(),
-        onColumnFiltersChange: setColumnFilters,
-        getFilteredRowModel: getFilteredRowModel(),
-        getSortedRowModel: getSortedRowModel(),
-        state: {
-            sorting,
-            columnFilters
-        },
-        enableSorting: true,
-        enableColumnFilters: true,
-    })
-
+  const table = useReactTable({
+    data,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+    onSortingChange: setSorting,
+    getPaginationRowModel: getPaginationRowModel(),
+    onColumnFiltersChange: setColumnFilters,
+    getFilteredRowModel: getFilteredRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    state: {
+      sorting,
+      columnFilters,
+    },
+    enableSorting: true,
+    enableColumnFilters: true,
+  });
 
     return (
         <DataTable table={table} loading={loading}>

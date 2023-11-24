@@ -1,17 +1,18 @@
 'use client'
-
 import {Button} from "@/components/ui/button"
 import {Card, CardContent, CardHeader, CardTitle,} from "@/components/ui/card"
-import CalendarDateRangePicker from "./components/date-range-picker"
-import {Overview} from "./components/overview"
-import {RecentSales} from "./components/recent-sales"
-import * as React from "react";
 import {useDashboard} from "./components/dashboard-provider";
-import {Sale} from "@/lib/database";
-import {DynamicChart} from "@/components/dynamic-chart";
-import SalesLineChart from "@/components/sales-line-chart";
-import SummaryCard, {CountCard} from "./components/summary-card";
 import {getSalesCSV} from "@/lib/csv";
+import dynamic from "next/dynamic";
+
+/* Can probably optimize this down the line. */
+const SalesLineChart = dynamic(() => import(`@/components/sales-line-chart`))
+const Overview = dynamic(() => import(`./components/overview`))
+const RecentSales = dynamic(() => import(`./components/recent-sales`))
+const DynamicChart = dynamic(() => import(`@/components/dynamic-chart`))
+const CalendarDateRangePicker = dynamic(() => import(`@/components/date-range-picker`))
+const SummaryCard = dynamic(() => import('./components/summary-card'));
+const CountCard = dynamic(() => import('./components/count-card'));
 import {Suspense} from "react";
 import LoadingAnimation from "@/components/loading-animation";
 
@@ -61,6 +62,6 @@ export default function DashboardPage() {
                     }
                 </div>
             </div>
-        </Suspense>
+        </>
     )
 }

@@ -14,8 +14,6 @@ interface SettingsLayoutProps {
 export default function SettingsLayout({children}: SettingsLayoutProps) {
     const [sideBarItems, setSideBarItems] = React.useState<{ title: string, href: string }[]>([])
     const {referencePage} = useDashboard()
-    console.log('ref page', referencePage)
-
     useEffect(() => {
         if (!referencePage) return
         setSideBarItems(
@@ -24,7 +22,6 @@ export default function SettingsLayout({children}: SettingsLayoutProps) {
                     title: page.pagename,
                     href: `/admin/training/${page.id}`,
                 }}))
-        console.log('sidebar items', sideBarItems)
     }, [referencePage])
 
     return (

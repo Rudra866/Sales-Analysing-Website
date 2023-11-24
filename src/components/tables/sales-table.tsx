@@ -1,41 +1,53 @@
 'use client'
 
 import {
-    ColumnDef,
-    ColumnFiltersState,
-    getCoreRowModel, getFilteredRowModel,
-    getPaginationRowModel, getSortedRowModel,
-    SortingState,
-    useReactTable
+  ColumnDef,
+  ColumnFiltersState,
+  getCoreRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  SortingState,
+  useReactTable,
 } from "@tanstack/react-table";
-import React, {useEffect, useState} from "react";
-import {Button} from "@/components/ui/button";
-import {Employee, Tables, Sale, getSupabaseBrowserClient, SaleInsert} from "@/lib/database";
-import {Plus} from "lucide-react";
-import {Badge} from "@/components/ui/badge";
-import {DropDownMenu} from "@/employee/sales/components/drop-down-menu";
-import {format} from "date-fns";
-import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger} from "@/components/ui/tooltip";
-import DataTable, {TableFilter} from "@/components/tables/DataTable";
-import {RowActionDialog} from "@/employee/sales/components/RowActionDialog";
-import FormModal from "@/components/dialogs/FormModal";
+import React, { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Employee, Sale, SaleInsert } from "@/lib/database";
+import { Plus } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { SalesDropDownMenu } from "@/components/sales-drop-down-menu";
+import { format } from "date-fns";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import DataTable, {
+  DataTableChildProps,
+  TableFilter,
+} from "@/components/tables/data-table";
+import { RowActionDialog } from "@/components/dialogs/row-action-dialog";
+import FormModal from "@/components/dialogs/form-modal";
 import useAuth from "@/hooks/use-auth";
 import TableSortButton from "@/components/tables/table-sort-button";
-import {useToast} from "@/components/ui/use-toast";
-import {ToastAction} from "@/components/ui/toast";
+
+export type SalesTableProps = DataTableChildProps<Sale> & {
+  employees: Employee[];
+};
 
 /**
  * Component used to render sales page table at `/sales`
  * @group React Components
  */
-export default function SalesTable() {
-    const [loading, setLoading] = useState(true);
-    const [sales, setSales] = useState<Sale[]>([]);
-    const [employees, setEmployees] = useState<Employee[]>([]);
-    const [sorting, setSorting] = useState<SortingState>([])
-    const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
-    const [showSaleDialog, setShowSaleDialog] = useState<boolean>(false)
-    const supabase = getSupabaseBrowserClient();
+export default function SalesTable({
+  data,
+  employees,
+  loading,
+}: SalesTableProps) {
+  const [sorting, setSorting] = useState<SortingState>([]);
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [showSaleDialog, setShowSaleDialog] = useState<boolean>(false);
 
     const {employee} = useAuth();
     const {toast} = useToast();
@@ -143,113 +155,125 @@ export default function SalesTable() {
         setShowSaleDialog(false);
     }
 
-    const columns: ColumnDef<Tables<'Sales'>, Employee>[] = [
-        {
-            accessorKey: "SaleTime",
-            header: ({column}) => <TableSortButton column={column}/>,
-            cell: ({row}) => {
-                return (
-                    <p className={'text-sm min-w-fit'}>
-                        {format(new Date(row.original.SaleTime || new Date()), "LLL dd, y")}
-                    </p>
-                )
-            },
-        },
-        {
-            accessorKey: "Name",
-            header: ({column}) => <TableSortButton column={column}/>,
-            cell: ({row}) => {
-                // return employees.find((employee) => employee.id === row.original.EmployeeID)?.Name
-                return (
-                    <div className="flex space-x-2 ml-1">
-                        <Badge variant="outline">
-                            <span className="max-w-[200px] truncate font-medium">
-                                {tooltip(employees.find((employee) => employee.id === row.original.EmployeeID)?.Name || 'Employee Name')}
-                            </span>
-                        </Badge>
-                    </div>
-                )
-            },
-        },
-        {
-            accessorKey: "VehicleMake",
-            header: ({column}) => <TableSortButton column={column}/>,
-            cell: ({row}) => {
-                return (tooltip(row.original.VehicleMake))
-            }
-        },
-        {
-            accessorKey: "ActualCashValue",
-            header: ({column}) => <TableSortButton column={column}/>,
-            cell: ({row}) => `$${row.original.ActualCashValue.toLocaleString()}`,
-        },
-        {
-            accessorKey: "GrossProfit",
-            header: ({column}) => <TableSortButton column={column}/>,
-            cell: ({row}) => `$${row.original.GrossProfit.toLocaleString()}`,
-        },
-        {
-            accessorKey: "FinAndInsurance",
-            header: ({column}) => <TableSortButton column={column}/>,
-            cell: ({row}) => `$${row.original.FinAndInsurance.toLocaleString()}`,
-        },
-        {
-            accessorKey: "Holdback",
-            header: ({column}) => <TableSortButton column={column}/>,
-            cell: ({row}) => {
-                return row.original.Holdback ? `$${row.original.Holdback.toLocaleString()}` : '0'
-            },
-        },
-        {
-            accessorKey: "Total",
-            header: ({column}) => <TableSortButton column={column}/>,
-            cell: ({row}) => `$${row.original.Total.toLocaleString()}`,
-        },
-        {
-            id: "actions",
-            cell: ({row}) => DropDownMenu({row, sales, setSales}),
-        },
-    ]
+  const columns: ColumnDef<Sale, Employee>[] = [
+    {
+      accessorKey: "SaleTime",
+      header: ({ column }) => <TableSortButton column={column} />,
+      cell: ({ row }) => {
+        return (
+          <p className={"text-sm min-w-fit"}>
+            {format(new Date(row.original.SaleTime || new Date()), "LLL dd, y")}
+          </p>
+        );
+      },
+    },
+    {
+      accessorKey: "Name",
+      header: ({ column }) => <TableSortButton column={column} />,
+      cell: ({ row }) => {
+        // return employees.find((employee) => employee.id === row.original.EmployeeID)?.Name
+        return (
+          <div className="flex space-x-2 ml-1">
+            <Badge variant="outline">
+              <span className="max-w-[200px] truncate font-medium">
+                {tooltip(
+                  employees.find(
+                    (employee) => employee.id === row.original.EmployeeID,
+                  )?.Name || "Employee Name",
+                )}
+              </span>
+            </Badge>
+          </div>
+        );
+      },
+    },
+    {
+      accessorKey: "VehicleMake",
+      header: ({ column }) => <TableSortButton column={column} />,
+      cell: ({ row }) => {
+        return tooltip(row.original.VehicleMake);
+      },
+    },
+    {
+      accessorKey: "ActualCashValue",
+      header: ({ column }) => <TableSortButton column={column} />,
+      cell: ({ row }) => `$${row.original.ActualCashValue.toLocaleString()}`,
+    },
+    {
+      accessorKey: "GrossProfit",
+      header: ({ column }) => <TableSortButton column={column} />,
+      cell: ({ row }) => `$${row.original.GrossProfit.toLocaleString()}`,
+    },
+    {
+      accessorKey: "FinAndInsurance",
+      header: ({ column }) => <TableSortButton column={column} />,
+      cell: ({ row }) => `$${row.original.FinAndInsurance.toLocaleString()}`,
+    },
+    {
+      accessorKey: "Holdback",
+      header: ({ column }) => <TableSortButton column={column} />,
+      cell: ({ row }) => {
+        return row.original.Holdback
+          ? `$${row.original.Holdback.toLocaleString()}`
+          : "0";
+      },
+    },
+    {
+      accessorKey: "Total",
+      header: ({ column }) => <TableSortButton column={column} />,
+      cell: ({ row }) => `$${row.original.Total.toLocaleString()}`,
+    },
+    {
+      id: "actions",
+      cell: ({ row }) => SalesDropDownMenu({ row }),
+    },
+  ];
 
-    const table = useReactTable({
-        data: sales,
-        columns,
-        getCoreRowModel: getCoreRowModel(),
-        onSortingChange: setSorting,
-        getPaginationRowModel: getPaginationRowModel(),
-        onColumnFiltersChange: setColumnFilters,
-        getFilteredRowModel: getFilteredRowModel(),
-        getSortedRowModel: getSortedRowModel(),
-        state: {
-            sorting,
-            columnFilters
-        },
-        enableSorting: true,
-        enableColumnFilters: true,
-    })
+  const table = useReactTable({
+    data,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+    onSortingChange: setSorting,
+    getPaginationRowModel: getPaginationRowModel(),
+    onColumnFiltersChange: setColumnFilters,
+    getFilteredRowModel: getFilteredRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    state: {
+      sorting,
+      columnFilters,
+    },
+    enableSorting: true,
+    enableColumnFilters: true,
+  });
 
-
-    return (
-        <DataTable table={table} loading={loading}>
-            <TableFilter table={table} initial={"Name"} placeholder={"Filter sales..."}/>
-            <div className="flex items-center space-x-2 w-full">
-                <Button
-                    size="sm"
-                    variant="outline"
-                    className="ml-auto hidden h-8 lg:flex"
-                    onClick={() => {
-                        setShowSaleDialog(true)
-                    }}
-                >
-                    <Plus className="mr-2 h-4 w-4"/>
-                    Add Sale
-                </Button>
-            </div>
-            <FormModal title={"Create Sale"} showDialog={showSaleDialog} setShowDialog={setShowSaleDialog}
-                       onSubmit={onSubmit}>
-                <RowActionDialog/>
-            </FormModal>
-        </DataTable>
-
-    )
+  return (
+    <DataTable table={table} loading={loading}>
+      <TableFilter
+        table={table}
+        initial={"Name"}
+        placeholder={"Filter sales..."}
+      />
+      <div className="flex items-center space-x-2 w-full">
+        <Button
+          size="sm"
+          variant="outline"
+          className="ml-auto hidden h-8 lg:flex"
+          onClick={() => {
+            setShowSaleDialog(true);
+          }}
+        >
+          <Plus className="mr-2 h-4 w-4" />
+          Add Sale
+        </Button>
+      </div>
+      <FormModal
+        title={"Create Sale"}
+        showDialog={showSaleDialog}
+        setShowDialog={setShowSaleDialog}
+        onSubmit={onSubmit}
+      >
+        <RowActionDialog />
+      </FormModal>
+    </DataTable>
+  );
 }

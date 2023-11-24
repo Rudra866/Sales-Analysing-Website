@@ -1,16 +1,18 @@
 'use client'
 
-import React, {Suspense, useEffect} from 'react';
+import React, {Suspense} from 'react';
 import {useEmployee} from "@/employee/employee-components/employee-provider";
-import CalendarDateRangePicker from "@/admin/dashboard/components/date-range-picker";
 import {Button} from "@/components/ui/button";
-import {DynamicChart} from "@/components/dynamic-chart";
-import TasksQuickView from "@/employee/employee-components/tasks-quick-view";
 import {getSalesCSV} from "@/lib/csv";
+import dynamic from "next/dynamic";
 
+const DynamicChart = dynamic(() => import(`@/components/dynamic-chart`))
+const TasksQuickView = dynamic(() => import('@/employee/employee-components/tasks-quick-view'));
+const CalendarDateRangePicker = dynamic(() => import(`@/components/date-range-picker`))
+
+
+// todo listing changing to daily breaks, doesn't render correctly.
 export default function EmployeePage() {
-    const [data, setData] = React.useState<any[]>([]);
-
     const {
         employee,
         tasks,
@@ -18,11 +20,6 @@ export default function EmployeePage() {
         date,
         setDate
     } = useEmployee()
-
-    useEffect(() => {
-        console.log('sales: ', sales)
-        sales && setData(sales as any[])
-    }, [employee, tasks, sales, date, setDate])
 
     return (
         <Suspense fallback={null}>
@@ -43,14 +40,12 @@ export default function EmployeePage() {
                         </div>
                     </div>
                     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-                        {sales &&
-                            <DynamicChart
-                                className="col-span-4"
-                                data={data}
-                                date={date}
-                                title={'Sales'}
-                            />
-                        }
+                        <DynamicChart
+                            className="col-span-4"
+                            data={sales ?? []}
+                            date={date}
+                            title={'Sales'}
+                        />
                         <TasksQuickView tasks={tasks}/>
                     </div>
                 </div>

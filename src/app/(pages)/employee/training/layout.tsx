@@ -22,7 +22,7 @@ export default function SettingsLayout({children}: SettingsLayoutProps) {
                     title: page.pagename,
                     href: `/employee/training/${page.id}`,
                 }}))
-    }, [])
+    }, [referencePage])
 
     return (
         <ContainerLayout>

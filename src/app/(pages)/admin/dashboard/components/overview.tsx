@@ -2,6 +2,9 @@
 
 import {Bar, BarChart, ResponsiveContainer, Tooltip, XAxis, YAxis} from "recharts"
 import {useDashboard} from "./dashboard-provider";
+import React, {useEffect, useState} from "react";
+import {groupByTimeFrame} from "@/lib/utils";
+import {customTooltip} from "@/components/custom-tooltip";
 import {useEffect, useState} from "react";
 import {cn, groupByTimeFrame} from "@/lib/utils";
 import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
@@ -13,11 +16,14 @@ export function Overview({className}: { className?: string}) {
     const [salesByMonth, setSalesByMonth] = useState<{ name: string; total: number }[]>();
 
     useEffect(() => {
-        setSalesByMonth(
-            Object.entries(groupByTimeFrame(data || [], 'MMM-yy')).map(([key, value]) => ({
+        const groupedData = groupByTimeFrame(data ?? [], 'MMM-yy');
+        const salesData = Object.entries(groupedData)
+            .map(([key, value]) => ({
                 name: key,
                 total: value,
-            })))
+            })
+        );
+        setSalesByMonth(salesData);
     }, [data, date]);
 
     const customToolTip = (props: any) => {

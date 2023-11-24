@@ -8,30 +8,32 @@ import {Form, FormDescription} from "@/components/ui/form"
 import FormFieldComponent from "@/components/form-components/form-field-component";
 import {Checkbox} from "@/components/ui/checkbox";
 import {getSupabaseBrowserClient, postToReferencePages} from "@/lib/database";
+import {referencePageFormSchema} from "@/lib/zod-schemas";
+import {errorToast, successToast} from "@/lib/toasts";
+import {PostgrestError} from "@supabase/postgrest-js";
 
 const supabase = getSupabaseBrowserClient();
 
-const referenceFormSchema = z.object({
-    title: z.string().min(3).optional(),
-    body: z.string().min(10).optional(),
-})
 
-type ReferenceFormValues = z.infer<typeof referenceFormSchema>
+type ReferenceFormValues = z.infer<typeof referencePageFormSchema>
 
 
-export function ReferenceForm() {
-
+export default function ReferenceForm() {
     const form = useForm<ReferenceFormValues>({
-        resolver: zodResolver(referenceFormSchema),
-        mode: "onChange",
+        resolver: zodResolver(referencePageFormSchema),
+        defaultValues: {
+            body: ""
+        }
     })
 
     function onSubmit(data: ReferenceFormValues) {
         postToReferencePages(supabase, {
-            pagename: form.getValues().title,
-            pagebody: form.getValues().body
+            pagename: data.title,
+            pagebody: data.body
         }).then((res) => {
-                console.log(res)
+            successToast(`Created page ${res.pagename}!`)
+        }).catch((err: PostgrestError) => {
+            errorToast(err.message);
         })
     }
 
@@ -41,7 +43,7 @@ export function ReferenceForm() {
                 <FormFieldComponent name={'title'} label={'Title'} form={form} inputType={'input'}/>
                 <FormFieldComponent name={'body'} form={form} inputType={'textarea'}/>
                 <FormDescription className={'items-center align-middle flex gap-2'}>
-                    Notify your employees about new reference page {" "}
+                    <span>Notify your employees about new reference page </span>
                     <Checkbox/>
                 </FormDescription>
                 <Button type="submit">Create Page</Button>

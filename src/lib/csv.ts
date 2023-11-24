@@ -1,5 +1,5 @@
 import {DateRange} from "react-day-picker";
-import {toast} from "@/components/ui/use-toast";
+import {errorToast} from "@/lib/toasts";
 
 export async function getSalesCSV(date?: DateRange | undefined) {
   try {
@@ -25,22 +25,12 @@ export async function getSalesCSV(date?: DateRange | undefined) {
 -${date?.to?.toLocaleDateString()?.replace(/-/g, '.')}.csv`
       )
     }
-
-    // Append to html link element page
     document.body.appendChild(link);
-
-    // Start download
     link.click();
-
-    // Clean up and remove the link
     link.parentNode?.removeChild(link);
 
-
   } catch (err) {
-    toast({
-      title: "Error!",
-      description: "File could not be downloaded."
-    })
-    console.log(err)
+    errorToast("File could not be downloaded.");
+    console.error(err)
   }
 }

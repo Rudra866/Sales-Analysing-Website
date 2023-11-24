@@ -2,12 +2,13 @@
 
 import {Bar, BarChart, ResponsiveContainer, Tooltip, XAxis, YAxis} from "recharts"
 import React, {useEffect, useState} from "react";
-import {cn, groupSelectionByTimeFrame, numericSales} from "@/lib/utils";
+import {cn, groupSelectionByTimeFrame, numericSalesFields} from "@/lib/utils";
 import {DateRange} from "react-day-picker";
 import {format} from "date-fns";
 import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 import {Sale} from "@/lib/database";
+import {customTooltip} from "@/components/custom-tooltip";
 
 
 // todo - make this dynamic based on the data as well as dynamic depending on the data type
@@ -19,6 +20,10 @@ interface DynamicChartProps {
     date: DateRange | undefined
     className?: string
 }
+
+// TODO - On hover tooltip it should display more relevant information such as a list of cars that the bar is summing, average ROI, etc..
+//  However this would require a complex data structure.
+
 
 export function DynamicChart({ title, color, data, date, className }: DynamicChartProps) {
     const [keyValues, setKeyValues] = useState<{ key: string; value: number }[]>();
@@ -64,7 +69,7 @@ export function DynamicChart({ title, color, data, date, className }: DynamicCha
         <Card className={cn("col-span-4", className)}>
             <CardHeader className={'flex flex-row justify-between gap-2'}>
                 <CardTitle className={'w-full self-center'}>{title}</CardTitle>
-                <Select defaultValue="MMM-yy" onValueChange={setGrouping}>
+                <Select defaultValue={grouping} onValueChange={setGrouping}>
                     <SelectTrigger id="area"  >
                         <SelectValue placeholder="Monthly" />
                     </SelectTrigger>
@@ -80,7 +85,7 @@ export function DynamicChart({ title, color, data, date, className }: DynamicCha
                         <SelectValue placeholder="Select"/>
                     </SelectTrigger>
                     <SelectContent>
-                        {numericSales?.map((cat, index) => {
+                        {numericSalesFields?.map((cat, index) => {
                             return (
                                 <SelectItem key={index} value={cat}>
                                     {cat}

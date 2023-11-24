@@ -1,9 +1,12 @@
 'use client'
 
 import React, {useEffect, useState} from 'react';
-import {useParams, useRouter} from "next/navigation";
+import {useParams} from "next/navigation";
 import {Employee, getEmployeeById, getRoleFromEmployee, getSupabaseBrowserClient, Role} from "@/lib/database";
-import {UserForm} from "@/admin/settings/components/user-form";
+import {errorToast} from "@/lib/toasts";
+import dynamic from "next/dynamic";
+
+const UserForm = dynamic(() => import('../../../components/user-form'));
 
 function Page() {
     const params = useParams()
@@ -16,16 +19,19 @@ function Page() {
         getEmployeeById(supabase, params?.id as string) // love type casting....
             .then(res=> {
                 setEmployee(res as Employee)
-                console.log(res)
                 return res
-            }).then(res=> {
+            })
+            .then(res=> {
                 res && getRoleFromEmployee(supabase, res).then(res=> {
-                    console.log(res)
                     setRole(res as Role)
                 })
             })
+            .catch((err) => {
+                errorToast("Failed to get data.");
+                console.error(err);
+            })
 
-    }, []);
+    }, [params?.id, supabase]);
 
     return (
         <div>

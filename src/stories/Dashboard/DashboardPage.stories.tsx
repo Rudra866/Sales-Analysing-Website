@@ -3,8 +3,7 @@ import {Meta, StoryObj} from "@storybook/react";
 import {subMonths} from "date-fns";
 import React from "react";
 import DashboardPage from "@/admin/dashboard/page";
-import {Overview} from "@/admin/dashboard/components/overview";
-// import {Overview} from "@/components/dashboard-components/overview";
+import Overview from "@/admin/dashboard/components/overview";
 
 export default {
   title: 'Dashboard/Page',

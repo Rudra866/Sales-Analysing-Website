@@ -3,9 +3,8 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 
-import {cn, isAdmin} from "@/lib/utils"
+import {cn} from "@/lib/utils"
 import { buttonVariants } from "@/components/ui/button"
-import useAuth from "@/hooks/use-auth";
 
 interface SidebarNavProps extends React.HTMLAttributes<HTMLElement> {
   items: {
@@ -16,8 +15,6 @@ interface SidebarNavProps extends React.HTMLAttributes<HTMLElement> {
 
 export function TrainingSidebarNav({ className, items, ...props }: SidebarNavProps) {
   const pathname = usePathname()
-  const {employee} = useAuth();
-
   return (
     <nav
       className={cn(

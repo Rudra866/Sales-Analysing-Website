@@ -5,11 +5,9 @@ import React from "react";
 import {useForm} from "react-hook-form";
 import * as z from "zod";
 import {zodResolver} from "@hookform/resolvers/zod";
-import {passwordFieldSchema} from "@/lib/types";
+import {passwordChangeFormSchema} from "@/lib/zod-schemas";
 
-export const passwordChangeFormSchema = z.object({
-  password: passwordFieldSchema
-})
+
 
 export default function ChangePasswordForm({ onSubmit }: {onSubmit: (values: z.infer<typeof passwordChangeFormSchema>) => void}) {
 

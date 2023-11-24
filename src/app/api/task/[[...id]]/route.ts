@@ -29,11 +29,22 @@ export async function GET(request: Request, { params }: {params: {id: string[]}}
 
   const supabaseAdmin =
       createClient<Database>(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_KEY!)
-  if (!params.id) {
-    const dbResult = await supabaseAdmin
-        .from("Tasks")
-        .select()
-    return NextResponse.json(dbResult, {status: dbResult.status})
+  if (!params.id) { // if querying ALL
+    if (role.EmployeePermission) { // get ALL tasks as an admin calling the endpoint
+      const dbResult = await supabaseAdmin
+          .from("Tasks")
+          .select()
+      return NextResponse.json(dbResult, {status: dbResult.status});
+    }
+
+    else {                       // otherwise, get all for current logged-in user only
+      const dbResult = await supabaseAdmin
+          .from("Tasks")
+          .select()
+          .eq("Assignee", employee.id)
+      return NextResponse.json(dbResult, {status: dbResult.status});
+    }
+
   } else {
     const dbResult = await supabaseAdmin
         .from("Tasks")

@@ -1,5 +1,9 @@
 'use client'
 
+import React, {useEffect} from 'react';
+import {Card, CardContent, CardHeader} from "@/components/ui/card";
+import {numericSalesFields} from "@/lib/utils";
+import {format} from "date-fns";
 import React, {useEffect, useState} from 'react';
 import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
 import {Car} from "lucide-react";
@@ -28,7 +32,7 @@ export default function SummaryCard({className, defaultCategory = "Total"}: { cl
             // @ts-ignore
             return acc + curr[selectedCategory]
         }, 0)
-        if (selectedCategory === "ROI") setCardData((sum ?? 0)/(data?.length ?? 1) * 100)
+        if (selectedCategory === "ROI") setCardData((sum ?? 0)/(data?.length ?? 1) * 100) // ROI becomes an avg.
         else setCardData(sum ?? 0)
 
     }, [data, date, selectedCategory]);
@@ -60,7 +64,7 @@ export default function SummaryCard({className, defaultCategory = "Total"}: { cl
                                 <SelectValue placeholder="Select" className={'text-sm font-medium'}/>
                             </SelectTrigger>
                             <SelectContent>
-                                {numericSales?.map((cat, index) => {
+                                {numericSalesFields?.map((cat, index) => {
                                     return (
                                         <SelectItem key={index} value={cat}>
                                             {cat}
@@ -69,6 +73,7 @@ export default function SummaryCard({className, defaultCategory = "Total"}: { cl
                                 })}
                             </SelectContent>
                         </Select>
+                        {/*<DollarSign className="h-4 w-4 text-muted-foreground"/>*/}
                     </CardHeader>
                     <CardContent>
                         {selectedCategory === "ROI" &&

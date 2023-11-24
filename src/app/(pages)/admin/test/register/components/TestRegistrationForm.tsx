@@ -11,7 +11,7 @@ import * as z from "zod";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {getSupabaseBrowserClient} from "@/lib/supabase";
 import {getAllRoles, Database, Role, SupabaseClient, User} from "@/lib/database";
-import {passwordFieldSchema} from "@/lib/types";
+import {passwordField} from "@/lib/zod-schemas";
 import {generateRandomString} from "@/lib/utils";
 
 
@@ -38,7 +38,7 @@ const existingEmployeeFormSchema = z.object({
           .email({
             message: "Employee Email must be a valid email address."}),
 
-  password: passwordFieldSchema,
+  password: passwordField,
 
   Role:
       z.string().refine(

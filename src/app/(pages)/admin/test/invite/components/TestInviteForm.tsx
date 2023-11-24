@@ -2,7 +2,7 @@ import {Database, getAllRoles, getSupabaseBrowserClient, Role, SupabaseClient, U
 import React, {useEffect, useState} from "react";
 import {useForm} from "react-hook-form";
 import * as z from "zod";
-import {existingEmployeeFormSchema} from "@/lib/types";
+import {existingEmployeeFormSchema} from "@/lib/zod-schemas";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
 import {Input} from "@/components/ui/input";
