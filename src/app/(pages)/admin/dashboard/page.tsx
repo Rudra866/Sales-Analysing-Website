@@ -5,16 +5,16 @@ import {useDashboard} from "./components/dashboard-provider";
 import {getSalesCSV} from "@/lib/csv";
 import dynamic from "next/dynamic";
 
-/* Can probably optimize this down the line. */
-const SalesLineChart = dynamic(() => import(`@/components/sales-line-chart`))
-const Overview = dynamic(() => import(`./components/overview`))
 const RecentSales = dynamic(() => import(`./components/recent-sales`))
-const DynamicChart = dynamic(() => import(`@/components/dynamic-chart`))
 const CalendarDateRangePicker = dynamic(() => import(`@/components/date-range-picker`))
 const SummaryCard = dynamic(() => import('./components/summary-card'));
 const CountCard = dynamic(() => import('./components/count-card'));
 import {Suspense} from "react";
 import LoadingAnimation from "@/components/loading-animation";
+import {Overview} from "@/admin/dashboard/components/overview";
+import {DynamicChart} from "@/components/dynamic-chart";
+import {Sale} from "@/lib/database";
+import SalesLineChart from "@/components/sales-line-chart";
 
 
 // TODO maybe we can split this page to some public components? We can also add db method to handle this db request.
@@ -48,9 +48,7 @@ export default function DashboardPage() {
                             <div className="grid gap-4 md:grid-cols-4 lg:grid-cols-7">
                                 <Overview className={'col-span-2 lg:col-span-4'}/>
                                 <RecentSales className={'col-span-2 lg:col-span-3'}/>
-                                <SalesLineChart
-                                    className={'col-span-2 lg:col-span-4'}
-                                    data={data as Sale[]} date={date}/>
+                                <SalesLineChart className={'col-span-2 lg:col-span-4'}/>
                                 <DynamicChart
                                     className="col-span-2 lg:col-span-3"
                                     data={data!}
@@ -62,6 +60,6 @@ export default function DashboardPage() {
                     }
                 </div>
             </div>
-        </>
+        </ Suspense >
     )
 }

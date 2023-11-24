@@ -14,19 +14,10 @@ import React, {useEffect, useState} from "react";
 import {Button} from "@/components/ui/button";
 import {
     Employee,
-    getSupabaseBrowserClient,
     Task,
     TaskInsert,
-    getAllEmployees
 } from "@/lib/database";
 import {ArrowUpDown, MoreHorizontal, Plus} from "lucide-react";
-import {format} from "date-fns";
-import DataTable, {TableFilter} from "@/components/tables/DataTable";
-import FormModal from "@/components/dialogs/FormModal";
-import React, { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Employee, Task, TaskInsert } from "@/lib/database";
-import { MoreHorizontal, Plus } from "lucide-react";
 import { format } from "date-fns";
 import DataTable, {
   DataTableChildProps,

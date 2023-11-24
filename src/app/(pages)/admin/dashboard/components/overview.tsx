@@ -2,9 +2,6 @@
 
 import {Bar, BarChart, ResponsiveContainer, Tooltip, XAxis, YAxis} from "recharts"
 import {useDashboard} from "./dashboard-provider";
-import React, {useEffect, useState} from "react";
-import {groupByTimeFrame} from "@/lib/utils";
-import {customTooltip} from "@/components/custom-tooltip";
 import {useEffect, useState} from "react";
 import {cn, groupByTimeFrame} from "@/lib/utils";
 import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";

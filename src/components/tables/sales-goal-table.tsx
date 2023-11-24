@@ -10,7 +10,7 @@ import {
 } from "@tanstack/react-table";
 import {useState} from "react";
 import {
-  Employee, SalesGoal, SalesGoalInsert, MonthlySale
+  Employee, SalesGoal, SalesGoalInsert, MonthlySale, getSupabaseBrowserClient
 } from "@/lib/database";
 import DataTable, {DataTableChildProps, TableFilter} from "@/components/tables/data-table";
 import TableSortButton from "@/components/tables/table-sort-button";
@@ -18,7 +18,6 @@ import {toast} from "@/components/ui/use-toast";
 import {Plus} from "lucide-react";
 import {isAdmin} from "@/lib/utils";
 import useAuth from "@/hooks/use-auth";
-import FormModal from "@/components/dialogs/FormModal";
 import {TaskCreateDialog} from "@/components/dialogs/TaskCreateDialog";
 
 export type SalesGoalTableProps = DataTableChildProps<SalesGoal> & {
@@ -33,8 +32,8 @@ export default function SalesGoalTable({data, monthlySales, employees, loading}:
   const supabase = getSupabaseBrowserClient();
   const [showTaskCreateModal, setShowTaskCreateModal] = useState<boolean>(false)
 
-  const [employees, setEmployees] = useState<Employee[]>([])
-  const [monthlySales, setMonthlySales] = useState<MonthlySale[]>([])
+  // const [employees, setEmployees] = useState<Employee[]>([])
+  // const [monthlySales, setMonthlySales] = useState<MonthlySale[]>([])
   const {employee} = useAuth();
   const [showGoalCreateModal, setShowGoalCreateModal] = useState<boolean>(false)
 

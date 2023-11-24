@@ -5,8 +5,8 @@ import {useEmployee} from "@/employee/employee-components/employee-provider";
 import {Button} from "@/components/ui/button";
 import {getSalesCSV} from "@/lib/csv";
 import dynamic from "next/dynamic";
+import {DynamicChart} from "@/components/dynamic-chart";
 
-const DynamicChart = dynamic(() => import(`@/components/dynamic-chart`))
 const TasksQuickView = dynamic(() => import('@/employee/employee-components/tasks-quick-view'));
 const CalendarDateRangePicker = dynamic(() => import(`@/components/date-range-picker`))
 

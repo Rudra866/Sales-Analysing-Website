@@ -44,7 +44,7 @@ export const DashboardProvider: React.FC<PropsWithChildren> = ({children}) => {
     const [mySales, setMySales] = useState<SaleWithEmployeeAndFinancingType[]>();
     const [referencePage, setReferencePage] = useState<ReferencePage[]>();
     const [isLoading, setIsLoading] = useState<boolean>(false);
-
+    const {employee} = useAuth()
 
     useEffect(() => { // todo - this is a hacky way to do this. need to revisit this.
         setIsLoading(true)
@@ -64,7 +64,7 @@ export const DashboardProvider: React.FC<PropsWithChildren> = ({children}) => {
         from: subDays(new Date(), 120),
         to: new Date(),
     })
-    const {employee} = useAuth()
+
 
     // get all employees, sales, goals and reference pages on initial provider load
     useEffect(() => {

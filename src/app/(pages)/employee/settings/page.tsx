@@ -1,17 +1,13 @@
 'use client'
 
 import React from 'react';
-import ContainerLayout from "@/components/container-layout";
-import {FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage, Form} from "@/components/ui/form";
-import {Input} from "@/components/ui/input";
+import {Form} from "@/components/ui/form";
 import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import * as z from "zod";
 import {toast} from "@/components/ui/use-toast";
 import FormFieldComponent from "@/components/form-components/form-field-component";
 import useAuth from "@/hooks/use-auth";
-import {Separator} from "@/components/ui/separator";
-import {UserForm} from "@/admin/settings/components/user-form";
 import {Button} from "@/components/ui/button";
 
 
@@ -39,7 +35,7 @@ type ProfileFormValues = z.infer<typeof profileFormSchema>
 
 
 function Page() {
-    const { employee, user } = useAuth()
+    const { employee} = useAuth()
     const defaultValues: Partial<ProfileFormValues> = {
         username: employee?.Name,
         email: employee?.Email,

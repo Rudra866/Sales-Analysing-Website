@@ -29,5 +29,3 @@ export default function RootLayout({children,}: { children: ReactNode }) {
   );
 }
 
-// todo - error catching such as try/catch should be used more often through out the app.
-// todo - fix all @ts-ignore ?

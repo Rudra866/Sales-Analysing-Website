@@ -2,7 +2,7 @@
 
 import useAuth from "@/hooks/use-auth";
 import dynamic from "next/dynamic";
-import {useEffect, useState} from "react";
+import {Suspense, useEffect, useState} from "react";
 import {Employee, getAllEmployees, getSales, getSupabaseBrowserClient, Sale} from "@/lib/database";
 import {errorToast} from "@/lib/toasts";
 
