@@ -80,7 +80,7 @@ export default function SalesLineChart({data, date, className}: SalesLineChartPr
     const [chartData, setChartData] = useState<ChartDataType[]>();
     const {theme} = useTheme();
 
-    const lineColors = [ theme ==='dark' ? "#ffffff" : "#888", "#adfa1d"]
+    const lineColors = [ theme ==='dark' ? "#ffffff" : "#88888", "#adfa1d"]
     const color1 = `text-[${lineColors[0]}]`
     const color2 = `text-[${lineColors[1]}]`
     const {salesGoal} = useDashboard();

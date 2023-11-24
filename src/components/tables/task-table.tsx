@@ -10,27 +10,17 @@ import {
     useReactTable
 } from "@tanstack/react-table";
 import React, {useEffect, useState} from "react";
-import {Input} from "@/components/ui/input";
 import {Button} from "@/components/ui/button";
-import {Checkbox} from "@/components/ui/checkbox";
 import {
     Employee,
-    Tables,
-    Sale,
     getSupabaseBrowserClient,
     Task,
-    getAllTasks,
     TaskInsert,
     getAllEmployees
 } from "@/lib/database";
 import {ArrowUpDown, MoreHorizontal, Plus} from "lucide-react";
-import {Badge} from "@/components/ui/badge";
-import {DropDownMenu} from "@/employee/sales/components/drop-down-menu";
 import {format} from "date-fns";
-import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger} from "@/components/ui/tooltip";
-import {DbResult} from "@/lib/types";
 import DataTable, {TableFilter} from "@/components/tables/DataTable";
-import {RowActionDialog} from "@/employee/sales/components/RowActionDialog";
 import FormModal from "@/components/dialogs/FormModal";
 import TableSortButton from "@/components/tables/table-sort-button";
 import {toast} from "@/components/ui/use-toast";
@@ -41,7 +31,6 @@ import {
     QuestionMarkCircledIcon,
     StopwatchIcon
 } from "@radix-ui/react-icons";
-import useAuth from "@/hooks/use-auth";
 import {TaskCreateDialog} from "@/components/dialogs/TaskCreateDialog";
 import tableTooltip from "@/components/table-tooltip";
 
@@ -187,6 +176,7 @@ export default function TaskTable() {
                 return (
                     <Button variant="ghost" className="h-8 w-8 p-0"
                     onClick={() => {
+                        console.log('setting task: ', row.original)
                         setTask(row.original)
                         setShowTaskCreateModal(true)
                     }}
@@ -220,7 +210,6 @@ export default function TaskTable() {
     return (
         <DataTable table={table} loading={loading}>
             <TableFilter table={table} initial={"Name"} placeholder={"Filter tasks..."}/>
-
             <div className="flex items-center space-x-2 w-full">
                 <Button
                     size="sm"

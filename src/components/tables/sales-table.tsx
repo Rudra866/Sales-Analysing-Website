@@ -21,6 +21,8 @@ import {RowActionDialog} from "@/employee/sales/components/RowActionDialog";
 import FormModal from "@/components/dialogs/FormModal";
 import useAuth from "@/hooks/use-auth";
 import TableSortButton from "@/components/tables/table-sort-button";
+import {useToast} from "@/components/ui/use-toast";
+import {ToastAction} from "@/components/ui/toast";
 
 /**
  * Component used to render sales page table at `/sales`
@@ -36,6 +38,7 @@ export default function SalesTable() {
     const supabase = getSupabaseBrowserClient();
 
     const {employee} = useAuth();
+    const {toast} = useToast();
     useEffect(() => {
         function fetchEmployees() {
             return supabase.from('Employees').select()
@@ -104,7 +107,40 @@ export default function SalesTable() {
                 "Content-Type": "application/json",
             },
             body: JSON.stringify(data),
+        }).then((res) => {
+            console.log(res)
+            try {
+                if (200 <= res.status && 300 > res.status) {
+                    toast({
+                        title: `${employee?.Name} submitted the following values:`,
+                        description: (
+                            <pre className="mt-2 w-[300px] rounded-md bg-slate-950 p-4">
+                                <code className="text-white truncate">{JSON.stringify(data, null, 2)}</code>
+                            </pre>
+                        ),
+                        action: (
+                            <ToastAction altText="Goto schedule to undo">Close</ToastAction>
+                        ),
+                    })
+                } else {
+                    toast({
+                        variant: "destructive",
+                        title: "Error submitting sale",
+                        description: (
+                            <pre className="mt-2 w-[300px] rounded-md bg-slate-950 p-4">
+                                <code className="text-white truncate">{JSON.stringify(data, null, 2)}</code>
+                            </pre>
+                        ),
+                        action: (
+                            <ToastAction altText="Goto schedule to undo">Close</ToastAction>
+                        ),
+                    })
+                }
+            } catch (e) {
+                console.log(e)
+            }
         })
+        setShowSaleDialog(false);
     }
 
     const columns: ColumnDef<Tables<'Sales'>, Employee>[] = [

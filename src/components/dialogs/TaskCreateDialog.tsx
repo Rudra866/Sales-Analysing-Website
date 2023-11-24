@@ -36,22 +36,20 @@ const newTaskSchema = z.object({
  * @group React Components
  */
 export function TaskCreateDialog({employees, task}: { employees: Employee[], task?: any }) {
-  console.log(task)
   const [openEmployees, setOpenEmployees] = useState<boolean>(false)
-  const taskEmployee = task?.Assignee ? employees.find(employee => employee.id === task.Assignee)?.Name : ""
+  const taskEmployee = task?.Assignee ? employees.find(employee => employee.id === task?.Assignee)?.Name : ""
   const [employeeValue, setEmployeeValue] = React.useState( taskEmployee ?? "")
   const formContext = useFormModalContext()
   const {employee} = useAuth();
-
-  const [startDate, setStartDate] = useState<Date | undefined>(task.StartDate ? new Date(task.StartDate) : undefined)
-  const [endDate, setEndDate] = useState<Date | undefined>( task.EndDate ? new Date(task.EndDate) : undefined)
+  const [startDate, setStartDate] = useState<Date | undefined>(task?.StartDate ? new Date(task?.StartDate) : undefined)
+  const [endDate, setEndDate] = useState<Date | undefined>( task?.EndDate ? new Date(task?.EndDate) : undefined)
 
 
   const form = useForm<z.infer<typeof newTaskSchema>>({
     resolver: zodResolver(newTaskSchema),
     defaultValues: {
-      Name: task.Name ?? "",
-      Description: task.Description ?? "",
+      Name: task?.Name ?? "",
+      Description: task?.Description ?? "",
     },
   })
   function onSubmit(data: any) {
@@ -61,7 +59,6 @@ export function TaskCreateDialog({employees, task}: { employees: Employee[], tas
     data["Assignee"] = employees.find((employee) => employee.Name.toLowerCase() === employeeValue)?.id // todo @bill better way to do this with keys?
     data["StartDate"] = startDate;
     data["EndDate"] = endDate;
-
     formContext!.onSubmit(data)
   }
 

@@ -75,8 +75,7 @@ export function RowActionDialog({sale}: SaleSelectModalFormProps) {
             }
 
     )
-    type formFieldComponentsPropType =
-        {
+    type formFieldComponentsPropType = {
             name: string,
             form: typeof form,
             label: string,

@@ -155,7 +155,7 @@ export function TableFilter<TData>({table, initial, placeholder}:
         <Input
             placeholder={placeholder}
             value={(table.getColumn(sortColumn)?.getFilterValue() as string) ?? ""}
-            onChange={(event) => table.getColumn(sortColumn)?.setFilterValue(event.target.value.toLowerCase())}
+            onChange={(event) => table.getColumn(sortColumn)?.setFilterValue(event.target.value)}
             className="max-w-[250px]"
         />
         <span className={"max-w px-2"}>
