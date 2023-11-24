@@ -1300,4 +1300,26 @@ ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON TAB
 ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON TABLES  TO "authenticated";
 ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON TABLES  TO "service_role";
 
+
+
+-- ADD INTEGRATION TEST USERS
+ALTER TABLE "auth"."users" DISABLE TRIGGER on_auth_user_created;
+INSERT INTO "public"."Roles" ("id", "RoleName", "ReadPermission", "WritePermission", "ModifySelfPermission", "ModifyAllPermission", "EmployeePermission", "DatabasePermission") VALUES
+(1, 'Default', false, false, false, false, false, false),
+(2, 'Administrator', true, true, true, true, true, true);
+
+INSERT INTO "auth"."users" ("instance_id", "id", "aud", "role", "email", "encrypted_password", "email_confirmed_at", "invited_at", "confirmation_token", "confirmation_sent_at", "recovery_token", "recovery_sent_at", "email_change_token_new", "email_change", "email_change_sent_at", "last_sign_in_at", "raw_app_meta_data", "raw_user_meta_data", "is_super_admin", "created_at", "updated_at", "phone", "phone_confirmed_at", "phone_change", "phone_change_token", "phone_change_sent_at", "email_change_token_current", "email_change_confirm_status", "banned_until", "reauthentication_token", "reauthentication_sent_at", "is_sso_user", "deleted_at") VALUES
+('00000000-0000-0000-0000-000000000000', '1eb698ad-dd16-469a-9f85-03edb9e5aa5c', 'authenticated', 'authenticated', 'admin@domain.com', '$2a$10$W9OuXL6D/ZdgZkxT/CPBx.kLFJv9h/YVcQX0W/CE3.iWsgp7/XSXq', '2023-11-07 10:00:05.227948+00', NULL, '', NULL, '', NULL, '', '', NULL, '2023-11-17 05:36:27.644279+00', '{"provider": "email", "providers": ["email"]}', '{"Name": "_REGISTER_TEST", "Role": "2", "EmployeeNumber": "Integration Admin"}', NULL, '2023-11-07 10:00:05.221681+00', '2023-11-17 05:36:27.647485+00', NULL, NULL, '', '', NULL, '', 0, NULL, '', NULL, false, NULL),
+('00000000-0000-0000-0000-000000000000', 'd311a865-fffd-4a48-a159-6354ca10ee0c', 'authenticated', 'authenticated', 'tester@domain.com', '$2a$10$7G7dfdtFdmpu3/tpiPFDSuWJ4T3UvsPPfCxDB2KLQXw5oadJkdD.m', '2023-11-07 06:57:38.704634+00', NULL, '', NULL, '', '2023-11-07 07:41:49.751707+00', '', '', NULL, '2023-11-17 05:36:41.143832+00', '{"provider": "email", "providers": ["email"]}', '{"Name": "Integration", "Role": "1", "EmployeeNumber": "00001"}', NULL, '2023-11-07 06:57:38.698202+00', '2023-11-17 05:36:41.14528+00', NULL, NULL, '', '', NULL, '', 0, NULL, '', NULL, false, NULL);
+
+INSERT INTO "auth"."identities" ("id", "user_id", "identity_data", "provider", "last_sign_in_at", "created_at", "updated_at") VALUES
+('d311a865-fffd-4a48-a159-6354ca10ee0c', 'd311a865-fffd-4a48-a159-6354ca10ee0c', '{"sub": "d311a865-fffd-4a48-a159-6354ca10ee0c", "email": "tester@domain.com"}', 'email', '2023-11-07 06:57:38.700184+00', '2023-11-07 06:57:38.70023+00', '2023-11-07 06:57:38.70023+00'),
+('1eb698ad-dd16-469a-9f85-03edb9e5aa5c', '1eb698ad-dd16-469a-9f85-03edb9e5aa5c', '{"sub": "1eb698ad-dd16-469a-9f85-03edb9e5aa5c", "email": "admin@domain.com"}', 'email', '2023-11-07 10:00:05.224706+00', '2023-11-07 10:00:05.224752+00', '2023-11-07 10:00:05.224752+00');
+
+INSERT INTO "public"."Employees" ("id", "Name", "EmployeeNumber", "Role", "Email", "Avatar") VALUES
+('d311a865-fffd-4a48-a159-6354ca10ee0c', 'Integration', 'User', 1, 'tester@domain.com', '01.png'),
+('1eb698ad-dd16-469a-9f85-03edb9e5aa5c', 'Integration', 'Admin', 2, 'admin@domain.com', '03.png');
+
+ALTER TABLE "auth"."users" ENABLE TRIGGER on_auth_user_created;
+
 RESET ALL;
