@@ -1,37 +1,3 @@
-## Getting Started
-
-First, run the development server:
-
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
-
-## Documentation
-Some links to help you get started:
-
-- [Next.js Documentation](https://nextjs.org/docs)
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-- [Next.js GitHub repository](https://github.com/vercel/next.js/)
-
-
-- [React Documentation](https://react.dev/reference/react)
-- [shadcn/ui Documentation](https://ui.shadcn.com/docs/)
-- [Database Documentation](https://docs.codeallergy.dev/interfaces/DatabaseUsage.html)
-- [Supabase-js Documentation](https://supabase.com/docs/reference/javascript/introduction)
-- [Project Documentation](https://docs.codeallergy.dev)
-
-TODO: Write a section about writing documentation and JSDoc comments.
-
 ## Installation
 
 ### Dependencies
@@ -46,19 +12,20 @@ npm i
 ```
 This will install all required dependencies.
 
-Now, the project is ready to build and run. But first we will setup a database instance for our application.
+Now, the project is ready to build and run. But first we will set up a database instance for our application.
 
-These instructions rely on you being able to register and create a project with Supabase. 
-If you would not like to create an account, you can self-host a Supabase instance locally 
-on your own system. Instructions for this are at the end of the setup instructions. 
-If you choose to self-host this way, just use the default values in the .example.env file as the guide does.
+Ideally for simplicity, we recommend you register an account on Supabase and create a project.
+If you would like to avoid creating an account, you can instead self-host a Supabase instance locally 
+on your own system. Instructions for this follow directly below. 
+
+Otherwise, skip ahead to the [Supabase.com setup](#supabasecom-setup) section
 
 ### Supabase Local Deployment
-(skip this section if you want to set up with an account on supabase.com)
 
 If you decide instead to host the instance locally, follow the directions
 [here](https://supabase.com/docs/guides/self-hosting/docker) first to get a local deployment. You will need docker, as they use docker compose to 
-run all their services.
+run all their services. Run these commands within a folder external to our project, as to not cause
+issues with linting.
 
 You will then want to replace the following environment variables in the root file .env:
 
@@ -77,13 +44,14 @@ You will also need to make note of the following in the .example.env, these are 
 
 With those credentials, access the supabase interface by navigating to http://localhost:8000. You are now ready to
 continue on with the steps for supabase.com, you do not need to create a project as you are given an initialized one.
-Skip the portion on copying environment variables.
+Skip the portion on copying environment variables, as you have already done this.
 
 ### Supabase.com Setup:
 Create an account on supabase.com by clicking [here](https://supabase.com/dashboard/sign-up).
 
-Once you have an account setup, you will be brought to a page to create a project. 
-Give the project some name, the value you set for the password is unimportant. 
+Once you have an account setup, you will first be brought to a page to create a organization.
+Pick a name and continue. Next you will select the option to create a new project. 
+Give the project some name, the value you set for the password is unimportant for the demo. 
 Once the project is set up, click on the third icon on the sidebar; it should look like a terminal prompt.
 
 Within the root of our project, there are 2 SQL files you will need to execute. One is for the tables 
@@ -161,7 +129,7 @@ the business, if wanting to keep data in house.
 
 The only other change required to supabase once deployed is changing the domain for authentication. This can be found in
 the Authentication section on the sidebar, and under the URL Configuration label. This should be set to the domain of the
-hosted web app.
+hosted web app, so Supabase knows where to direct users for authentication requests.
 
 ### Test Deployments
 The following subdomains are set up to mirror the latest deployment of each user's branch. 
@@ -177,3 +145,25 @@ Some of them are just old versions of main, as some of them have never made a co
 | ryan     | [ryan.codeallergy.dev](https://ryan.codeallergy.dev)         |
 | Suchetan | [suchetan.codeallergy.dev](https://suchetan.codeallergy.dev) |
 | tolu     | [tolu.codeallergy.dev](https://tolu.codeallergy.dev)         |
+
+## Testing
+To run the test suite for the program, run the following in the terminal:
+```shell
+npm run test
+```
+This will run all tests in `/src/tests`, reporting on the status of each test as it runs.
+
+
+## Documentation
+Some links to help you get started:
+
+- [Next.js Documentation](https://nextjs.org/docs)
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- [Next.js GitHub repository](https://github.com/vercel/next.js/)
+
+
+- [React Documentation](https://react.dev/reference/react)
+- [shadcn/ui Documentation](https://ui.shadcn.com/docs/)
+- [Database Documentation](https://docs.codeallergy.dev/interfaces/DatabaseUsage.html)
+- [Supabase-js Documentation](https://supabase.com/docs/reference/javascript/introduction)
+- [Auto-generated JSDoc Documentation](https://docs.codeallergy.dev)
