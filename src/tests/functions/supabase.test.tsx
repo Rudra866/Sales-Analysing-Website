@@ -41,6 +41,9 @@ describe("supabase auth integration testing", () => {
       email: test_user_info.email,
       password: test_user_info.password,
     });
+    expect(error).toBeNull();
+    expect(session).not.toBeNull();
+    expect(user).not.toBeNull();
 
     const response = await supabase.auth.updateUser({
       password: "password change",
