@@ -5,7 +5,6 @@ import React from "react";
 
 import { Employee } from "@/lib/database";
 import { test_employee_set, test_roles_set } from "@/tests/test_data";
-
 export default {
   title: "Tables/Employee Table",
   component: DataTable,
@@ -23,6 +22,4 @@ export default {
 
 // todo modify when we remove data collection from the tables
 // modify some props in too or change the nesting of these
-export const Employees: StoryObj<DataTableProps<Employee>> = {
-  args: {},
-};
+export const Employees: StoryObj<DataTableProps<Employee>> = {};
