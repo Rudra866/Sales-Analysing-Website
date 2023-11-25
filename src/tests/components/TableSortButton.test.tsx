@@ -5,23 +5,25 @@ import { Column } from "@tanstack/react-table";
 import React from "react";
 
 describe("TableSortButton", () => {
-    const mockGetIsSorted = jest.fn();
-    const mockToggleSorting = jest.fn();
-    const mockColumn = {
-        id: "Test Column",
-        getIsSorted: mockGetIsSorted,
-        toggleSorting: mockToggleSorting,
-    } as Partial<Column<any>> as Column<any>;
+  const mockGetIsSorted = jest.fn();
+  const mockToggleSorting = jest.fn();
+  const mockColumn = {
+    id: "Test Column",
+    getIsSorted: mockGetIsSorted,
+    toggleSorting: mockToggleSorting,
+  } as Partial<Column<any>> as Column<any>;
 
-    test('renders the button with the correct text', () => {
-        render(<TableSortButton column={mockColumn} />);
-        expect(screen.getByRole("button", { name: /Test Column/i })).toBeInTheDocument();
-    });
+  test("renders the button with the correct text", () => {
+    render(<TableSortButton column={mockColumn} />);
+    expect(
+      screen.getByRole("button", { name: /Test Column/i }),
+    ).toBeInTheDocument();
+  });
 
-    test('clicking the button toggles sorting', () => {
-        mockGetIsSorted.mockReturnValueOnce("asc");
-        render(<TableSortButton column={mockColumn} />);
-        userEvent.click(screen.getByRole("button"));
-        expect(mockToggleSorting).toHaveBeenCalledWith("desc");
-    });
+  test("clicking the button toggles sorting", async () => {
+    mockGetIsSorted.mockReturnValueOnce("asc");
+    render(<TableSortButton column={mockColumn} />);
+    await userEvent.click(screen.getByRole("button"));
+    expect(mockToggleSorting).toHaveBeenCalledWith(true);
+  });
 });
