@@ -1,3 +1,7 @@
+Credentials: 
+Admin: nathanial.beining@icloud.com , password1
+Employee: elissa.tsidilkovsky@hotmail.com, password1
+
 ## Installation
 
 ### Dependencies
