@@ -1,10 +1,7 @@
-import FormModal, {
-  FormModalProps,
-  useFormModalContext,
-} from "@/components/dialogs/form-modal";
+import FormModal, { FormModalProps } from "@/components/dialogs/form-modal";
 import { Meta, StoryObj } from "@storybook/react";
 import { useArgs } from "@storybook/preview-api";
-import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
+import React, { Dispatch, SetStateAction } from "react";
 import { Button } from "@/components/ui/button";
 
 import ForgotPasswordDialog, {
