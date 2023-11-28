@@ -12,6 +12,7 @@ import {Sheet, SheetContent, SheetTrigger} from "@/components/ui/sheet"
 import {docsConfig, docsConfigAdmin} from "@/lib/config";
 import Image from "next/image";
 import useAuth from "@/hooks/use-auth";
+import {UserNav} from "@/components/user-nav";
 
 export function MobileNav() {
     const [open, setOpen] = React.useState(false)
@@ -45,9 +46,9 @@ export function MobileNav() {
                                         </MobileLink>
                                     )
                             )}
-
                         </div>
                     </ScrollArea>
+
                 </SheetContent>
             </Sheet>
         </div>

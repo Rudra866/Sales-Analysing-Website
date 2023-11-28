@@ -3,6 +3,7 @@ import React, {useEffect, useState} from 'react';
 import TaskTable from "@/components/tables/task-table";
 import {Employee, getAllEmployees, getSupabaseBrowserClient, Task} from "@/lib/database";
 import {errorToast} from "@/lib/toasts";
+import ContainerLayout from "@/components/container-layout";
 
 function AdminTasksPage() {
   const [loading, setLoading] = useState<boolean>(true);
@@ -33,7 +34,7 @@ function AdminTasksPage() {
   }, [supabase]);
 
   return (
-      <div className={'container'}>
+      <div className={'container border md:p-6 lg:p-12 rounded-xl'}>
           <TaskTable  data={data} employees={employees} loading={loading}/>
       </div>
   );

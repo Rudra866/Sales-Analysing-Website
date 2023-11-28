@@ -7,7 +7,7 @@ import {
     Sale,
     Task,
     getReferencePages,
-    getSupabaseBrowserClient, getTasks, getSales,
+    getSupabaseBrowserClient, getTasks, getSales, getAllTasksByAssignee,
 } from "@/lib/database";
 import {DateRange} from "react-day-picker";
 import useAuth from "@/hooks/use-auth";
@@ -23,6 +23,7 @@ type EmployeeContextProps = {
     setDate?: React.Dispatch<React.SetStateAction<DateRange | undefined>>;
     employee?: Employee | null;
     referencePage?: ReferencePage[]
+    // notify?: boolean
 }
 
 const supabase = getSupabaseBrowserClient()
@@ -45,7 +46,24 @@ export const EmployeeProvider: React.FC<EmployeeProviderProps> = ({children}) =>
     const [tasks, setTasks] = useState<Task[]>([]);
     const [sales, setSales] = useState<Sale[]>();
     const [referencePage, setReferencePage] = useState<ReferencePage[]>()
-    const {employee} = useAuth()
+    const {employee, user, session} = useAuth()
+    const [notify, setNotify] = useState(false)
+
+    // useEffect(() => {
+    //     employee && getAllTasksByAssignee(supabase, employee.id)
+    //         .then((res) => {
+    //             const start = res.sort((a, b) => new Date(a.StartDate).getTime() - new Date(b.StartDate).getTime())
+    //             console.log("notify", new Date(start[start.length - 1].CreatedTime) > new Date(user?.last_sign_in_at || '' ))
+    //
+    //             // if the last task is overdue, notify the user
+    //             if (start.length > 0 && new Date(start[start.length - 1].CreatedTime) > new Date(user?.last_sign_in_at || '' )) {
+    //                 console.log("notify")
+    //                 setNotify(true)
+    //             }
+    //
+    //         })
+    // }, [employee])
+
 
     const [date, setDate] = useState<DateRange | undefined>({
         from: subDays(new Date(), 120),
@@ -55,7 +73,7 @@ export const EmployeeProvider: React.FC<EmployeeProviderProps> = ({children}) =>
     // get data on initial load
     useEffect(() => {
         if (!employee) return // if there's no employee, the page is broken already anyway.
-        getTasks()
+        getAllTasksByAssignee(supabase, employee.id)
             .then((res) => {
                 setAllTasks(res as Task[])
             })

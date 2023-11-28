@@ -18,7 +18,6 @@ import {toast} from "@/components/ui/use-toast";
 import {Plus} from "lucide-react";
 import {isAdmin} from "@/lib/utils";
 import useAuth from "@/hooks/use-auth";
-import {TaskCreateDialog} from "@/components/dialogs/TaskCreateDialog";
 
 export type SalesGoalTableProps = DataTableChildProps<SalesGoal> & {
   employees: Employee[]
