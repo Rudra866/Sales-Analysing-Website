@@ -394,6 +394,7 @@ export async function getAllTasksByAssignee(supabase: SupabaseClient, assigneeID
       .from('Tasks')
       .select('*')
       .eq('Assignee', assigneeID)
+      .order('CreatedTime', { ascending: true })
 
   if (error) throw error;
   return task;

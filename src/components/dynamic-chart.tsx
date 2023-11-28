@@ -4,6 +4,7 @@ import {Bar, BarChart, ResponsiveContainer, Tooltip, XAxis, YAxis} from "rechart
 import React, {useEffect, useState} from "react";
 import {cn, groupSelectionByTimeFrame, numericSalesFields} from "@/lib/utils";
 import {DateRange} from "react-day-picker";
+import {format} from "date-fns";
 import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 import {Sale} from "@/lib/database";
@@ -24,21 +25,45 @@ interface DynamicChartProps {
 //  However this would require a complex data structure.
 
 
-export default function DynamicChart({ title, color, data, date, className }: DynamicChartProps) {
+export function DynamicChart({ title, color, data, date, className }: DynamicChartProps) {
     const [keyValues, setKeyValues] = useState<{ key: string; value: number }[]>();
     const [selectedCategory, setSelectedCategory] = useState("Total");
+    const [categories, setCategories] = useState<string[]>();
     const [grouping, setGrouping] = useState("MMM-yy");
 
     useEffect(() => {
-        if (selectedCategory) {
-            setKeyValues(
-                Object.entries(groupSelectionByTimeFrame(data, grouping)).map(([key, value]) => ({
-                    key,
-                    value: value[selectedCategory],
-                }))
-            );
+        try {
+            if (selectedCategory) {
+                setKeyValues(
+                    Object.entries(groupSelectionByTimeFrame(data, grouping)).map(([key, value]) => ({
+                        key,
+                        value: value[selectedCategory],
+                    }))
+                );
+            }
         }
-    }, [data, date, grouping, selectedCategory]);
+        catch (e) {
+            console.log(e)
+        }
+
+    }, [data, date, grouping, selectedCategory, categories]);
+
+    const customToolTip = (props: any) => {
+        try {
+            if (props.active && props.payload && props.payload.length) {
+                return (
+                    <div className="bg-muted p-4 rounded-md shadow-md">
+                        <p className="text-primary text-sm">{props.label}</p>
+                        <p className="text-primary text-sm">
+                            {`$${Number(props?.payload[0]?.value)?.toLocaleString()}`}
+                        </p>
+                    </div>
+                )
+            }
+        } catch (e) {
+            console.log(e)
+        } return null
+    }
 
     return (
         <Card className={cn("col-span-4", className)}>
@@ -95,7 +120,7 @@ export default function DynamicChart({ title, color, data, date, className }: Dy
                         />
                         <Bar dataKey="value" fill={color || "#adfa1d"} radius={[4, 4, 0, 0]}/>
                         <Tooltip
-                            content={customTooltip}
+                            content={customToolTip}
                             cursor={{fill: 'rgba(250,250,250,0.3)', radius: 4}}
                         />
                     </BarChart>

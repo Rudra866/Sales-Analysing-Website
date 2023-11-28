@@ -6,8 +6,9 @@ import {ScrollArea, ScrollBar} from "@/components/ui/scroll-area";
 import {format} from "date-fns";
 import {Employee} from "@/lib/database";
 import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs";
+import {cn} from "@/lib/utils";
 
-export default function RecentSales() {
+export default function RecentSales({className}: { className?: string }) {
     const {saleWithEmployeeAndFinancing, mySales} = useDashboard()
     function SalesRow({employee, vehicle, amount, id, date}: {
         employee?: Employee;
@@ -38,7 +39,7 @@ export default function RecentSales() {
     }
 
     return (
-        <Tabs defaultValue="Sales Overview" className="col-span-3 space-y-4 border rounded-xl p-4">
+        <Tabs defaultValue="Sales Overview" className={cn("space-y-4 border rounded-xl p-4", className)}>
             <TabsList>
                 <TabsTrigger value="Sales Overview">Sales Overview</TabsTrigger>
                 <TabsTrigger value="My Sales">My Sales</TabsTrigger>

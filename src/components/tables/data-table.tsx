@@ -6,6 +6,7 @@ import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/c
 import {Button} from "@/components/ui/button";
 import {ChevronLeftIcon, ChevronRightIcon, DoubleArrowLeftIcon, DoubleArrowRightIcon} from "@radix-ui/react-icons";
 import {Input} from "@/components/ui/input";
+import LoadingAnimation from "@/components/loading-animation";
 
 export interface DataTableProps<TData> {
   table: import("@tanstack/table-core").Table<TData>
@@ -53,7 +54,7 @@ export default function DataTable<TData>({table, loading, children}:
                 ))}
               </TableHeader>
               <TableBody>
-                {!loading ? (
+                {!loading && table.getRowModel().rows?.length ? (
                     table.getRowModel().rows.map((row) => (
                         <TableRow
                             key={row.id}
@@ -69,13 +70,7 @@ export default function DataTable<TData>({table, loading, children}:
                 ) : (
                     <TableRow>
                       <TableCell colSpan={columns.length} className="h-24 text-center">
-                        <div className="flex items-center justify-center h-24">
-                          <div className="flex items-center space-x-2">
-                            <div className="w-4 h-4 bg-accent rounded-full animate-bounce"/>
-                            <div className="w-4 h-4 bg-accent rounded-full animate-bounce delay-75"/>
-                            <div className="w-4 h-4 bg-accent rounded-full animate-bounce delay-150"/>
-                          </div>
-                        </div>
+                        <LoadingAnimation />
                       </TableCell>
                     </TableRow>
                 )}
@@ -165,7 +160,7 @@ export function TableFilter<TData>({table, initial, placeholder}:
         <Input
             placeholder={placeholder}
             value={(table.getColumn(sortColumn)?.getFilterValue() as string) ?? ""}
-            onChange={(event) => table.getColumn(sortColumn)?.setFilterValue(event.target.value.toLowerCase())}
+            onChange={(event) => table.getColumn(sortColumn)?.setFilterValue(event.target.value)}
             className="max-w-[250px]"
         />
         <span className={"max-w px-2"}>

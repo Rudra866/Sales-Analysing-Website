@@ -10,6 +10,7 @@ import {cn, groupSelectionByTimeFrame} from "@/lib/utils";
 import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
 import {format} from "date-fns";
 import {useDashboard} from "@/admin/dashboard/components/dashboard-provider";
+import {useTheme} from "next-themes";
 
 interface SalesLineChartProps {
     className?: string
@@ -23,7 +24,9 @@ type ChartDataType = {
 
 export default function SalesLineChart({className}: SalesLineChartProps) {
     const [chartData, setChartData] = useState<ChartDataType[]>();
-    const lineColors = ["#ffffff", "#adfa1d"]
+    const {theme} = useTheme();
+
+    const lineColors = [ theme ==='dark' ? "#ffffff" : "#88888", "#adfa1d"]
     const color1 = `text-[${lineColors[0]}]`
     const color2 = `text-[${lineColors[1]}]`
     const {salesGoal, data, date} = useDashboard();
@@ -35,11 +38,11 @@ export default function SalesLineChart({className}: SalesLineChartProps) {
                     <div className="bg-muted p-4 rounded-md shadow-md">
                         <p className="text-primary text-sm">{props.label}</p>
                         <p className={cn("text-muted-foreground text-sm", color1)}>
-                            {props?.payload[0]?.name}{": "}
+                            {props?.payload[1]?.name}{": "}
                             {`$${Number(props?.payload[0]?.value)?.toLocaleString()}`}
                         </p>
                         <p className={cn("text-muted-foreground text-sm", color2)}>
-                            {props?.payload[1]?.name}{": "}
+                            {props?.payload[0]?.name}{": "}
                             {`$${Number(props?.payload[1]?.value)?.toLocaleString()}`}
                         </p>
                     </div>
@@ -69,7 +72,7 @@ export default function SalesLineChart({className}: SalesLineChartProps) {
     }, [data, date, salesGoal]);
 
     return (
-        <Card className={cn("col-span-4", className)}>
+        <Card className={cn("col-span-4 w-full", className)}>
             <CardHeader className={'flex flex-row justify-between gap-2'}>
                 <CardTitle className={'w-full self-center'}>Line Chart</CardTitle>
             </CardHeader>
@@ -91,7 +94,7 @@ export default function SalesLineChart({className}: SalesLineChartProps) {
                             tickFormatter={(value) => `$${Number(value).toLocaleString()}`}
                         />
                         <Line type="monotone" dataKey="actualSales" stroke={lineColors[0]} activeDot={{r: 8}}/>
-                        <Line type="monotone" dataKey="estimatedSales" stroke={lineColors[1]}/>
+                        <Line type="monotone" dataKey="estimatedSales" stroke={lineColors[1]} activeDot={{r: 8}}/>
                         <Tooltip
                             content={customToolTip}
                             cursor={{fill: 'rgba(250,250,250,0.3)', radius: 4}}

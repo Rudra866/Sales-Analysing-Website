@@ -61,7 +61,7 @@ export const role_options_config = [
   },
 ];
 
-export const role_defaults = Object.fromEntries(
+const role_defaults = Object.fromEntries(
   role_options_config.map((role) => [role.name, role.default]),
 );
 

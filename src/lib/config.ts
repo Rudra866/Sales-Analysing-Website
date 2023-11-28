@@ -57,5 +57,9 @@ export const docsConfig: DocsConfig = {
             title: "Training",
             href: "/employee/training",
         },
+        {
+            title: "Settings",
+            href: "/employee/settings",
+        },
     ],
 }

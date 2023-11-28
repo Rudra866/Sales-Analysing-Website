@@ -10,10 +10,14 @@ import {
 } from "@tanstack/react-table";
 import {useState} from "react";
 import {
-  Employee, SalesGoal, SalesGoalInsert, MonthlySale
+  Employee, SalesGoal, SalesGoalInsert, MonthlySale, getSupabaseBrowserClient
 } from "@/lib/database";
 import DataTable, {DataTableChildProps, TableFilter} from "@/components/tables/data-table";
 import TableSortButton from "@/components/tables/table-sort-button";
+import {toast} from "@/components/ui/use-toast";
+import {Plus} from "lucide-react";
+import {isAdmin} from "@/lib/utils";
+import useAuth from "@/hooks/use-auth";
 
 export type SalesGoalTableProps = DataTableChildProps<SalesGoal> & {
   employees: Employee[]
@@ -23,6 +27,13 @@ export type SalesGoalTableProps = DataTableChildProps<SalesGoal> & {
 export default function SalesGoalTable({data, monthlySales, employees, loading}: SalesGoalTableProps) {
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
+  const [goals, setGoals] = useState<SalesGoal[]>([])
+  const supabase = getSupabaseBrowserClient();
+  const [showTaskCreateModal, setShowTaskCreateModal] = useState<boolean>(false)
+
+  // const [employees, setEmployees] = useState<Employee[]>([])
+  // const [monthlySales, setMonthlySales] = useState<MonthlySale[]>([])
+  const {employee} = useAuth();
   const [showGoalCreateModal, setShowGoalCreateModal] = useState<boolean>(false)
 
   async function createNewSaleGoal(data: SalesGoalInsert) {
@@ -97,17 +108,6 @@ export default function SalesGoalTable({data, monthlySales, employees, loading}:
       <DataTable table={table} loading={loading}>
         <TableFilter table={table} initial={"Name"} placeholder={"Filter goals..."}/>
       </DataTable>
+
   )
 }
-
-// {/*<div className="flex items-center space-x-2 w-full">*/}
-// {/*  <Button*/}
-// {/*      size="sm"*/}
-// {/*      variant="outline"*/}
-// {/*      className="ml-auto hidden h-8 lg:flex"*/}
-// {/*      onClick={() => setShowTaskCreateModal(true)} // todo posting to db*/}
-// {/*  >*/}
-// {/*    <Plus className="mr-2 h-4 w-4" />*/}
-// {/*    Create Task*/}
-// {/*  </Button>*/}
-// {/*</div>*/}

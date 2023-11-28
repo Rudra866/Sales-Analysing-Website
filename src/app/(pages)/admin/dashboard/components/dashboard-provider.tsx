@@ -11,6 +11,7 @@ import {
 } from "@/lib/database";
 import {SaleWithEmployeeAndFinancingType} from "@/lib/types";
 import useAuth from "@/hooks/use-auth";
+import {PostgrestError} from "@supabase/supabase-js";
 import {filterSalesByDate, filterSalesByEmployee} from "@/lib/utils";
 import {errorToast} from "@/lib/toasts";
 
@@ -23,6 +24,7 @@ type DashBoardContextProps = {
     date?: DateRange;
     setDate?: React.Dispatch<React.SetStateAction<DateRange | undefined>>;
     referencePage?: ReferencePage[]
+    isLoading?: boolean
 }
 
 const supabase = getSupabaseBrowserClient()
@@ -41,11 +43,28 @@ export const DashboardProvider: React.FC<PropsWithChildren> = ({children}) => {
     const [salesGoal, setSalesGoal] = useState<SalesGoal[]>();
     const [mySales, setMySales] = useState<SaleWithEmployeeAndFinancingType[]>();
     const [referencePage, setReferencePage] = useState<ReferencePage[]>();
+    const [isLoading, setIsLoading] = useState<boolean>(false);
+    const {employee} = useAuth()
+
+    useEffect(() => { // todo - this is a hacky way to do this. need to revisit this.
+        setIsLoading(true)
+        employee &&
+        filteredSales &&
+        employees &&
+        sales &&
+        saleWithEmployeeAndFinancing &&
+        salesGoal &&
+        mySales &&
+        referencePage &&
+        setIsLoading(false)
+    }, [employee, filteredSales, employees, sales, saleWithEmployeeAndFinancing, salesGoal, mySales, referencePage]);
+
+
     const [date, setDate] = React.useState<DateRange | undefined>({
         from: subDays(new Date(), 120),
         to: new Date(),
     })
-    const {employee} = useAuth()
+
 
     // get all employees, sales, goals and reference pages on initial provider load
     useEffect(() => {
@@ -107,7 +126,7 @@ export const DashboardProvider: React.FC<PropsWithChildren> = ({children}) => {
                 mySales,
                 setDate,
                 referencePage
-                }}>
+                , isLoading}}>
             {children}
         </DashboardContext.Provider>
     );

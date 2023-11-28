@@ -6,18 +6,19 @@ import {
   DropdownMenuContent,
   DropdownMenuGroup,
   DropdownMenuItem,
-  DropdownMenuLabel, DropdownMenuPortal,
+  DropdownMenuLabel,
   DropdownMenuSeparator,
-  DropdownMenuShortcut, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger,
+  DropdownMenuShortcut, DropdownMenuSub,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import {Mail, MessageSquare, Moon, PlusCircle, Sun, UserPlus} from "lucide-react";
+import {Moon, Sun} from "lucide-react";
 import * as React from "react";
 import {useTheme} from "next-themes";
 import { useRouter } from 'next/navigation'
 import useAuth from "@/hooks/use-auth";
-import {getSupabaseBrowserClient} from "@/lib/database";
+import {getAllTasksByAssignee, getSupabaseBrowserClient} from "@/lib/database";
 import EmployeeAvatar from "@/components/employee-avatar";
+import {useEffect, useState} from "react";
 
 
 const userDirectory = {
@@ -28,17 +29,37 @@ export function UserNav() {
   const { setTheme, theme } = useTheme()
   const router = useRouter()
   const supabase = getSupabaseBrowserClient();
-  const {employee} = useAuth();
+  const {employee, user} = useAuth();
+  const [notify, setNotify] = useState(false)
+
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
     router.refresh()
   }
+
+
+
+  useEffect(() => {
+    employee && getAllTasksByAssignee(supabase, employee.id)
+        .then((res) => {
+          const start = res.sort((a, b) => new Date(a.StartDate).getTime() - new Date(b.StartDate).getTime())
+          console.log("notify", new Date(start[start.length - 1].CreatedTime) > new Date(user?.last_sign_in_at || '' ))
+
+          // if the last task is overdue, notify the user
+          if (start.length > 0 && new Date(start[start.length - 1].CreatedTime) > new Date(user?.last_sign_in_at || '' )) {
+            console.log("notify")
+            setNotify(true)
+          }
+
+        })
+  }, [employee])
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-          <EmployeeAvatar employee={employee}/>
+          <EmployeeAvatar employee={employee} notify={notify}/>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56" align="end" forceMount>
@@ -52,32 +73,7 @@ export function UserNav() {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <DropdownMenuItem onClick={() => router.push(userDirectory.profile)}>
-            Profile
-            <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
-          </DropdownMenuItem>
           <DropdownMenuSub>
-            <DropdownMenuSubTrigger>
-              <UserPlus className="mr-2 h-4 w-4" />
-              <span>Invite users</span>
-            </DropdownMenuSubTrigger>
-            <DropdownMenuPortal>
-              <DropdownMenuSubContent>
-                <DropdownMenuItem>
-                  <Mail className="mr-2 h-4 w-4" />
-                  <span>Email</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <MessageSquare className="mr-2 h-4 w-4" />
-                  <span>Message</span>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem>
-                  <PlusCircle className="mr-2 h-4 w-4" />
-                  <span>More...</span>
-                </DropdownMenuItem>
-              </DropdownMenuSubContent>
-            </DropdownMenuPortal>
           </DropdownMenuSub>
           <DropdownMenuItem onClick={() => router.push('/settings')}>
             Settings

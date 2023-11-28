@@ -110,8 +110,8 @@ function Page(props: any) {
                 <div className="space-y-6">
                     {/* TODO twice? why? */}
                     <p className="text-sm text-muted-foreground">{page?.pagebody}</p>
-                    <Separator />
-                    <p className="text-sm text-muted-foreground">{page?.pagebody}</p>
+                    {/*<Separator />*/}
+                    {/*<p className="text-sm text-muted-foreground">{page?.pagebody}</p>*/}
                 </div>
             }
 

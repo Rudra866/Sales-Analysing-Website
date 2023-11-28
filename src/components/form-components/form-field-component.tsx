@@ -9,11 +9,12 @@ type FormFieldComponentProps = {
     form: any
     label?: string
     inputType: "input" | "checkbox" | "inputNumber" | "textarea"
+    defaultValue?: string
     className?: string
 }
 
 
-export default function FormFieldComponent({name, form, label, inputType, className}: FormFieldComponentProps) {
+export default function FormFieldComponent({name, form, label, inputType, className, defaultValue}: FormFieldComponentProps) {
     return (
         <div className={className}>
             <FormField
@@ -25,11 +26,14 @@ export default function FormFieldComponent({name, form, label, inputType, classN
                         <FormControl className='flex flex-col'>
                             {inputType === "input" ? (
                                 <Input
+                                    defaultValue={defaultValue}
                                     placeholder={label}
                                     {...field}
+                                    onChange={event => field.onChange(event.target.value)}
                                 />
                             ) : inputType === "inputNumber" ? (
                                 <Input
+                                    defaultValue={defaultValue}
                                     placeholder={label}
                                     {...field}
                                     onChange={event => {
@@ -53,8 +57,10 @@ export default function FormFieldComponent({name, form, label, inputType, classN
                                 />
                             ) : (
                                 <Input
+                                    defaultValue={defaultValue}
                                     placeholder={label}
                                     {...field}
+                                    onChange={event => field.onChange(event.target.value)}
                                 />
                             )
                             }

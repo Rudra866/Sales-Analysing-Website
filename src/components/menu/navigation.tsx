@@ -22,7 +22,7 @@ function Navigation() {
                           <UserNav/>
                       </div>
                   </div>
-                  <div className="container flex h-fit items-center">
+                  <div className="container flex h-fit items-center justify-between">
                       <MobileNav/>
                   </div>
               </>

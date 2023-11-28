@@ -335,6 +335,7 @@ export interface Database {
           Name: string
           StartDate: string
           Status: Database["public"]["Enums"]["Task Status"]
+          CreatedTime: string
         }
         Insert: {
           Assignee?: string | null
@@ -345,6 +346,7 @@ export interface Database {
           Name: string
           StartDate?: string
           Status?: Database["public"]["Enums"]["Task Status"]
+          CreatedTime: string
         }
         Update: {
           Assignee?: string | null
@@ -355,6 +357,7 @@ export interface Database {
           Name?: string
           StartDate?: string
           Status?: Database["public"]["Enums"]["Task Status"]
+          CreatedTime: string
         }
         Relationships: [
           {

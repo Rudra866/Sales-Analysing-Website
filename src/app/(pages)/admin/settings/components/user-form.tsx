@@ -13,7 +13,7 @@ import {Employee, getAllRoles, getSupabaseBrowserClient, Role} from "@/lib/datab
 import {existingEmployeeFormSchema} from "@/lib/zod-schemas";
 import {errorToast, successToast} from "@/lib/toasts";
 
-type FormInputFieldProps = { // fk typescript
+type FormInputFieldProps = {
     form: UseFormReturn<z.infer<typeof existingEmployeeFormSchema>>,
     name: "EmployeeNumber" | "Name" | "email",
     label: string
@@ -51,8 +51,6 @@ interface UserFormProps {
 export default function UserForm({name, email, password, number, employee, role, remove}: UserFormProps) {
     const supabase = getSupabaseBrowserClient();
     const [roles, setRoles] = React.useState<Role[]>([])
-    // const router = useRouter()
-
 
     useEffect(() => {
         getAllRoles(supabase).then((res) => {
@@ -109,7 +107,7 @@ export default function UserForm({name, email, password, number, employee, role,
                 <FormInputField form={form} name="EmployeeNumber" label="Employee Number"/>
                 <FormField
                     control={form.control}
-                    name="Role" // todo
+                    name="Role"
                     render={({field}) => (
                         <FormItem>
                             <FormLabel>Role</FormLabel>

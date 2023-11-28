@@ -21,8 +21,8 @@ export async function getSalesCSV(date?: DateRange | undefined) {
     if (date) {
       link.setAttribute(
           'download',
-          `sales-${date?.from?.toLocaleDateString()?.replace(/-/g, '.')}\
--${date?.to?.toLocaleDateString()?.replace(/-/g, '.')}.csv`
+          `sales-${date?.from?.toLocaleDateString()?.replace(/-/g, '.')}
+          -${date?.to?.toLocaleDateString()?.replace(/-/g, '.')}.csv`
       )
     }
     document.body.appendChild(link);

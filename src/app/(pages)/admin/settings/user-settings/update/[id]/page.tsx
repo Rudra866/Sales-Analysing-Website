@@ -35,7 +35,6 @@ function Page() {
 
     return (
         <div>
-            {/*todo connect the role from DB to UI*/}
             {employee && role &&
                 <UserForm
                     name={employee.Name}

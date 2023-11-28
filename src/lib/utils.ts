@@ -10,6 +10,13 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
+export function isAdmin(role: number) {
+    const adminRoles = [1, 2, 3, 4, 5];
+    return adminRoles.includes(role);
+}
+
+
+
 export const numericSalesFields = [
     "ActualCashValue",
     "DealerCost",
@@ -50,7 +57,7 @@ export function groupByTimeFrame(data: Sale[], grouping: string): { [p: string]:
     return groupedData;
 }
 
-export function groupByMonth(data: Sale[]): { [p: string]: number } {
+export function groupByMonth(data: Sale[]): { [key: string]: number } {
     const groupedData: { [key: string]: number } = {};
 
     data.forEach(item => {
@@ -121,5 +128,69 @@ export function groupSelectionByTimeFrame(data: (SaleWithIndex | null | undefine
         });
 
         return groupedData;
+    }, {});
+}
+
+export function groupSelectionByMonth(data: (SaleWithIndex | null | undefined)[]): { [p: string]: { [p: string]: number } } {
+    if (!data) {
+        return {};
+    }
+
+    return data.reduce((groupedData: { [key: string]: { [p: string]: number } }, item) => {
+        if (!item) {
+            return groupedData;
+        }
+
+        const date = new Date(item.SaleTime?.toString() || '');
+        const monthYearKey = format(date, 'MMM-yy');
+
+        if (!groupedData[monthYearKey]) {
+            groupedData[monthYearKey] = {};
+        }
+
+        numericSalesFields.forEach((field) => {
+            if (!groupedData[monthYearKey][field]) {
+                groupedData[monthYearKey][field] = 0;
+            }
+
+            const fieldValue = item[field];
+            groupedData[monthYearKey][field] += typeof fieldValue === 'number' ? fieldValue : 0;
+        });
+
+        return groupedData;
+    }, {});
+}
+
+
+// Given the data:
+// {
+    // "Jul-23": 65336.630000000005,
+    // "Aug-23": 336510.07999999996,
+    // "Sep-23": 251428.07,
+    // "Oct-23": 190610.66
+// }
+
+// returns:
+// {
+//     "Jul-23": 8%,
+//     "Aug-23": 40%,
+//     "Sep-23": 30%,
+//     "Oct-23": 23%
+// }
+export function monthlyAverage(data: SaleWithIndex[], field: string): { [p: string]: number } {
+    if (!data) {
+        return {};
+    }
+
+    const groupedData = groupSelectionByMonth(data);
+
+    const total = Object.values(groupedData).reduce((acc, item) => {
+        return acc + item[field];
+    }, 0);
+
+    return Object.entries(groupedData).reduce((acc, [key, item]) => {
+        // @ts-ignore
+        acc[key] = Math.round((item[field] / total) * 100);
+        return acc;
     }, {});
 }

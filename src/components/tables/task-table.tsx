@@ -1,4 +1,4 @@
-"use client";
+'use client'
 
 import {
   ColumnDef,
@@ -10,10 +10,14 @@ import {
   SortingState,
   useReactTable,
 } from "@tanstack/react-table";
-import React, { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Employee, Task, TaskInsert } from "@/lib/database";
-import { MoreHorizontal, Plus } from "lucide-react";
+import React, {useEffect, useState} from "react";
+import {Button} from "@/components/ui/button";
+import {
+    Employee,
+    Task,
+    TaskInsert,
+} from "@/lib/database";
+import {ArrowUpDown, MoreHorizontal, Plus} from "lucide-react";
 import { format } from "date-fns";
 import DataTable, {
   DataTableChildProps,
@@ -21,6 +25,7 @@ import DataTable, {
 } from "@/components/tables/data-table";
 import FormModal from "@/components/dialogs/form-modal";
 import TableSortButton from "@/components/tables/table-sort-button";
+import {toast} from "@/components/ui/use-toast";
 import {
   CheckCircledIcon,
   CircleIcon,
@@ -124,53 +129,51 @@ export default function TaskTable({
           (status) => status.value === row.getValue("Status"),
         );
 
-        if (!status) {
-          return null;
-        }
+                if (!status) {
+                    return null
+                }
 
-        return (
-          <div className="flex w-[100px] items-center">
-            {status.icon && (
-              <status.icon className="mr-2 h-4 w-4 text-muted-foreground" />
-            )}
-            <span>{status.label}</span>
-          </div>
-        );
-      },
-      filterFn: (row, id, value) => {
-        return value.includes(row.getValue(id));
-      },
-    },
-    {
-      accessorKey: "StartDate",
-      header: ({ column }) => <TableSortButton column={column} />,
-      cell: ({ row }) =>
-        format(new Date(row.getValue("StartDate")), "LLL dd, y"),
-    },
-    {
-      accessorKey: "EndDate",
-      header: ({ column }) => <TableSortButton column={column} />,
-      cell: ({ row }) => format(new Date(row.getValue("EndDate")), "LLL dd, y"),
-    },
-    {
-      id: "actions",
-      cell: ({ row }) => {
-        return (
-          <Button
-            variant="ghost"
-            className="h-8 w-8 p-0"
-            onClick={() => {
-              setTask(row.original);
-              setShowTaskCreateModal(true);
-            }}
-          >
-            <span className="sr-only">Open menu</span>
-            <MoreHorizontal className="h-4 w-4" />
-          </Button>
-        );
-      },
-    },
-  ];
+                return (
+                    <div className="flex w-[100px] items-center">
+                        {status.icon && (
+                            <status.icon className="mr-2 h-4 w-4 text-muted-foreground"/>
+                        )}
+                        <span>{status.label}</span>
+                    </div>
+                )
+            },
+            filterFn: (row, id, value) => {
+                return value.includes(row.getValue(id))
+            }
+        },
+        {
+            accessorKey: "StartDate",
+            header: ({column}) => <TableSortButton column={column}/>,
+            cell: ({row}) => (format(new Date(row.getValue("StartDate")), "LLL dd, y"))
+        },
+        {
+            accessorKey: "EndDate",
+            header: ({column}) => <TableSortButton column={column}/>,
+            cell: ({row}) => (format(new Date(row.getValue("EndDate")), "LLL dd, y"))
+        },
+        {
+            id: "actions",
+            cell: ({row}) => {
+                return (
+                    <Button variant="ghost" className="h-8 w-8 p-0"
+                    onClick={() => {
+                        console.log('setting task: ', row.original)
+                        setTask(row.original)
+                        setShowTaskCreateModal(true)
+                    }}
+                    >
+                        <span className="sr-only">Open menu</span>
+                        <MoreHorizontal className="h-4 w-4"/>
+                    </Button>
+                )
+            },
+        },
+    ]
 
   const table = useReactTable({
     data,
@@ -189,32 +192,27 @@ export default function TaskTable({
     enableColumnFilters: true,
   });
 
-  return (
-    <DataTable table={table} loading={loading}>
-      <TableFilter
-        table={table}
-        initial={"Name"}
-        placeholder={"Filter tasks..."}
-      />
-      <div className="flex items-center space-x-2 w-full">
-        <Button
-          size="sm"
-          variant="outline"
-          className="ml-auto hidden h-8 lg:flex"
-          onClick={() => setShowTaskCreateModal(true)}
-        >
-          <Plus className="mr-2 h-4 w-4" />
-          Create Task
-        </Button>
-      </div>
-      <FormModal
-        title={"Create Task"}
-        showDialog={showTaskCreateModal}
-        setShowDialog={setShowTaskCreateModal}
-        onSubmit={createNewTask}
-      >
-        <TaskCreateDialog employees={employees} task={task} />
-      </FormModal>
-    </DataTable>
-  );
+    return (
+        <DataTable table={table} loading={loading}>
+            <TableFilter table={table} initial={"Name"} placeholder={"Filter tasks..."}/>
+            <div className="flex items-center space-x-2 w-full">
+                <Button
+                    size="sm"
+                    variant="outline"
+                    className="ml-auto hidden h-8 lg:flex"
+                    onClick={() => setShowTaskCreateModal(true)} // todo post
+                >
+                    <Plus className="mr-2 h-4 w-4"/>
+                    Create Task
+                </Button>
+            </div>
+            <FormModal title={"Create Task"}
+                       showDialog={showTaskCreateModal}
+                       setShowDialog={setShowTaskCreateModal}
+                       onSubmit={createNewTask}>
+                <TaskCreateDialog employees={employees} task={task}/>
+            </FormModal>
+        </DataTable>
+
+    )
 }
