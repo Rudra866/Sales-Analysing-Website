@@ -1,5 +1,5 @@
 // todo -- broken fields time
-import React, {useRef, useState} from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -46,8 +46,13 @@ import {successToast} from "@/lib/toasts";
  * Maybe add a toast notification here in the future so the user has more evidence it was successful?
  * @group React Components
  */
-export function TaskCreateDialog({employees, task}: { employees: Employee[]; task?: any}) {
-
+export function TaskCreateDialog({
+  employees,
+  task,
+}: {
+  employees: Employee[];
+  task?: any;
+}) {
   const [openEmployees, setOpenEmployees] = useState<boolean>(false);
   const taskEmployee = task?.Assignee
     ? employees.find((employee) => employee.id === task?.Assignee)?.Name
@@ -74,19 +79,11 @@ export function TaskCreateDialog({employees, task}: { employees: Employee[]; tas
     data["Creator"] = employee?.id;
     data["Assignee"] = employees.find(
       (employee) => employee.Name.toLowerCase() === employeeValue,
-    )?.id; // todo @bill better way to do this with keys?
+    )?.id;
     data["StartDate"] = startDate;
     data["EndDate"] = endDate;
 
     formContext!.onSubmit(data);
-    toast({
-      title: "You submitted the following values:",
-      description: (
-          <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-        </pre>
-      ),
-    })
   }
 
   return (
@@ -115,7 +112,7 @@ export function TaskCreateDialog({employees, task}: { employees: Employee[]; tas
                 <FormControl>
                   <Textarea
                     className="h-44"
-                    placeholder="Employee Name"
+                    placeholder="Description"
                     {...field}
                   />
                 </FormControl>
@@ -236,9 +233,7 @@ export function TaskCreateDialog({employees, task}: { employees: Employee[]; tas
           </Popover>
         </DialogBody>
         <DialogFooter>
-          <DialogClose asChild>
-            <Button type={"submit"}>Submit</Button>
-          </DialogClose>
+          <Button type={"submit"}>Submit</Button>
           <DialogClose asChild>
             <Button type="button" variant="secondary">
               Close

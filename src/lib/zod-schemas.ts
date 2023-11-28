@@ -113,3 +113,11 @@ export const newTaskSchema = z.object({
   Description: z.string(),
   // other
 });
+
+export const newGoalSchema = z.object({
+  Name: z.string().min(1),
+  Description: z.string(),
+  TotalGoal: z.string().min(1),
+  StartDate: z.string(),
+  // other
+});

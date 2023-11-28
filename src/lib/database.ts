@@ -1,21 +1,28 @@
-import {Database, Json} from "@/lib/database.types"
-import type {SupabaseClient, User} from "@supabase/supabase-js";
-import {getSupabaseRouteHandlerClient,
+import { Database, Json } from "@/lib/database.types";
+import type { SupabaseClient, User } from "@supabase/supabase-js";
+import {
+  getSupabaseRouteHandlerClient,
   getSupabaseBrowserClient,
   getSupabaseMiddlewareClient,
   getSupabaseServerClient,
-  getSupabaseServerActionClient} from "@/lib/supabase";
+  getSupabaseServerActionClient,
+} from "@/lib/supabase";
 
 // export type for docs
-import {PostgrestError} from "@supabase/postgrest-js";
-import {format} from "date-fns";
-import {SaleWithEmployeeAndFinancingType} from "@/lib/types";
+import { PostgrestError } from "@supabase/postgrest-js";
+import { format } from "date-fns";
+import { SaleWithEmployeeAndFinancingType } from "@/lib/types";
 export type { PostgrestError };
 
 // export types from other files, so we can not have to import directly
-export type {Database, Json, SupabaseClient, User};
-export {getSupabaseMiddlewareClient, getSupabaseBrowserClient, getSupabaseServerClient,
-  getSupabaseServerActionClient, getSupabaseRouteHandlerClient}
+export type { Database, Json, SupabaseClient, User };
+export {
+  getSupabaseMiddlewareClient,
+  getSupabaseBrowserClient,
+  getSupabaseServerClient,
+  getSupabaseServerActionClient,
+  getSupabaseRouteHandlerClient,
+};
 
 // todo find a less stupid way to do this for TypeDoc?
 /**
@@ -57,7 +64,7 @@ export {getSupabaseMiddlewareClient, getSupabaseBrowserClient, getSupabaseServer
  *    console.error("Database error...", e);
  * }
  */
-export interface DatabaseUsage{}
+export interface DatabaseUsage {}
 
 /**
  * Returned from some database methods when we were expecting an employee but it was not found.
@@ -74,7 +81,6 @@ class EmployeeIDNotFoundError implements Error {
     this.message = mes;
     this.name = name;
   }
-
 }
 
 // we can add extra error reporting later to make error messages nicer. This could let us use toasts/other notifs directly
@@ -88,14 +94,16 @@ class EmployeeIDNotFoundError implements Error {
  * @throws {@link PostgrestError} on database error
  * @group Database Functions
  */
-export async function getCustomer(supabase: SupabaseClient, fullName: string): Promise<Customer | null>
-{
-  const {data:customer, error} = await supabase
-      .from('Customers')
-      .select('*')
-      .eq('Name', fullName)
-      .limit(1)
-      .maybeSingle();
+export async function getCustomer(
+  supabase: SupabaseClient,
+  fullName: string,
+): Promise<Customer | null> {
+  const { data: customer, error } = await supabase
+    .from("Customers")
+    .select("*")
+    .eq("Name", fullName)
+    .limit(1)
+    .maybeSingle();
 
   if (error) throw error;
   return customer;
@@ -109,48 +117,54 @@ export async function getCustomer(supabase: SupabaseClient, fullName: string): P
  * @throws {@link PostgrestError} on database error
  * @group Database Functions
  */
-export async function getEmployee(supabase: SupabaseClient, employeeNumber: string): Promise<Employee | null>
-{
-  const {data: employee, error} = await supabase
-      .from('Employees')
-      .select('*')
-      .eq('EmployeeNumber', employeeNumber)
-      .maybeSingle();
+export async function getEmployee(
+  supabase: SupabaseClient,
+  employeeNumber: string,
+): Promise<Employee | null> {
+  const { data: employee, error } = await supabase
+    .from("Employees")
+    .select("*")
+    .eq("EmployeeNumber", employeeNumber)
+    .maybeSingle();
 
   if (error) throw error;
   return employee;
 }
 
-export async function getReferencePages(supabase: SupabaseClient): Promise<ReferencePage[]>{
+export async function getReferencePages(
+  supabase: SupabaseClient,
+): Promise<ReferencePage[]> {
   let { data: ReferencePages, error } = await supabase
-      .from('ReferencePages')
-      .select('*')
+    .from("ReferencePages")
+    .select("*");
 
   if (error) throw error;
   return ReferencePages ?? [];
 }
 
-
-
-export async function getReferencePagesById(supabase: SupabaseClient, id: string){
+export async function getReferencePagesById(
+  supabase: SupabaseClient,
+  id: string,
+) {
   let { data: ReferencePages, error } = await supabase
-      .from('ReferencePages')
-      .select('*')
-      .eq('id', id)
-      .maybeSingle();
+    .from("ReferencePages")
+    .select("*")
+    .eq("id", id)
+    .maybeSingle();
 
   if (error) throw error;
   return ReferencePages;
 }
 
-
-
-export async function getEmployeeById(supabase: SupabaseClient, employeeID: string): Promise<Employee| null> {
-  const {data: employee, error} = await supabase
-      .from('Employees')
-      .select('*')
-      .eq('id', employeeID)
-      .maybeSingle();
+export async function getEmployeeById(
+  supabase: SupabaseClient,
+  employeeID: string,
+): Promise<Employee | null> {
+  const { data: employee, error } = await supabase
+    .from("Employees")
+    .select("*")
+    .eq("id", employeeID)
+    .maybeSingle();
 
   if (error) throw error;
   return employee;
@@ -164,13 +178,15 @@ export async function getEmployeeById(supabase: SupabaseClient, employeeID: stri
  * @throws {@link PostgrestError} on database error
  * @group Database Functions
  */
-export async function getFinancing(supabase: SupabaseClient, name: string): Promise<Financier | null>
-{
-  const {data: financier, error} = await supabase
-      .from('Financing')
-      .select()
-      .eq('Method', name)
-      .maybeSingle();
+export async function getFinancing(
+  supabase: SupabaseClient,
+  name: string,
+): Promise<Financier | null> {
+  const { data: financier, error } = await supabase
+    .from("Financing")
+    .select()
+    .eq("Method", name)
+    .maybeSingle();
 
   if (error) throw error;
   return financier;
@@ -184,14 +200,16 @@ export async function getFinancing(supabase: SupabaseClient, name: string): Prom
  * @throws {@link PostgrestError} on database error
  * @group Database Functions
  */
-export async function getMonthSale(supabase: SupabaseClient, startDate: Date): Promise<MonthlySale | null>
-{
-  const {data: monthlySale, error} = await supabase
-      .from('MonthlySales')
-      .select('*')
-      .eq('TimePeriod', startDate)
-      .limit(1)
-      .maybeSingle();
+export async function getMonthSale(
+  supabase: SupabaseClient,
+  startDate: Date,
+): Promise<MonthlySale | null> {
+  const { data: monthlySale, error } = await supabase
+    .from("MonthlySales")
+    .select("*")
+    .eq("TimePeriod", startDate)
+    .limit(1)
+    .maybeSingle();
 
   if (error) throw error;
   return monthlySale;
@@ -205,14 +223,16 @@ export async function getMonthSale(supabase: SupabaseClient, startDate: Date): P
  * @throws {@link PostgrestError} on database error
  * @group Database Functions
  */
-export async function getRole(supabase: SupabaseClient, roleName: string): Promise<Role | null>
-{
-  const {data: role, error} = await supabase
-      .from('Roles')
-      .select('*')
-      .eq('RoleName', roleName)
-      .limit(1)
-      .maybeSingle();
+export async function getRole(
+  supabase: SupabaseClient,
+  roleName: string,
+): Promise<Role | null> {
+  const { data: role, error } = await supabase
+    .from("Roles")
+    .select("*")
+    .eq("RoleName", roleName)
+    .limit(1)
+    .maybeSingle();
 
   if (error) throw error;
   return role;
@@ -228,14 +248,16 @@ export async function getRole(supabase: SupabaseClient, roleName: string): Promi
  * @throws {@link PostgrestError} on database error
  * @group Database Functions
  */
-export async function getNotification(supabase: SupabaseClient, employeeId: string): Promise<Notification | null>
-{
-  const {data: notification, error} = await supabase
-      .from('Notifications')
-      .select('*')
-      .eq('Employee', employeeId)
-      .limit(1)
-      .maybeSingle();
+export async function getNotification(
+  supabase: SupabaseClient,
+  employeeId: string,
+): Promise<Notification | null> {
+  const { data: notification, error } = await supabase
+    .from("Notifications")
+    .select("*")
+    .eq("Employee", employeeId)
+    .limit(1)
+    .maybeSingle();
 
   if (error) throw error;
   return notification;
@@ -250,12 +272,14 @@ export async function getNotification(supabase: SupabaseClient, employeeId: stri
  * @throws {@link PostgrestError} on database error
  * @group Database Functions
  */
-export async function getNotificationsForEmployee(supabase: SupabaseClient, employeeId: number): Promise<Notification[] | null>
-{
-  const {data: notification, error} = await supabase
-      .from('Notifications')
-      .select('*')
-      .eq('Employee', employeeId)
+export async function getNotificationsForEmployee(
+  supabase: SupabaseClient,
+  employeeId: number,
+): Promise<Notification[] | null> {
+  const { data: notification, error } = await supabase
+    .from("Notifications")
+    .select("*")
+    .eq("Employee", employeeId);
 
   if (error) throw error;
   return notification;
@@ -269,14 +293,16 @@ export async function getNotificationsForEmployee(supabase: SupabaseClient, empl
  * @throws {@link PostgrestError} on database error
  * @group Database Functions
  */
-export async function getSale(supabase: SupabaseClient, stockNum: string): Promise<Sale | null>
-{
-  const {data: sale, error} = await supabase
-      .from('Sales')
-      .select('*')
-      .eq('StockNumber', stockNum)
-      .limit(1)
-      .maybeSingle();
+export async function getSale(
+  supabase: SupabaseClient,
+  stockNum: string,
+): Promise<Sale | null> {
+  const { data: sale, error } = await supabase
+    .from("Sales")
+    .select("*")
+    .eq("StockNumber", stockNum)
+    .limit(1)
+    .maybeSingle();
 
   if (error) throw error;
   return sale;
@@ -290,14 +316,16 @@ export async function getSale(supabase: SupabaseClient, stockNum: string): Promi
  * @throws {@link PostgrestError} on database error
  * @group Database Functions
  */
-export async function getSalesGoal(supabase: SupabaseClient, goalName: string): Promise<SalesGoal | null>
-{
-  const {data: salesGoal, error} = await supabase
-      .from('SalesGoals')
-      .select('*')
-      .eq('Name', goalName)
-      .limit(1)
-      .maybeSingle();
+export async function getSalesGoal(
+  supabase: SupabaseClient,
+  goalName: string,
+): Promise<SalesGoal | null> {
+  const { data: salesGoal, error } = await supabase
+    .from("SalesGoals")
+    .select("*")
+    .eq("Name", goalName)
+    .limit(1)
+    .maybeSingle();
 
   if (error) throw error;
   return salesGoal;
@@ -312,21 +340,20 @@ export async function getSalesGoal(supabase: SupabaseClient, goalName: string): 
  * @throws {@link PostgrestError} on database error
  * @group Database Functions
  */
-export async function getTask(supabase: SupabaseClient, taskName: string): Promise<Task | null>
-{
-  const {data: task, error} = await supabase
-      .from('Tasks')
-      .select('*')
-      .eq('Name', taskName)
-      .limit(1)
-      .maybeSingle();
+export async function getTask(
+  supabase: SupabaseClient,
+  taskName: string,
+): Promise<Task | null> {
+  const { data: task, error } = await supabase
+    .from("Tasks")
+    .select("*")
+    .eq("Name", taskName)
+    .limit(1)
+    .maybeSingle();
 
   if (error) throw error;
   return task;
 }
-
-
-
 
 // is there much point to this one? There may be multiple duplicates, and our sales record holds an id.
 // we probably want to return multiple if we have?
@@ -338,14 +365,16 @@ export async function getTask(supabase: SupabaseClient, taskName: string): Promi
  * @throws {@link PostgrestError} on database error
  * @group Database Functions
  */
-export async function getTradeIn(supabase: SupabaseClient, tradeName: string): Promise<TradeIn | null>
-{
-  const {data:tradeIn, error} = await supabase
-      .from('TradeIns')
-      .select('*')
-      .eq('Trade', tradeName)
-      .limit(1)
-      .maybeSingle();
+export async function getTradeIn(
+  supabase: SupabaseClient,
+  tradeName: string,
+): Promise<TradeIn | null> {
+  const { data: tradeIn, error } = await supabase
+    .from("TradeIns")
+    .select("*")
+    .eq("Trade", tradeName)
+    .limit(1)
+    .maybeSingle();
 
   if (error) throw error;
   return tradeIn;
@@ -358,13 +387,16 @@ export async function getTradeIn(supabase: SupabaseClient, tradeName: string): P
  * @throws {@link PostgrestError} if authUser is null or doesn't exist, or database error.
  * @group Database Functions
  */
-export async function getEmployeeFromAuthUser(supabase: SupabaseClient, authUser: User): Promise<Employee> {
-  const {data: employee, error} = await supabase
-      .from('Employees')
-      .select()
-      .eq("id", authUser.id)
-      .limit(1)
-      .single()
+export async function getEmployeeFromAuthUser(
+  supabase: SupabaseClient,
+  authUser: User,
+): Promise<Employee> {
+  const { data: employee, error } = await supabase
+    .from("Employees")
+    .select()
+    .eq("id", authUser.id)
+    .limit(1)
+    .single();
 
   if (error) throw error;
   return employee;
@@ -378,12 +410,15 @@ export async function getEmployeeFromAuthUser(supabase: SupabaseClient, authUser
  * @throws {@link PostgrestError} if employee is null or doesn't exist, or database error.
  * @group Database Functions
  */
-export async function getRoleFromEmployee(supabase: SupabaseClient, employee: Employee): Promise<Role> {
-  const {data: role, error} = await supabase
-      .from('Roles')
-      .select()
-      .eq("id", employee.Role)
-      .single();
+export async function getRoleFromEmployee(
+  supabase: SupabaseClient,
+  employee: Employee,
+): Promise<Role> {
+  const { data: role, error } = await supabase
+    .from("Roles")
+    .select()
+    .eq("id", employee.Role)
+    .single();
 
   if (error) throw error;
   return role;
@@ -400,11 +435,14 @@ export async function getAllTasksByAssignee(supabase: SupabaseClient, assigneeID
   return task;
 }
 
-export async function getAllTasksByCreator(supabase: SupabaseClient, creatorID: string): Promise<Task[]> {
-  const {data: task, error} = await supabase
-      .from('Tasks')
-      .select('*')
-      .eq('Creator', creatorID)
+export async function getAllTasksByCreator(
+  supabase: SupabaseClient,
+  creatorID: string,
+): Promise<Task[]> {
+  const { data: task, error } = await supabase
+    .from("Tasks")
+    .select("*")
+    .eq("Creator", creatorID);
 
   if (error) throw error;
   return task;
@@ -417,15 +455,12 @@ export async function getAllTasksByCreator(supabase: SupabaseClient, creatorID: 
  * @throws {@link PostgrestError} on database error.
  * @group Database Functions
  */
-export async function getAllTasks(supabase: SupabaseClient): Promise<Task[]>
-{
-  const {data: tasks, error} = await supabase
-      .from('Tasks')
-      .select(`
+export async function getAllTasks(supabase: SupabaseClient): Promise<Task[]> {
+  const { data: tasks, error } = await supabase.from("Tasks").select(`
         Creator (
           Name
         ), *
-      `)
+      `);
 
   if (error) throw error;
   return tasks;
@@ -438,11 +473,12 @@ export async function getAllTasks(supabase: SupabaseClient): Promise<Task[]>
  * @throws {@link PostgrestError} on database error.
  * @group Database Functions
  */
-export async function getAllCustomers(supabase: SupabaseClient): Promise<Customer[] | null>
-{
-  const {data: customers, error} = await supabase
-      .from('Customers')
-      .select('*');
+export async function getAllCustomers(
+  supabase: SupabaseClient,
+): Promise<Customer[] | null> {
+  const { data: customers, error } = await supabase
+    .from("Customers")
+    .select("*");
 
   if (error) throw error;
   return customers;
@@ -455,12 +491,12 @@ export async function getAllCustomers(supabase: SupabaseClient): Promise<Custome
  * @throws {@link PostgrestError} on database error.
  * @group Database Functions
  */
-export async function getAllEmployees(supabase: SupabaseClient): Promise<Employee[]>
-// todo this function might be a bad idea because it's returning all employee passwords?
-{
-  const {data: employees, error} = await supabase
-      .from('Employees')
-      .select('*');
+export async function getAllEmployees(
+  supabase: SupabaseClient,
+): Promise<Employee[]> {
+  const { data: employees, error } = await supabase
+    .from("Employees")
+    .select("*");
 
   if (error) throw error;
   return employees;
@@ -473,11 +509,12 @@ export async function getAllEmployees(supabase: SupabaseClient): Promise<Employe
  * @throws {@link PostgrestError} on database error.
  * @group Database Functions
  */
-export async function getAllFinancingOptions(supabase: SupabaseClient): Promise<Financier[] | null>
-{
-  const {data: financiers, error} = await supabase
-      .from('Financing')
-      .select('*')
+export async function getAllFinancingOptions(
+  supabase: SupabaseClient,
+): Promise<Financier[] | null> {
+  const { data: financiers, error } = await supabase
+    .from("Financing")
+    .select("*");
 
   if (error) throw error;
   return financiers;
@@ -490,11 +527,12 @@ export async function getAllFinancingOptions(supabase: SupabaseClient): Promise<
  * @throws {@link PostgrestError} on database error.
  * @group Database Functions
  */
-export async function getAllMonthlySales(supabase: SupabaseClient): Promise<MonthlySale[]>
-{
-  const {data: monthlySales, error} = await supabase
-      .from('MonthlySales')
-      .select('*')
+export async function getAllMonthlySales(
+  supabase: SupabaseClient,
+): Promise<MonthlySale[]> {
+  const { data: monthlySales, error } = await supabase
+    .from("MonthlySales")
+    .select("*");
 
   if (error) throw error;
   return monthlySales;
@@ -507,11 +545,8 @@ export async function getAllMonthlySales(supabase: SupabaseClient): Promise<Mont
  * @throws {@link PostgrestError} on database error.
  * @group Database Functions
  */
-export async function getAllRoles(supabase: SupabaseClient): Promise<Role[]>
-{
-  const {data: roles, error} = await supabase
-      .from('Roles')
-      .select('*')
+export async function getAllRoles(supabase: SupabaseClient): Promise<Role[]> {
+  const { data: roles, error } = await supabase.from("Roles").select("*");
 
   if (error) throw error;
   return roles ?? [];
@@ -523,11 +558,12 @@ export async function getAllRoles(supabase: SupabaseClient): Promise<Role[]>
  * @throws {@link PostgrestError} on database error.
  * @group Database Functions
  */
-export async function getAllNotifications(supabase: SupabaseClient): Promise<Notification[] | null>
-{
-  const {data: notifications, error} = await supabase
-      .from('Notifications')
-      .select('*')
+export async function getAllNotifications(
+  supabase: SupabaseClient,
+): Promise<Notification[] | null> {
+  const { data: notifications, error } = await supabase
+    .from("Notifications")
+    .select("*");
 
   if (error) throw error;
   return notifications;
@@ -539,11 +575,10 @@ export async function getAllNotifications(supabase: SupabaseClient): Promise<Not
  * @throws {@link PostgrestError} on database error.
  * @group Database Functions
  */
-export async function getAllSales(supabase: SupabaseClient): Promise<Sale[] | null>
-{
-  const {data: sales, error} = await supabase
-      .from('Sales')
-      .select('*')
+export async function getAllSales(
+  supabase: SupabaseClient,
+): Promise<Sale[] | null> {
+  const { data: sales, error } = await supabase.from("Sales").select("*");
 
   if (error) throw error;
   return sales;
@@ -556,17 +591,16 @@ export async function getAllSales(supabase: SupabaseClient): Promise<Sale[] | nu
  * @throws {@link PostgrestError} on database error.
  * @group Database Functions
  */
-export async function getAllSalesGoals(supabase: SupabaseClient): Promise<SalesGoal[] | null>
-{
-  const {data: salesGoals, error} = await supabase
-      .from('SalesGoals')
-      .select('*');
+export async function getAllSalesGoals(
+  supabase: SupabaseClient,
+): Promise<SalesGoal[] | null> {
+  const { data: salesGoals, error } = await supabase
+    .from("SalesGoals")
+    .select("*");
 
   if (error) throw error;
   return salesGoals;
 }
-
-
 
 /**
  * Get all rows in the TradeIns table.
@@ -575,11 +609,10 @@ export async function getAllSalesGoals(supabase: SupabaseClient): Promise<SalesG
  * @throws {@link PostgrestError} on database error.
  * @group Database Functions
  */
-export async function getAllTradeIns(supabase: SupabaseClient): Promise<TradeIn[] | null>
-{
-  const {data: tradeIns, error} = await supabase
-      .from('TradeIns')
-      .select('*');
+export async function getAllTradeIns(
+  supabase: SupabaseClient,
+): Promise<TradeIn[] | null> {
+  const { data: tradeIns, error } = await supabase.from("TradeIns").select("*");
 
   if (error) throw error;
   return tradeIns;
@@ -593,14 +626,17 @@ export async function getAllTradeIns(supabase: SupabaseClient): Promise<TradeIn[
  * @throws {@link PostgrestError} if Creator is null or doesn't exist, or on database insert error.
  * @group Database Functions
  */
-export async function postToSalesGoals(supabase: SupabaseClient, newSaleGoal: SalesGoalInsert): Promise<SalesGoal>
-{
-  const {data: saleGoal, error} = await supabase
-      .from('SalesGoals')
-      .insert(newSaleGoal)
-      .select()
-      .limit(1)
-      .single();
+export async function postToSalesGoals(
+  supabase: SupabaseClient,
+  newSaleGoal: SalesGoalInsert,
+): Promise<SalesGoal> {
+  console.log(newSaleGoal.StartDate);
+  const { data: saleGoal, error } = await supabase
+    .from("SalesGoals")
+    .upsert(newSaleGoal, { onConflict: "StartDate" })
+    .select()
+    .limit(1)
+    .single();
 
   if (error) throw error;
 
@@ -616,43 +652,55 @@ export async function postToSalesGoals(supabase: SupabaseClient, newSaleGoal: Sa
  * @throws {@link PostgrestError} on database error.
  * @group Database Functions
  */
-export async function getSalesInDateRange(supabase: SupabaseClient, startDate?: Date, endDate?: Date, sort?: "asc" | "dsc") {
+export async function getSalesInDateRange(
+  supabase: SupabaseClient,
+  startDate?: Date,
+  endDate?: Date,
+  sort?: "asc" | "dsc",
+) {
   const { data: SaleTime, error } = await supabase
-      .from('Sales')
-      .select('SaleTime, Total')
-      .order('SaleTime', { ascending: sort != "dsc" })
-      .filter('SaleTime', 'gte', format(startDate || new Date(), 'yyyy-MM-dd'))
-      .filter('SaleTime', 'lte', format(endDate || new Date(), 'yyyy-MM-dd'))
+    .from("Sales")
+    .select("SaleTime, Total")
+    .order("SaleTime", { ascending: sort != "dsc" })
+    .filter("SaleTime", "gte", format(startDate || new Date(), "yyyy-MM-dd"))
+    .filter("SaleTime", "lte", format(endDate || new Date(), "yyyy-MM-dd"));
 
   if (error) throw error;
   return SaleTime;
 }
 
-export async function getSalesForEmployeeInDateRange(supabase: SupabaseClient, employeeID: string, startDate?: Date, endDate?: Date, sort?: "asc" | "dsc"){
+export async function getSalesForEmployeeInDateRange(
+  supabase: SupabaseClient,
+  employeeID: string,
+  startDate?: Date,
+  endDate?: Date,
+  sort?: "asc" | "dsc",
+) {
   const { data: SaleTime, error } = await supabase
-        .from('Sales')
-        .select('SaleTime, Total')
-        .order('SaleTime', { ascending: sort != "dsc" })
-        .filter('SaleTime', 'gte', format(startDate || new Date(), 'yyyy-MM-dd'))
-        .filter('SaleTime', 'lte', format(endDate || new Date(), 'yyyy-MM-dd'))
-        .filter('EmployeeID', 'eq', employeeID)
+    .from("Sales")
+    .select("SaleTime, Total")
+    .order("SaleTime", { ascending: sort != "dsc" })
+    .filter("SaleTime", "gte", format(startDate || new Date(), "yyyy-MM-dd"))
+    .filter("SaleTime", "lte", format(endDate || new Date(), "yyyy-MM-dd"))
+    .filter("EmployeeID", "eq", employeeID);
 
-    if (error) throw error;
-    return SaleTime;
-}
-
-
-export async function getSalesForEmployee(supabase: SupabaseClient, employeeID: string, sort?: "asc" | "dsc"){
-  const { data: SaleTime, error } = await supabase
-      .from('Sales')
-      .select('*')
-      .order('SaleTime', { ascending: sort != "dsc" })
-      .filter('EmployeeID', 'eq', employeeID)
   if (error) throw error;
   return SaleTime;
 }
 
-
+export async function getSalesForEmployee(
+  supabase: SupabaseClient,
+  employeeID: string,
+  sort?: "asc" | "dsc",
+) {
+  const { data: SaleTime, error } = await supabase
+    .from("Sales")
+    .select("*")
+    .order("SaleTime", { ascending: sort != "dsc" })
+    .filter("EmployeeID", "eq", employeeID);
+  if (error) throw error;
+  return SaleTime;
+}
 
 // leaving this one for now, but we should make our forms use interactive components, and this will let us get the
 // ids from those. EX. see src/app/(pages)/admin/employees/components/EmployeeSelectModalForm.tsx
@@ -685,67 +733,79 @@ export async function getSalesForEmployee(supabase: SupabaseClient, employeeID: 
  * @throws {@link PostgrestError} on database insert error.
  * @group Database Functions
  */
-export async function postToSales(supabase: SupabaseClient, stockNum: string, make: string, cashVal: number,
-                                  grossProfit: number, finAndInsurance: number, holdback: number, total: number,
-                                  employeeID: number, customerFirstName: string, customerLastName: string,
-                                  financingOption: string, tradeIn: string, tradeInValue: number, newSale: boolean,
-                                  lotpack: number, daysinstock: number, dealercost: number, roi: number): Promise<Sale>
-{
+export async function postToSales(
+  supabase: SupabaseClient,
+  stockNum: string,
+  make: string,
+  cashVal: number,
+  grossProfit: number,
+  finAndInsurance: number,
+  holdback: number,
+  total: number,
+  employeeID: number,
+  customerFirstName: string,
+  customerLastName: string,
+  financingOption: string,
+  tradeIn: string,
+  tradeInValue: number,
+  newSale: boolean,
+  lotpack: number,
+  daysinstock: number,
+  dealercost: number,
+  roi: number,
+): Promise<Sale> {
   // Big function here. Got to check many things
   const getTradein = await supabase
-      .from('TradeIns')
-      .select('id')
-      .eq('Trade', tradeIn)
+    .from("TradeIns")
+    .select("id")
+    .eq("Trade", tradeIn);
 
-  if (getTradein.data == undefined) // Case where there is no such tradein
-  {
-    throw TypeError
+  if (getTradein.data == undefined) {
+    // Case where there is no such tradein
+    throw TypeError;
   }
-  const tradeInId = getTradein.data[0].id
+  const tradeInId = getTradein.data[0].id;
   // not all sales involve tradeIns
-  console.log(tradeInId)
+  console.log(tradeInId);
 
   var financeResp = await supabase
-      .from('Financing')
-      .select('id')
-      .eq('Method', financingOption)
+    .from("Financing")
+    .select("id")
+    .eq("Method", financingOption);
 
-  if (financeResp.data == null)
-  {
-    throw TypeError
+  if (financeResp.data == null) {
+    throw TypeError;
   }
 
-  const financeID = financeResp.data[0].id
+  const financeID = financeResp.data[0].id;
 
-  console.log(financeID)
+  console.log(financeID);
 
   const employeeResp = await supabase
-      .from('Employees')
-      .select('id')
-      .eq('EmployeeNumber', employeeID)
+    .from("Employees")
+    .select("id")
+    .eq("EmployeeNumber", employeeID);
 
-  if (employeeResp.error != null)
-  {
-    throw new EmployeeIDNotFoundError("Error: Employee not found.", "")
+  if (employeeResp.error != null) {
+    throw new EmployeeIDNotFoundError("Error: Employee not found.", "");
   }
 
-  const employeeRowID = employeeResp.data[0].id
+  const employeeRowID = employeeResp.data[0].id;
 
-  console.log(employeeRowID)
+  console.log(employeeRowID);
 
   const customerResp = await supabase
-      .from('Customers')
-      .select('id')
-      .eq('Name', customerFirstName+" "+customerLastName)
+    .from("Customers")
+    .select("id")
+    .eq("Name", customerFirstName + " " + customerLastName);
 
-  if (customerResp.error != null)
-  {
-    throw new Error()
+  if (customerResp.error != null) {
+    throw new Error();
   }
 
-  const customerRowID = customerResp.data[0].id
+  const customerRowID = customerResp.data[0].id;
 
-  console.log(customerRowID)
+  console.log(customerRowID);
 
   // Now we have all the references pulled. Lets pop this bad boy into the db
 
@@ -766,20 +826,19 @@ export async function postToSales(supabase: SupabaseClient, stockNum: string, ma
     LotPack: lotpack,
     DaysInStock: daysinstock,
     DealerCost: dealercost,
-    ROI: roi
-  }
+    ROI: roi,
+  };
 
-  console.log(collatedData)
+  console.log(collatedData);
 
   const finalPost = await supabase
-      .from('Sales')
-      .insert(collatedData)
-      .select()
-      .limit(1)
-      .single();
+    .from("Sales")
+    .insert(collatedData)
+    .select()
+    .limit(1)
+    .single();
 
   return finalPost.data;
-
 }
 
 /**
@@ -789,14 +848,16 @@ export async function postToSales(supabase: SupabaseClient, stockNum: string, ma
  * @throws {@link PostgrestError} on database insert error.
  * @group Database Functions
  */
-export async function postToCustomers(supabase: SupabaseClient, newCustomer: CustomerInsert): Promise<Customer | null>
-{
-  const {data: customers, error} = await supabase
-      .from('Customers')
-      .upsert(newCustomer)
-      .select()
-      .limit(1)
-      .single();
+export async function postToCustomers(
+  supabase: SupabaseClient,
+  newCustomer: CustomerInsert,
+): Promise<Customer | null> {
+  const { data: customers, error } = await supabase
+    .from("Customers")
+    .upsert(newCustomer)
+    .select()
+    .limit(1)
+    .single();
 
   if (error) throw error;
   return customers;
@@ -811,14 +872,16 @@ export async function postToCustomers(supabase: SupabaseClient, newCustomer: Cus
  * @throws {@link PostgrestError} if EmployeeInsert.Role is null, or on database insert error.
  * @group Database Functions
  */
-export async function postToEmployees(supabase: SupabaseClient, newEmployee: EmployeeInsert): Promise<Employee>
-{
-  const {data: employee, error} = await supabase
-      .from("Employees")
-      .insert(newEmployee)
-      .select()
-      .limit(1)
-      .single();
+export async function postToEmployees(
+  supabase: SupabaseClient,
+  newEmployee: EmployeeInsert,
+): Promise<Employee> {
+  const { data: employee, error } = await supabase
+    .from("Employees")
+    .insert(newEmployee)
+    .select()
+    .limit(1)
+    .single();
 
   if (error) throw error;
   return employee;
@@ -831,14 +894,16 @@ export async function postToEmployees(supabase: SupabaseClient, newEmployee: Emp
  * @throws {@link PostgrestError} if id is null, or on database insert error.
  * @group Database Functions
  */
-export async function updateToEmployees(supabase: SupabaseClient, updatedEmployee: EmployeeUpdate): Promise<Employee>
-{
-  const {data: employee, error} = await supabase
-      .from("Employees")
-      .update(updatedEmployee)
-      .eq("id", updatedEmployee.id)
-      .select()
-      .single()
+export async function updateToEmployees(
+  supabase: SupabaseClient,
+  updatedEmployee: EmployeeUpdate,
+): Promise<Employee> {
+  const { data: employee, error } = await supabase
+    .from("Employees")
+    .update(updatedEmployee)
+    .eq("id", updatedEmployee.id)
+    .select()
+    .single();
 
   if (error) throw error;
   return employee;
@@ -852,43 +917,49 @@ export async function updateToEmployees(supabase: SupabaseClient, updatedEmploye
  * @throws {@link PostgrestError} on database insert error.
  * @group Database Functions
  */
-export async function postToFinancing(supabase: SupabaseClient, newFinancier: FinancierInsert): Promise<Financier>
-{
-  const {data: financier, error} = await supabase
-      .from('Financing')
-      .upsert(newFinancier)
-      .select()
-      .limit(1)
-      .single();
+export async function postToFinancing(
+  supabase: SupabaseClient,
+  newFinancier: FinancierInsert,
+): Promise<Financier> {
+  const { data: financier, error } = await supabase
+    .from("Financing")
+    .upsert(newFinancier)
+    .select()
+    .limit(1)
+    .single();
 
   if (error) throw error;
   return financier;
 }
-export async function postToReferencePages(supabase: SupabaseClient, newPage: ReferencePageInsert): Promise<ReferencePage> {
-  const {data: ref, error} = await supabase
-      .from('ReferencePages')
-      .insert(newPage)
-      .select()
-      .limit(1)
-      .single();
+export async function postToReferencePages(
+  supabase: SupabaseClient,
+  newPage: ReferencePageInsert,
+): Promise<ReferencePage> {
+  const { data: ref, error } = await supabase
+    .from("ReferencePages")
+    .insert(newPage)
+    .select()
+    .limit(1)
+    .single();
 
   if (error) throw error;
   return ref;
 }
 
-export async function updateToReferencePages(supabase: SupabaseClient, newPage: ReferencePageInsert): Promise<ReferencePage> {
-  const {data: ref, error} = await supabase
-      .from('ReferencePages')
-      .update(newPage)
-      .select()
-      .limit(1)
-      .single();
+export async function updateToReferencePages(
+  supabase: SupabaseClient,
+  newPage: ReferencePageInsert,
+): Promise<ReferencePage> {
+  const { data: ref, error } = await supabase
+    .from("ReferencePages")
+    .update(newPage)
+    .select()
+    .limit(1)
+    .single();
 
   if (error) throw error;
   return ref;
 }
-
-
 
 /**
  * Posts a new row into the MonthlySales table
@@ -897,14 +968,16 @@ export async function updateToReferencePages(supabase: SupabaseClient, newPage: 
  * @throws {@link PostgrestError} on database insert error.
  * @group Database Functions
  */
-export async function postToMonthlySales(supabase: SupabaseClient, newMonthlySale: MonthlySaleInsert): Promise<MonthlySale>
-{
-  const {data: monthlySale, error} = await supabase
-      .from('MonthlySales')
-      .insert(newMonthlySale)
-      .select()
-      .limit(1)
-      .single();
+export async function postToMonthlySales(
+  supabase: SupabaseClient,
+  newMonthlySale: MonthlySaleInsert,
+): Promise<MonthlySale> {
+  const { data: monthlySale, error } = await supabase
+    .from("MonthlySales")
+    .insert(newMonthlySale)
+    .select()
+    .limit(1)
+    .single();
 
   if (error) throw error;
   return monthlySale;
@@ -919,19 +992,20 @@ export async function postToMonthlySales(supabase: SupabaseClient, newMonthlySal
  * @throws {@link PostgrestError} if employee or sale doesn't exist, or database insert error.
  * @group Database Functions
  */
-export async function postToNotifications(supabase: SupabaseClient, newNotification: NotificationInsert): Promise<Notification>
-{
-  const {data: notification, error} = await supabase
-      .from('Notifications')
-      .insert(newNotification)
-      .select()
-      .limit(1)
-      .single();
+export async function postToNotifications(
+  supabase: SupabaseClient,
+  newNotification: NotificationInsert,
+): Promise<Notification> {
+  const { data: notification, error } = await supabase
+    .from("Notifications")
+    .insert(newNotification)
+    .select()
+    .limit(1)
+    .single();
 
   if (error) throw error;
   return notification;
 }
-
 
 // todo task table may need some extra not null restrictions
 // todo at least one for sure on col Creator. then we don't need to do extra calls.
@@ -943,14 +1017,16 @@ export async function postToNotifications(supabase: SupabaseClient, newNotificat
  * @throws {@link PostgrestError} if `Creator` or `Assignee` doesn't exist, or on database insert error.
  * @group Database Functions
  */
-export async function postToTasks(supabase: SupabaseClient, newTask: TaskInsert): Promise<Task>
-{
+export async function postToTasks(
+  supabase: SupabaseClient,
+  newTask: TaskInsert,
+): Promise<Task> {
   const post = await supabase
-      .from('Tasks')
-      .insert(newTask)
-      .select()
-      .limit(1)
-      .single();
+    .from("Tasks")
+    .insert(newTask)
+    .select()
+    .limit(1)
+    .single();
 
   if (post.error) throw post.error;
   return post.data;
@@ -963,23 +1039,25 @@ export async function postToTasks(supabase: SupabaseClient, newTask: TaskInsert)
  * @throws {@link PostgrestError} on database insert error.
  * @group Database Functions
  */
-export async function postToTradeIns(supabase: SupabaseClient, newTradeIn: TradeInInsert): Promise<TradeIn>
-{
-  const {data: tradeIn, error} = await supabase
-      .from('TradeIns')
-      .insert(newTradeIn)
-      .select()
-      .limit(1)
-      .single()
+export async function postToTradeIns(
+  supabase: SupabaseClient,
+  newTradeIn: TradeInInsert,
+): Promise<TradeIn> {
+  const { data: tradeIn, error } = await supabase
+    .from("TradeIns")
+    .insert(newTradeIn)
+    .select()
+    .limit(1)
+    .single();
 
   if (error) throw error;
-  return tradeIn
+  return tradeIn;
 }
 
 // when called from a user access level, only returns sales for that user.
 export async function getSales(): Promise<Sale[]> {
-  const response = await fetch(`/api/sale`, { method: "GET" })
-  const responseBody = await response.json()
+  const response = await fetch(`/api/sale`, { method: "GET" });
+  const responseBody = await response.json();
 
   if (responseBody.error) throw responseBody.error;
   return responseBody.data ?? [];
@@ -987,8 +1065,8 @@ export async function getSales(): Promise<Sale[]> {
 
 // when called from a user access level, only returns tasks for that user.
 export async function getTasks(): Promise<Task[]> {
-  const response = await fetch(`/api/task`, { method: "GET" })
-  const responseBody = await response.json()
+  const response = await fetch(`/api/task`, { method: "GET" });
+  const responseBody = await response.json();
 
   if (responseBody.error) throw responseBody.error;
   return responseBody.data ?? [];
@@ -996,8 +1074,8 @@ export async function getTasks(): Promise<Task[]> {
 
 // when called from a user access level, only returns tasks for that user.
 export async function getGoals(): Promise<SalesGoal[]> {
-  const response = await fetch(`/api/goal`, { method: "GET" })
-  const responseBody = await response.json()
+  const response = await fetch(`/api/goal`, { method: "GET" });
+  const responseBody = await response.json();
 
   if (responseBody.error) throw responseBody.error;
   return responseBody.data ?? [];
@@ -1005,142 +1083,151 @@ export async function getGoals(): Promise<SalesGoal[]> {
 
 // gets sales with Customer, TradeIn, Financier and Employee info expanded.
 export async function getFormattedSales() {
-  const salesRequest = await fetch(`/api/sale?type=formatted`, { method: "GET" })
+  const salesRequest = await fetch(`/api/sale?type=formatted`, {
+    method: "GET",
+  });
 
-  const {data: sales, error}: { data: SaleWithEmployeeAndFinancingType[], error: PostgrestError } =
-    await salesRequest.json()
+  const {
+    data: sales,
+    error,
+  }: { data: SaleWithEmployeeAndFinancingType[]; error: PostgrestError } =
+    await salesRequest.json();
   if (error) throw error;
 
   return sales ?? [];
 }
 
 /** @ignore */
-export type Tables<T extends keyof Database['public']['Tables']> = Database['public']['Tables'][T]['Row'];
-type UpdateTables<T extends keyof Database['public']['Tables']> = Database['public']['Tables'][T]['Update'];
+export type Tables<T extends keyof Database["public"]["Tables"]> =
+  Database["public"]["Tables"][T]["Row"];
+type UpdateTables<T extends keyof Database["public"]["Tables"]> =
+  Database["public"]["Tables"][T]["Update"];
 
-type InsertTables<T extends keyof Database['public']['Tables']> = Database['public']['Tables'][T]['Insert'];
+type InsertTables<T extends keyof Database["public"]["Tables"]> =
+  Database["public"]["Tables"][T]["Insert"];
 /** @ignore */
-export type Enums<T extends keyof Database['public']['Enums']> = Database['public']['Enums'][T];
+export type Enums<T extends keyof Database["public"]["Enums"]> =
+  Database["public"]["Enums"][T];
 
 /**Represents a complete employee row in the database with all fields possible. If you need an incomplete
  *  type instead, consider using {@link EmployeeInsert} or {@link EmployeeUpdate}.
  *  @interface
  *  @category Database Row */
-export type Employee =             Tables<"Employees">;
+export type Employee = Tables<"Employees">;
 
 /** Represents a complete role row in the database with all fields possible. If you need an incomplete
  *  type instead, consider using {@link RoleInsert} or {@link RoleUpdate}.
  *  @interface
  *  @category Database Row */
-export type Role =                 Tables<"Roles">;
+export type Role = Tables<"Roles">;
 
 /** Represents a complete sale row in the database with all fields possible. If you need an incomplete
  *  type instead, consider using {@link SaleInsert} or {@link SaleUpdate}.
  *  @interface
  *  @category Database Row */
-export type Sale =                 Tables<"Sales">;
+export type Sale = Tables<"Sales">;
 /** Represents a complete sales goal row in the database with all fields possible. If you need an incomplete
  *  type instead, consider using {@link SalesGoalInsert} or {@link SalesGoalUpdate}.
  *  @interface
  *  @category Database Row */
-export type SalesGoal =            Tables<"SalesGoals">;
+export type SalesGoal = Tables<"SalesGoals">;
 /** Represents a complete monthly sales row in the database with all fields possible. If you need an incomplete
  *  type instead, consider using {@link MonthlySaleInsert} or {@link MonthlySaleUpdate}.
  *  @interface
  *  @category Database Row */
-export type MonthlySale =          Tables<"MonthlySales">;
+export type MonthlySale = Tables<"MonthlySales">;
 /** Represents a complete customer row in the database with all fields possible. If you need an incomplete
  *  type instead, consider using {@link CustomerInsert} or {@link CustomerUpdate}.
  *  @interface
  *  @category Database Row */
-export type Customer  =            Tables<"Customers">;
+export type Customer = Tables<"Customers">;
 /** Represents a complete financier row in the database with all fields possible. If you need an incomplete
  *  type instead, consider using {@link FinancierInsert} or {@link FinancierUpdate}.
  *  @interface
  *  @category Database Row */
-export type Financier =            Tables<"Financing">;
+export type Financier = Tables<"Financing">;
 /** Represents a complete notification row in the database with all fields possible. If you need an incomplete
  *  type instead, consider using {@link NotificationInsert} or {@link NotificationUpdate}.
  *  @interface
  *  @category Database Row */
-export type Notification =         Tables<"Notifications">;
+export type Notification = Tables<"Notifications">;
 /** Represents a complete task row in the database with all fields possible. If you need an incomplete
  type instead, consider using {@link TaskInsert} or {@link TaskUpdate}.
  *  @interface
  *  @category Database Row */
-export type Task =                 Tables<"Tasks">;
+export type Task = Tables<"Tasks">;
 /** Represents a complete trade in row in the database with all fields possible. If you need an incomplete
  type instead, consider using {@link TradeInInsert} or {@link TradeInUpdate}.
  *  @interface
  *  @category Database Row */
-export type TradeIn =              Tables<"TradeIns">;
+export type TradeIn = Tables<"TradeIns">;
 
-export type ReferencePage  =  Tables<"ReferencePages">;
+export type ReferencePage = Tables<"ReferencePages">;
 
 // todo the rest::
 /** Represents a partial employee row in the database with all required fields. If you need an incomplete
  *  type instead, consider using {@link TradeInInsert} or {@link TradeInUpdate}.
  *  @interface
  *  @category Database Insert */
-export type EmployeeInsert =       InsertTables<"Employees">;
+export type EmployeeInsert = InsertTables<"Employees">;
 /** @interface
  *  @category Database Insert */
-export type RoleInsert =           InsertTables<"Roles">;
+export type RoleInsert = InsertTables<"Roles">;
 /** @interface
  *  @category Database Insert */
-export type SaleInsert =           InsertTables<"Sales">;
+export type SaleInsert = InsertTables<"Sales">;
 /** @interface
  *  @category Database Insert */
-export type SalesGoalInsert =      InsertTables<"SalesGoals">;
+export type SalesGoalInsert = InsertTables<"SalesGoals">;
 /** @interface
  *  @category Database Insert */
-export type MonthlySaleInsert =    InsertTables<"MonthlySales">;
+export type MonthlySaleInsert = InsertTables<"MonthlySales">;
 /** @interface
  *  @category Database Insert */
-export type CustomerInsert  =      InsertTables<"Customers">;
+export type CustomerInsert = InsertTables<"Customers">;
 /** @interface
  *  @category Database Insert */
-export type FinancierInsert =      InsertTables<"Financing">;
+export type FinancierInsert = InsertTables<"Financing">;
 /** @interface
  *  @category Database Insert */
-export type NotificationInsert =   InsertTables<"Notifications">;
+export type NotificationInsert = InsertTables<"Notifications">;
 /** @interface
  *  @category Database Insert */
-export type TaskInsert =           InsertTables<"Tasks">;
+export type TaskInsert = InsertTables<"Tasks">;
 /** @interface
  *  @category Database Insert */
-export type TradeInInsert =        InsertTables<"TradeIns">;
+export type TradeInInsert = InsertTables<"TradeIns">;
 
-export type ReferencePageInsert  =  InsertTables<"ReferencePages">;
+export type ReferencePageInsert = InsertTables<"ReferencePages">;
 /** @interface
  *  @category Database Update */
-export type EmployeeUpdate =       UpdateTables<"Employees">;
+export type EmployeeUpdate = UpdateTables<"Employees">;
 /** @interface
  *  @category Database Update */
-export type RoleUpdate =           UpdateTables<"Roles">;
+export type RoleUpdate = UpdateTables<"Roles">;
 /** @interface
  *  @category Database Update */
-export type SaleUpdate =           UpdateTables<"Sales">;
+export type SaleUpdate = UpdateTables<"Sales">;
 /** @interface
  *  @category Database Update */
-export type SalesGoalUpdate =      UpdateTables<"SalesGoals">;
+export type SalesGoalUpdate = UpdateTables<"SalesGoals">;
 /** @interface
  *  @category Database Update */
-export type MonthlySaleUpdate =    UpdateTables<"MonthlySales">;
+export type MonthlySaleUpdate = UpdateTables<"MonthlySales">;
 /** @interface
  *  @category Database Update */
-export type CustomerUpdate  =      UpdateTables<"Customers">;
+export type CustomerUpdate = UpdateTables<"Customers">;
 /** @interface
  *  @category Database Update */
-export type FinancierUpdate =      UpdateTables<"Financing">;
+export type FinancierUpdate = UpdateTables<"Financing">;
 /** @interface
  *  @category Database Update */
-export type NotificationUpdate =   UpdateTables<"Notifications">;
+export type NotificationUpdate = UpdateTables<"Notifications">;
 /** @interface
  *  @category Database Update */
-export type TaskUpdate =           UpdateTables<"Tasks">;
+export type TaskUpdate = UpdateTables<"Tasks">;
 /** @interface
  *  @category Database Update */
-export type TradeInUpdate =        UpdateTables<"TradeIns">;
+export type TradeInUpdate = UpdateTables<"TradeIns">;
 
-export type ReferencePageUpdate  =  UpdateTables<"ReferencePages">;
+export type ReferencePageUpdate = UpdateTables<"ReferencePages">;
