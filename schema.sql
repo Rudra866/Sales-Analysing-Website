@@ -1,4 +1,5 @@
 -- TODO enable RLS --
+BEGIN;
 SET statement_timeout = 0;
 SET lock_timeout = 0;
 SET idle_in_transaction_session_timeout = 0;
@@ -1323,3 +1324,4 @@ INSERT INTO "public"."Employees" ("id", "Name", "EmployeeNumber", "Role", "Email
 ALTER TABLE "auth"."users" ENABLE TRIGGER on_auth_user_created;
 
 RESET ALL;
+COMMIT;

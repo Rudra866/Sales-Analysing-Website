@@ -1,5 +1,6 @@
 -- TODO Add reference pages --
 -- TODO add nov/dec sales ==
+BEGIN;
 SET statement_timeout = 0;
 SET lock_timeout = 0;
 SET idle_in_transaction_session_timeout = 0;
@@ -1435,3 +1436,4 @@ INSERT INTO "public"."Tasks" ("id", "Name", "Description", "StartDate", "EndDate
 ALTER TABLE "auth"."users" ENABLE TRIGGER on_auth_user_created;
 ALTER TABLE "public"."Sales" ENABLE TRIGGER after_sale_insert;
 RESET ALL;
+COMMIT;
