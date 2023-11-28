@@ -153,6 +153,13 @@ npm run test
 ```
 This will run all tests in `/src/tests`, reporting on the status of each test as it runs.
 
+There are also deployments of the Storybook for dev and main branches, along with auto-generated TypeDoc documentation:
+| Site                 | URL                                                                     |
+|----------------------|-------------------------------------------------------------------------|
+| Storybook (main)     | [storybook.codeallergy.dev](https://storybook.codeallergy.dev)          |
+| Storybook (dev)      | [dev.storybook.codeallergy.dev](https://dev.storybook.codeallergy.dev)  |
+| TypeDocs             | [docs.codeallergy.dev](https://docs.codeallergy.dev)                    |
+
 
 ## Documentation
 Some links to help you get started:
