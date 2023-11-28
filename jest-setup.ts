@@ -40,6 +40,7 @@ export type user_info_type = {
   password: string;
   role: string;
   roleText: string;
+  number: string;
 };
 
 export const test_user_info: user_info_type = {
@@ -48,6 +49,7 @@ export const test_user_info: user_info_type = {
   password: process.env.JEST_DEFAULT_USER_PASSWORD!,
   role: "1",
   roleText: "Default",
+  number: "1234567890",
 };
 
 export const test_admin_info: user_info_type = {
@@ -56,6 +58,7 @@ export const test_admin_info: user_info_type = {
   password: process.env.JEST_ADMIN_USER_PASSWORD!,
   role: "2",
   roleText: "Administrator",
+  number: "1234567890",
 };
 
 export function getCookie(name: string): string | null {

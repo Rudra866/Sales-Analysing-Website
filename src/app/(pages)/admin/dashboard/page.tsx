@@ -28,7 +28,7 @@ export default function DashboardPage() {
     return (
         <Suspense fallback={<LoadingAnimation />}>
             <div className="flex-col md:flex">
-                <div className="flex-1 space-y-4 p-8 pt-6">
+                <div className="flex-1 space-y-4 p-2 md:p-8 pt-6">
                     <div className="flex items-start justify-start space-y-2 lg:flex-row flex-col">
                         <h2 className="w-full text-3xl font-bold tracking-tight">Dashboard</h2>
                         <div className="w-fit flex space-x-2 lg:flex-row flex-col gap-2 justify-end">
@@ -38,7 +38,7 @@ export default function DashboardPage() {
                     </div>
                     {isLoading ? <LoadingAnimation/> :
                         <section className={'w-full space-y-2'}>
-                            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                            <div className="grid gap-2 md:grid-cols-2 lg:grid-cols-4">
                                 <SummaryCard defaultCategory={'Total'} />
                                 <SummaryCard defaultCategory={'GrossProfit'} />
                                 <SummaryCard defaultCategory={'DealerCost'} />

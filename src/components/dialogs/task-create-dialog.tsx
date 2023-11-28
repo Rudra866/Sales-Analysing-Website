@@ -1,5 +1,5 @@
 // todo -- broken fields time
-import React, { useState } from "react";
+import React, {useRef, useState} from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -38,40 +38,36 @@ import { format } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { newTaskSchema } from "@/lib/zod-schemas";
+import {toast, useToast} from "@/components/ui/use-toast";
+import {successToast} from "@/lib/toasts";
 
 /**
  * Component to allow for viewing a task and modifying it. Has two states, view mode and edit mode.
  * Maybe add a toast notification here in the future so the user has more evidence it was successful?
  * @group React Components
  */
-export function TaskCreateDialog({
-  employees,
-  task,
-}: {
-  employees: Employee[];
-  task?: any;
-}) {
-  console.log(task);
+export function TaskCreateDialog({employees, task}: { employees: Employee[]; task?: any}) {
+
   const [openEmployees, setOpenEmployees] = useState<boolean>(false);
   const taskEmployee = task?.Assignee
-    ? employees.find((employee) => employee.id === task.Assignee)?.Name
+    ? employees.find((employee) => employee.id === task?.Assignee)?.Name
     : "";
   const [employeeValue, setEmployeeValue] = React.useState(taskEmployee ?? "");
   const formContext = useFormModalContext();
   const { employee } = useAuth();
 
   const [startDate, setStartDate] = useState<Date | undefined>(
-    task.StartDate ? new Date(task.StartDate) : undefined,
+    task?.StartDate ? new Date(task?.StartDate) : undefined,
   );
   const [endDate, setEndDate] = useState<Date | undefined>(
-    task.EndDate ? new Date(task.EndDate) : undefined,
+    task?.EndDate ? new Date(task?.EndDate) : undefined,
   );
 
   const form = useForm<z.infer<typeof newTaskSchema>>({
     resolver: zodResolver(newTaskSchema),
     defaultValues: {
-      Name: task.Name ?? "",
-      Description: task.Description ?? "",
+      Name: task?.Name ?? "",
+      Description: task?.Description ?? "",
     },
   });
   function onSubmit(data: any) {
@@ -83,6 +79,14 @@ export function TaskCreateDialog({
     data["EndDate"] = endDate;
 
     formContext!.onSubmit(data);
+    toast({
+      title: "You submitted the following values:",
+      description: (
+          <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
+          <code className="text-white">{JSON.stringify(data, null, 2)}</code>
+        </pre>
+      ),
+    })
   }
 
   return (
@@ -94,7 +98,7 @@ export function TaskCreateDialog({
             name="Name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>EmployeeNumber</FormLabel>
+                <FormLabel>Task Name</FormLabel>
                 <FormControl>
                   <Input placeholder="Task Name" {...field} />
                 </FormControl>
@@ -232,7 +236,9 @@ export function TaskCreateDialog({
           </Popover>
         </DialogBody>
         <DialogFooter>
-          <Button type={"submit"}>Submit</Button>
+          <DialogClose asChild>
+            <Button type={"submit"}>Submit</Button>
+          </DialogClose>
           <DialogClose asChild>
             <Button type="button" variant="secondary">
               Close

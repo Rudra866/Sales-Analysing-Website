@@ -41,19 +41,16 @@ export default function SummaryCard({className, defaultCategory = "Total"}: { cl
         const lastMonth = format(new Date(date?.from || new Date()), 'MMM-yy')
         const previousMonth = format(addDays(new Date(), -Number(30)), 'MMM-yy')
         const e = data && monthlyAverage(data, selectedCategory)
-        // console.log(e, selectedCategory, e && e[thisMonth])
-
         setAverage(e && e[thisMonth] ? e[lastMonth] : 0)
-
 
     }, [selectedCategory , data, date])
 
 
 
     return (
-        <div>
+        <div className={'h-full'}>
             {data && (
-                <Card>
+                <Card className={'h-full'}>
                     <CardHeader className={cn("flex flex-row items-center justify-between pb-2 w-full", className)}>
                         <Select defaultValue={selectedCategory} onValueChange={setSelectedCategory}>
                             <SelectTrigger id="area" className={'border-transparent px-0'}>
@@ -121,7 +118,6 @@ export function CountCard() {
         });
 
     }, [date, data]);
-
 
     return (
         <div>

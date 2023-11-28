@@ -5,6 +5,7 @@ import ContainerLayout from "@/components/container-layout";
 import React, {useEffect} from "react";
 import {useEmployee} from "@/employee/employee-components/employee-provider";
 import {TrainingSidebarNav} from "@/employee/training/training-sidebar-nav";
+import {ScrollArea} from "@/components/ui/scroll-area";
 
 interface SettingsLayoutProps {
     children: React.ReactNode
@@ -36,7 +37,9 @@ export default function SettingsLayout({children}: SettingsLayoutProps) {
                 <Separator className="my-6"/>
                 <div className="flex flex-col space-y-8 lg:flex-row lg:space-x-12 lg:space-y-0">
                     <aside className="-mx-4 lg:w-1/5">
+                        <ScrollArea className={'h-[400px]'}>
                         {sideBarItems && <TrainingSidebarNav items={sideBarItems}/>}
+                        </ScrollArea>
                     </aside>
                     <div className="w-full">
                         {children}
