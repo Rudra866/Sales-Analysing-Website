@@ -37,8 +37,8 @@ export default function SettingsLayout({children}: SettingsLayoutProps) {
                 <Separator className="my-6"/>
                 <div className="flex flex-col space-y-8 lg:flex-row lg:space-x-12 lg:space-y-0">
                     <aside className="-mx-4 lg:w-1/5">
-                        <ScrollArea className={'h-[400px]'}>
-                        {sideBarItems && <TrainingSidebarNav items={sideBarItems}/>}
+                        <ScrollArea className={'md:h-[400px] h-[200px]'}>
+                         {sideBarItems && <TrainingSidebarNav items={sideBarItems}/>}
                         </ScrollArea>
                     </aside>
                     <div className="w-full">

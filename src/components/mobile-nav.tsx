@@ -3,7 +3,7 @@
 import * as React from "react"
 import Link, {LinkProps} from "next/link"
 import {useRouter} from "next/navigation"
-import {SidebarOpen} from "lucide-react"
+import {Moon, SidebarOpen, Sun} from "lucide-react"
 import {cn, isAdmin} from "@/lib/utils"
 import {Icons} from "@/components/icons"
 import {Button} from "@/components/ui/button"
@@ -13,9 +13,13 @@ import {docsConfig, docsConfigAdmin} from "@/lib/config";
 import Image from "next/image";
 import useAuth from "@/hooks/use-auth";
 import {UserNav} from "@/components/user-nav";
+import {Label} from "@/components/ui/label";
+import {DropdownMenuItem} from "@/components/ui/dropdown-menu";
+import {useTheme} from "next-themes";
 
 export function MobileNav() {
     const [open, setOpen] = React.useState(false)
+    const { setTheme, theme } = useTheme()
     const {role} = useAuth()
     const routes = role && isAdmin(role.id) ? docsConfigAdmin : docsConfig
     return (
@@ -29,26 +33,42 @@ export function MobileNav() {
                         <span className="sr-only">Toggle Menu</span>
                     </Button>
                 </SheetTrigger>
-                <SheetContent side="left" className="pr-0">
+                <SheetContent side="left" className="pr-0 flex flex-col justify-between">
 
-                    <MobileLink href="/" className="flex items-center" onOpenChange={setOpen}>
-                        <Image src={'/icon.png'} alt={'icon'} width={25} height={25} className={'mr-2'}/>
-                    </MobileLink>
+                    <div>
+                        <MobileLink href="/" className="flex items-center border-b pb-1 border-dashed" onOpenChange={setOpen}>
+                            <Image src={'/icon.png'} alt={'icon'} width={50} height={50} className={'mr-2'}/>
+                            <span className="text-lg font-bold text-foreground">
+                                Binary Bandits
+                                <p className='text-sm text-muted-foreground font-medium'>Sales Tracker</p>
+                            </span>
+                        </MobileLink>
 
-                    <ScrollArea className="my-4 pb-10 pl-6">
-                        <div className="flex flex-col space-y-3">
-                            {routes.mainNav?.map(
-                                (item) =>
-                                    item.href && (
-                                        <MobileLink key={item.href} href={item.href} onOpenChange={setOpen}
-                                                    className={'text-lg text-foreground'}>
-                                            {item.title}
-                                        </MobileLink>
-                                    )
-                            )}
-                        </div>
-                    </ScrollArea>
+                        <ScrollArea className="my-4 pb-10 pl-6">
+                            <div className="flex flex-col space-y-3 text-sm h-fit">
+                                {routes.mainNav?.map(
+                                    (item) =>
+                                        item.href && (
+                                            <MobileLink key={item.href} href={item.href} onOpenChange={setOpen}
+                                                        className={'text-foreground'}>
+                                                {item.title}
+                                            </MobileLink>
+                                        )
+                                )}
+                                <Label className={'text-foreground h-fit py-1'}>
+                                    Sign Out
+                                </Label>
 
+                            </div>
+                        </ScrollArea>
+                    </div>
+                    <Label
+                        className="flex items-center space-x-2 text-sm text-foreground cursor-pointer"
+                        onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}>
+                        <Sun className="mr-2 h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+                        <Moon className="absolute mr-2 h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+                        <span>Change theme</span>
+                    </Label>
                 </SheetContent>
             </Sheet>
         </div>

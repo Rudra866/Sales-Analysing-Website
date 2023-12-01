@@ -22,13 +22,11 @@ function Page(props: any) {
     }, [id]);
 
     return (
-        <div className="space-y-6">
-            {page && <h3 className="text-lg font-medium">{page.pagename}</h3>}
+        <div className="space-y-6 p-2 rounded-lg">
+            {page && <h3 className="text-lg font-medium p-4 rounded-xl">{page.pagename}</h3>}
             <Separator />
             <div className="space-y-6">
                 <p className="text-sm text-muted-foreground">{page?.pagebody}</p>
-                {/*<Separator />*/}
-                {/*<p className="text-sm text-muted-foreground">{page?.pagebody}</p>*/}
             </div>
         </div>
     );

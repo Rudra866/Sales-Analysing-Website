@@ -68,7 +68,7 @@ function TasksQuickView({tasks}: TasksQuickViewProps) {
     }
 
     return (
-        <Tabs defaultValue="Tasks Overview" className="col-span-3 space-y-4 border rounded-xl p-4">
+        <Tabs defaultValue="Tasks Overview" className="col-span-4 space-y-4 border rounded-xl p-4 w-full">
             <TabsList>
                 <TabsTrigger value="Tasks Overview">Tasks Overview</TabsTrigger>
             </TabsList>
