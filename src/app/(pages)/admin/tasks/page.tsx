@@ -34,7 +34,7 @@ function AdminTasksPage() {
   }, [supabase]);
 
   return (
-      <div className={'container border md:p-6 lg:p-12 rounded-xl'}>
+      <div className={'container md:border md:p-6 lg:p-12 rounded-xl'}>
           <TaskTable  data={data} employees={employees} loading={loading}/>
       </div>
   );

@@ -204,11 +204,11 @@ export default function SalesTable({data, employees, loading}: SalesTableProps) 
                 initial={"Name"}
                 placeholder={"Filter sales..."}
             />
-            <div className="flex items-center space-x-2 w-full">
+            <div className="flex items-center space-x-2 w-full md:w-auto">
                 <Button
                     size="sm"
                     variant="outline"
-                    className="ml-auto hidden h-8 lg:flex"
+                    className="ml-auto h-8 lg:flex"
                     onClick={() => {
                         setShowSaleDialog(true);
                     }}

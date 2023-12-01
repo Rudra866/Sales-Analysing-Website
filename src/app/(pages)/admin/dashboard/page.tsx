@@ -22,47 +22,48 @@ import SalesLineChart from "@/components/sales-line-chart";
  * @group Next.js Pages
  * @route `/dashboard`
  */
+
 export default function DashboardPage() {
   const { data, date, setDate, isLoading } = useDashboard();
   return (
-    <Suspense fallback={<LoadingAnimation />}>
-      <div className="flex-col md:flex">
-        <div className="flex-1 space-y-4 p-2 md:p-8 pt-6">
-          <div className="flex items-start justify-start space-y-2 lg:flex-row flex-col">
-            <h2 className="w-full text-3xl font-bold tracking-tight">
-              Dashboard
-            </h2>
-            <div className="w-fit flex space-x-2 lg:flex-row flex-col gap-2 justify-end">
-              <CalendarDateRangePicker date={date} setDate={setDate} />
-              <Button onClick={() => getSalesCSV(date)}>Download</Button>
+      <Suspense fallback={<LoadingAnimation />}>
+        <div className="flex flex-col md:flex-row">
+          <div className="flex-1 space-y-4 p-2 md:p-8 pt-6">
+            <div className="flex flex-col lg:flex-row items-start justify-between space-y-2 lg:space-y-0">
+              <h2 className="w-full text-3xl font-bold tracking-tight">
+                Dashboard
+              </h2>
+              <div className="w-fit lg:w-auto flex flex-col lg:flex-row space-y-2 lg:space-x-2 align-top items-end justify-start">
+                <CalendarDateRangePicker date={date} setDate={setDate} />
+                <Button className={'w-full'} onClick={() => getSalesCSV(date)}>Download</Button>
+              </div>
             </div>
-          </div>
-          {isLoading ? (
-            <LoadingAnimation />
-          ) : (
-            <section className={"w-full space-y-2"}>
-              <div className="grid gap-2 md:grid-cols-2 lg:grid-cols-4">
-                <SummaryCard defaultCategory={"Total"} />
-                <SummaryCard defaultCategory={"GrossProfit"} />
-                <SummaryCard defaultCategory={"DealerCost"} />
-                <CountCard />
-              </div>
+            {isLoading ? (
+                <LoadingAnimation />
+            ) : (
+                <section className={"w-full space-y-2"}>
+                  <div className="grid gap-2 grid-cols-1 md:grid-cols-2 lg:grid-cols-4 overflow-hidden">
+                    <SummaryCard defaultCategory={"Total"} />
+                    <SummaryCard defaultCategory={"GrossProfit"} />
+                    <SummaryCard defaultCategory={"DealerCost"} />
+                    <CountCard />
+                  </div>
 
-              <div className="grid gap-4 md:grid-cols-4 lg:grid-cols-7">
-                <Overview className={"col-span-2 lg:col-span-4"} />
-                <RecentSales className={"col-span-2 lg:col-span-3"} />
-                <SalesLineChart className={"col-span-2 lg:col-span-4"} />
-                <DynamicChart
-                  className="col-span-2 lg:col-span-3"
-                  data={data!}
-                  date={date}
-                  title={"Sales"}
-                />
-              </div>
-            </section>
-          )}
+                  <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-7">
+                    <Overview className={"col-span-1 md:col-span-2 lg:col-span-4"} />
+                    <RecentSales className={"col-span-1 md:col-span-2 lg:col-span-3"} />
+                    <SalesLineChart className={"col-span-1 md:col-span-2 lg:col-span-4"} />
+                    <DynamicChart
+                        className="col-span-1 md:col-span-2 lg:col-span-3"
+                        data={data!}
+                        date={date}
+                        title={"Sales"}
+                    />
+                  </div>
+                </section>
+            )}
+          </div>
         </div>
-      </div>
-    </Suspense>
+      </Suspense>
   );
 }

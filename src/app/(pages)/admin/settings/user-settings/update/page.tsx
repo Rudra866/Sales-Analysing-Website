@@ -1,6 +1,6 @@
 'use client'
 
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Separator} from "@/components/ui/separator";
 import {
     Employee,
@@ -17,9 +17,10 @@ import {ScrollArea, ScrollBar} from "@/components/ui/scroll-area";
 
 function UpdateUserPage() {
     const supabase = getSupabaseBrowserClient();
-    const [employees, setEmployees] = React.useState<Employee[]>();
-    const [roles, setRoles] = React.useState<Role[]>();
+    const [employees, setEmployees] = useState<Employee[]>();
+    const [roles, setRoles] = useState<Role[]>();
     const router = useRouter()
+    const [searchTerm, setSearchTerm] = useState("");
 
     useEffect(() => {
         getAllEmployees(supabase).then((res) => {
@@ -40,18 +41,22 @@ function UpdateUserPage() {
         })
     }, [supabase]);
 
+    const filteredEmployees = employees?.filter(employee =>
+        employee.Name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
     return (
-        <div className="space-y-6">
-            <div className={'flex flex-row justify-between'}>
-                <div className={'hidden md:flex md:flex-col w-full'}>
+      <div className="space-y-6">
+            <div className={'flex flex-col md:flex-row justify-between'}>
+                <div className={'w-full md:flex md:flex-col'}>
                     <h3 className="text-lg font-medium">Update User</h3>
                     <p className="text-sm text-muted-foreground">Click on a user to update.</p>
                 </div>
-                <Input placeholder={'Search'}/>
+                <Input placeholder={'Search'} value={searchTerm} onChange={e => setSearchTerm(e.target.value)}/>
             </div>
             <Separator/>
             <ScrollArea className={'h-[800px]'}>
-                {employees?.map((employee) => {
+                {filteredEmployees?.map((employee) => {
                     return (
                         <div key={employee.id}
                              className="flex items-center border-b justify-between space-x-4 p-3 shadow-sm cursor-pointer hover:bg-accent mr-4 my-2"

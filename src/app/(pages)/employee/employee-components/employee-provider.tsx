@@ -53,15 +53,16 @@ export const EmployeeProvider: React.FC<EmployeeProviderProps> = ({children}) =>
         to: new Date(),
     })
 
-    // get data on initial load
     useEffect(() => {
-        if (!employee) return // if there's no employee, the page is broken already anyway.
         fetch("/api/task", { method: "GET" })
             .then(response => response.json())
             .then(data => data.data)
             .then((res) => {
                 setAllTasks(res as Task[])
                 console.log(res)
+        }).catch(e => {
+            errorToast("Failed to load tasks.")
+            console.error(e);
         })
         getSales()
             .then((res) => {

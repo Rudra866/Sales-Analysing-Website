@@ -37,17 +37,18 @@ export function DataTableFacetedFilter({title, options}: DataTableFacetedFilterP
     return (
         <Popover>
             <PopoverTrigger asChild>
-                <Button variant="outline" size="sm" className="flex flex-wrap w-full justify-start border-dashed">
+
+                <Button variant="outline" size="sm" className="flex flex-wrap w-fit h-fit justify-start border-dashed p-1 gap-1">
                     <PlusCircledIcon className="mr-2 h-4 w-4"/>
                     {title}
                     {selectedValues?.length > 0 && (
                         <>
-                            <Separator orientation="vertical" className="mx-2 h-4" />
-                            <div className="hidden space-x-1 lg:flex">
+                            <Separator orientation="vertical" className="hidden md:flex mx-2 h-4" />
+                            <div className="space-x-1 space-y-1 flex flex-wrap items-end">
                                 {options && options
                                     .filter((option) => selectedValues.includes(option.value))
                                     .map((option) =>
-                                        <Badge variant="secondary" key={option.value} className="z-40 rounded-full px-2 font-normal">
+                                        <Badge variant="secondary" key={option.value} className="z-40 rounded-full px-2 font-normal h-full">
                                             {option.label}
                                             <X size={18} className="ml-1 rounded-full cursor-pointer hover:bg-primary/80" onClick={() => {
                                                 setSelectedValues(selectedValues.filter((value) => value !== option.value))
@@ -60,9 +61,9 @@ export function DataTableFacetedFilter({title, options}: DataTableFacetedFilterP
                     )}
                 </Button>
             </PopoverTrigger>
-            <PopoverContent className="min-w-full p-0 bg-slate-300" align="start">
+            <PopoverContent className="min-w-full p-0 " align="start">
                 <Command>
-                    <CommandInput placeholder={title}/>
+                    <CommandInput placeholder={title} className={'focus:border-background  border-0'}/>
                     <CommandList>
                         <CommandEmpty>No results found.</CommandEmpty>
                         <CommandGroup>
@@ -70,12 +71,12 @@ export function DataTableFacetedFilter({title, options}: DataTableFacetedFilterP
                                 const isSelected = selectedValues.includes(option.value)
                                 return (
                                     <CommandItem
-                                        className={cn('active:bg-slate-400/50  ', )}
+                                        className={cn('  ', )}
                                         key={option.value}
                                         onSelect={() => {
                                             if (isSelected) {setSelectedValues(selectedValues.filter((value) => value !== option.value))
                                             } else {setSelectedValues([...selectedValues, option.value])}
-                                            console.log('isSelected: ', isSelected, option.value, ' selectedValues: ', selectedValues)
+                                            // console.log('isSelected: ', isSelected, option.value, ' selectedValues: ', selectedValues)
                                         }}
                                     >
                                         <div className={cn("mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-slate-700/50 text-white")}
