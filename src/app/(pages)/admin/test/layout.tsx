@@ -30,7 +30,7 @@ export default async function TestsLayout({children}: { children: React.ReactNod
                 {directories.map((name) =>
                     <Link key={name}
                           href={name}
-                          className={"mx-4"}>{name}</Link>
+                          className={"mx-4 text-foreground"}>{name}</Link>
                 )}
               </div>
             </div>

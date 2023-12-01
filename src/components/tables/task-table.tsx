@@ -213,6 +213,5 @@ export default function TaskTable({
                 <TaskCreateDialog employees={employees} task={task}/>
             </FormModal>
         </DataTable>
-
     )
 }

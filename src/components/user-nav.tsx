@@ -32,26 +32,22 @@ export function UserNav() {
   const {employee, user} = useAuth();
   const [notify, setNotify] = useState(false)
 
-
   const handleSignOut = async () => {
     await supabase.auth.signOut();
     router.refresh()
   }
 
-
-
   useEffect(() => {
     employee && getAllTasksByAssignee(supabase, employee.id)
         .then((res) => {
           const start = res.sort((a, b) => new Date(a.StartDate).getTime() - new Date(b.StartDate).getTime())
-          console.log("notify", new Date(start[start.length - 1].CreatedTime) > new Date(user?.last_sign_in_at || '' ))
+          console.log("notify", new Date(start[start.length - 1]?.CreatedTime) > new Date(user?.last_sign_in_at || '' ))
 
           // if the last task is overdue, notify the user
-          if (start.length > 0 && new Date(start[start.length - 1].CreatedTime) > new Date(user?.last_sign_in_at || '' )) {
+          if (start.length > 0 && new Date(start[start.length - 1]?.CreatedTime) > new Date(user?.last_sign_in_at || '' )) {
             console.log("notify")
             setNotify(true)
           }
-
         })
   }, [employee])
 

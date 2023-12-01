@@ -30,10 +30,10 @@ export const docsConfigAdmin: DocsConfig = {
             title: "Training",
             href: "/admin/training/create-new",
         },
-        {
-            title: "Test",
-            href: "/admin/test/database",
-        },
+        // {
+        //     title: "Test",
+        //     href: "/admin/test/database",
+        // },
     ],
 }
 
