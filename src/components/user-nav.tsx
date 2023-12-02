@@ -41,11 +41,11 @@ export function UserNav() {
     employee && getAllTasksByAssignee(supabase, employee.id)
         .then((res) => {
           const start = res.sort((a, b) => new Date(a.StartDate).getTime() - new Date(b.StartDate).getTime())
-          console.log("notify", new Date(start[start.length - 1]?.CreatedTime) > new Date(user?.last_sign_in_at || '' ))
+          // console.log("notify", new Date(start[start.length - 1]?.CreatedTime) > new Date(user?.last_sign_in_at || '' ))
 
           // if the last task is overdue, notify the user
           if (start.length > 0 && new Date(start[start.length - 1]?.CreatedTime) > new Date(user?.last_sign_in_at || '' )) {
-            console.log("notify")
+            // console.log("notify")
             setNotify(true)
           }
         })
@@ -55,7 +55,7 @@ export function UserNav() {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-          <EmployeeAvatar employee={employee} notify={notify}/>
+          <EmployeeAvatar employee={employee} notify={true}/>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56" align="end" forceMount>

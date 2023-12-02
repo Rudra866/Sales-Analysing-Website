@@ -1,7 +1,15 @@
 'use client'
 
-import {useEffect, useState} from 'react';
-import {getReferencePagesById, getSupabaseBrowserClient, postToReferencePages, ReferencePage} from "@/lib/database";
+import React, {useEffect, useState} from 'react';
+import {
+    Employee,
+    getAllEmployees, getAllRoles,
+    getReferencePagesById,
+    getSupabaseBrowserClient,
+    postToReferencePages,
+    ReferencePage,
+    Role
+} from "@/lib/database";
 import {Separator} from "@/components/ui/separator";
 import {Button} from "@/components/ui/button";
 import {Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
@@ -14,6 +22,7 @@ import {Checkbox} from "@/components/ui/checkbox";
 import {referencePageFormSchema} from "@/lib/zod-schemas";
 import {errorToast, successToast} from "@/lib/toasts";
 import {PostgrestError} from "@supabase/postgrest-js";
+import {DataTableFacetedFilter} from "@/components/data-table-faceted-filter";
 
 const supabase = getSupabaseBrowserClient();
 
@@ -50,6 +59,28 @@ function Page(props: any) {
             errorToast(err.message);
         })
     }
+
+    const [roles, setRoles] = useState<Role[]>([])
+    useEffect(() => {
+        Promise.all([
+            getAllRoles(supabase)
+        ])
+            .then(([ roles]) => {
+                setRoles(roles);
+            })
+            .catch(err => {
+                errorToast("Failed to load data.");
+                console.error(err);
+            })
+    }, []);
+
+
+    const names = roles.map(role => {
+        return {
+            label: role.RoleName,
+            value: role.id.toString()
+        }
+    })
 
     return (
         <div className="space-y-6">
@@ -95,10 +126,7 @@ function Page(props: any) {
                                             />
                                         </FormControl>
                                         <FormMessage />
-                                        <FormDescription className={'items-center align-middle flex gap-2'}>
-                                            Notify your employees about new reference page {" "}
-                                            <Checkbox/>
-                                        </FormDescription>
+                                        {names && <DataTableFacetedFilter title={"Notify your employees about new reference page "} options={names}/>}
                                     </FormItem>
 
                                 )}

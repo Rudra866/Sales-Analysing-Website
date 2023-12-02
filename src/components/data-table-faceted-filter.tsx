@@ -37,8 +37,7 @@ export function DataTableFacetedFilter({title, options}: DataTableFacetedFilterP
     return (
         <Popover>
             <PopoverTrigger asChild>
-
-                <Button variant="outline" size="sm" className="flex flex-wrap w-fit h-fit justify-start border-dashed p-1 gap-1">
+                <Button variant="outline" size="sm" className="flex flex-wrap w-fit h-fit justify-start border-dashed p-1 gap-1 text-sm">
                     <PlusCircledIcon className="mr-2 h-4 w-4"/>
                     {title}
                     {selectedValues?.length > 0 && (

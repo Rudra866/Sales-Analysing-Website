@@ -33,19 +33,31 @@ export default function SummaryCard({className, defaultCategory = "Total"}: { cl
 
     }, [data, date, selectedCategory]);
 
+    // useEffect(() => {
+    //     const thisMonth = format(new Date(date?.to || new Date()), 'MMM-yy')
+    //     const lastMonth = format(new Date(date?.from || new Date()), 'MMM-yy')
+    //     const previousMonth = format(addDays(new Date(), -Number(30)), 'MMM-yy')
+    //     const e = data && monthlyAverage(data, selectedCategory)
+    //     setAverage(e && e[thisMonth] ? e[previousMonth] : 0)
+    //
+    // }, [selectedCategory , data, date])
 
 
-    //  todo this shit is very buggy. need to revisit this.
-    useEffect(() => {
-        const thisMonth = format(new Date(date?.to || new Date()), 'MMM-yy')
-        const lastMonth = format(new Date(date?.from || new Date()), 'MMM-yy')
-        const previousMonth = format(addDays(new Date(), -Number(30)), 'MMM-yy')
-        const e = data && monthlyAverage(data, selectedCategory)
-        setAverage(e && e[thisMonth] ? e[lastMonth] : 0)
 
-    }, [selectedCategory , data, date])
-
-
+    // useEffect(() => {
+    //     const thisMonth = format(new Date(date?.to || new Date()), 'MMM-yy')
+    //     const previousMonth = format(addDays(new Date(date?.to || new Date()), -Number(30)), 'MMM-yy')
+    //     const e = data && monthlyAverage(data, selectedCategory)
+    //
+    //     const thisMonthValue = e && e[thisMonth] ? e[thisMonth] : 0
+    //     const previousMonthValue = e && e[previousMonth] ? e[previousMonth] : 0
+    //
+    //     const percentageChange = ((thisMonthValue - previousMonthValue) / previousMonthValue) * 100
+    //     console.log(percentageChange)
+    //
+    //     setAverage(percentageChange)
+    //
+    // }, [selectedCategory , data, date])
 
     return (
         <div className={'h-full'}>
@@ -77,8 +89,8 @@ export default function SummaryCard({className, defaultCategory = "Total"}: { cl
                         }
 
                         <p className="text-xs text-muted-foreground">
-                            {average > 0 && <span className={cn('text-[#adfa1d]')}>+{average}% </span>}
-                            {}
+                            {/*{average > 0.0 && <span className={cn('text-[#adfa1d]')}>+{average}% </span>}*/}
+                            {/*{average < 0.0 && <span className={cn('text-[#E86825]')}>{average}% </span>}*/}
                             from last
                             <span>
                             {" "}{format(new Date(date?.from || new Date()), 'yyyy-MMM-dd')}
@@ -90,6 +102,8 @@ export default function SummaryCard({className, defaultCategory = "Total"}: { cl
         </div>
     );
 }
+
+
 
 
 

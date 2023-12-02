@@ -33,28 +33,18 @@ export default function ReferenceForm() {
         }
     })
 
-    const [loading, setLoading] = useState<boolean>(false)
-    const [employees, setEmployees] = useState<Employee[]>([])
     const [roles, setRoles] = useState<Role[]>([])
-
-
     useEffect(() => {
-        setLoading(true);
         Promise.all([
-            getAllEmployees(supabase),
             getAllRoles(supabase)
         ])
-            .then(([employees, roles]) => {
-                setEmployees(employees);
+            .then(([ roles]) => {
                 setRoles(roles);
             })
             .catch(err => {
                 errorToast("Failed to load data.");
                 console.error(err);
             })
-            .finally(() => {
-                setLoading(false);
-            });
     }, []);
 
     function onSubmit(data: ReferenceFormValues) {
