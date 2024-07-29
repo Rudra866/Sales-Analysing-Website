@@ -179,5 +179,5 @@ Some links to help you get started:
 Here is a link to a youtube video demonstrating this website and how to get it running:
 https://www.youtube.com/watch?v=oY6Ra2OdxHQ
 
-Here is a Power Point presentation on the project and how it was developed and tested inclunding the user stories and architechture used:
+You can view a Power Point presentation on the project and how it was developed and tested inclunding the user stories and architechture used from the BinaryBanditsSalesTracker.pptx file in this repository.
 
