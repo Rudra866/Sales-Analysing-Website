@@ -143,12 +143,10 @@ Some of them are just old versions of main, as some of them have never made a co
 |----------|--------------------------------------------------------------|
 | main     | [codeallergy.dev](https://codeallergy.dev)                   |
 | dev      | [dev.codeallergy.dev](https://dev.codeallergy.dev)           |
-| Amir     | [amir.codeallergy.dev](https://amir.codeallergy.dev)         |
 | bill     | [bill.codeallergy.dev](https://bill.codeallergy.dev)         |
 | Rudra    | [rudra.codeallergy.dev](https://rudra.codeallergy.dev)       |
-| ryan     | [ryan.codeallergy.dev](https://ryan.codeallergy.dev)         |
 | Suchetan | [suchetan.codeallergy.dev](https://suchetan.codeallergy.dev) |
-| tolu     | [tolu.codeallergy.dev](https://tolu.codeallergy.dev)         |
+
 
 ## Testing
 To run the test suite for the program, run the following in the terminal:
@@ -171,10 +169,15 @@ Some links to help you get started:
 - [Next.js Documentation](https://nextjs.org/docs)
 - [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 - [Next.js GitHub repository](https://github.com/vercel/next.js/)
-
-
 - [React Documentation](https://react.dev/reference/react)
 - [shadcn/ui Documentation](https://ui.shadcn.com/docs/)
 - [Database Documentation](https://docs.codeallergy.dev/interfaces/DatabaseUsage.html)
 - [Supabase-js Documentation](https://supabase.com/docs/reference/javascript/introduction)
 - [Auto-generated JSDoc Documentation](https://docs.codeallergy.dev)
+
+## Other Links and Sources
+Here is a link to a youtube video demonstrating this website and how to get it running:
+https://www.youtube.com/watch?v=oY6Ra2OdxHQ
+
+Here is a Power Point presentation on the project and how it was developed and tested inclunding the user stories and architechture used:
+
